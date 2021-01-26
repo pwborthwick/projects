@@ -1,0 +1,908 @@
+' Gambas module file
+
+'**************************************************************************************************CROSSPRODUCT
+Public Function crossProduct(v As Vector, u As Vector) As Vector
+	'** the cross-product of two vector
+	Dim vec As New Vector(3)
+	Dim iDim As Integer
+
+	For iDim = 0 To 2
+		vec[iDim] = u[(iDim + 1) Mod 3] * v[(iDim + 2) Mod 3] - u[(iDim + 2) Mod 3] * v[(iDim + 1) Mod 3]
+  Next
+  
+	Return vec
+	
+End
+'**************************************************************************************************EIGJACOBI
+
+Public Procedure eigJacobi(mat As Matrix, Optional NOVECTOR As Boolean = False, Optional precision As Integer = -4, Optional ByRef eigenVectors As Matrix, ByRef eigenValues As Vector, ascend As Boolean = True) As Boolean
+  '** eigen solution by Jacobi method
+
+  Dim S As New Matrix
+  Dim nRows, i, j, row, col As Integer
+  Dim H As Matrix
+  Dim isZero, epsilon, tol, maxS, val, theta, cosTheta, sinTheta As Float
+  Dim DOVECTOR As Boolean
+  Dim Si, Sj, Hi As Vector
+  '** copy argument to local matrix
+  S = mat.Copy()
+  nRows = S.Row(0).Count
+  DOVECTOR = Not NOVECTOR
+  '** if we want eigenvectors clear a matrix for them
+  If DOVECTOR Then H = Matrix.Identity(nRows, nRows, False)
+  '** define convergence tolerence
+  epsilon = 0.0
+  isZero = 2.0E-16
+  If epsilon > isZero Then
+    tol = epsilon
+  Else
+    tol = isZero
+  Endif
+  If NOVECTOR And (epsilon = 0.0) Then tol = Sqr(tol)
+  '** main loop
+  While True
+    '** get pivot
+    maxS = 0.0
+    i = 0
+    j = 0
+    For row = 1 To nRows - 1
+      For col = 0 To row - 1
+        val = Abs(S.Row(row)[col])
+        If maxS < val Then
+          maxS = val
+          i = row
+          j = col
+        Endif
+      Next
+    Next
+    '** converged
+    If maxS <= tol Then Break
+
+    Si = S.Column(i)
+    Sj = S.Column(j)
+    '** rotation set-up
+    theta = 0.5 * ATan2(2.0 * Si[j], Sj[j] - Si[i])
+    sinTheta = Sin(theta)
+    cosTheta = Cos(theta)
+    '** rotate
+    S.SetColumn(i, cosTheta * Si - sinTheta * Sj)
+    S.SetRow(i, S.Column(i))
+    S.SetColumn(j, sinTheta * Si + cosTheta * Sj)
+    S.SetRow(j, S.Column(j))
+    S[i, j] = 0.0
+    S[j, i] = 0.0
+    S[i, i] = cosTheta * cosTheta * Si[i] - 2.0 * sinTheta * cosTheta * Si[j] + sinTheta * sinTheta * Sj[j]
+    S[j, j] = sinTheta * sinTheta * Si[i] + 2.0 * sinTheta * cosTheta * Si[j] + cosTheta * cosTheta * Sj[j]
+    '** if need vectors
+    If DOVECTOR Then
+      Hi = H.Column(i)
+      H.SetColumn(i, cosTheta * Hi - sinTheta * H.Column(j))
+      H.SetColumn(j, sinTheta * Hi + cosTheta * H.Column(j))
+    Endif
+    '** end main loop
+  Wend
+  '** construct return vector and matrix
+  For i = 0 To nRows - 1
+    eigenValues[i] = Round(S.Row(i)[i], precision)
+    If DOVECTOR Then
+      For j = 0 To nRows - 1
+        H[i, j] = Round(H.Row(i)[j], precision)
+      Next
+    Endif
+  Next
+  If DOVECTOR Then eigenVectors = H.Copy()
+  '** sort the eigen solution
+  eigenSort(ByRef eigenVectors, eigenValues, ascend)
+  Return Isdegeneate(eigenValues, precision)
+
+End
+
+'**************************************************************************************************ISDEGENERATE
+
+Public Function Isdegeneate(v As Vector, precision As Float) As Boolean
+  '** check for degenerate eigenvalues
+
+  Dim asArray As New Float[]
+  Dim i As Integer
+
+  '** change to array to use its sort capability
+  asArray = v.Copy()
+  asArray.Sort()
+
+  For i = 0 To asArray.Max - 1
+    If Abs(asArray[i] - asArray[i + 1]) < precision Then Return True
+  Next
+
+  Return False
+
+End
+'**************************************************************************************************EIGENSORT
+
+Public Procedure eigenSort(Optional ByRef m As Matrix, ByRef v As Vector, ascend As Boolean)
+
+  Dim bSorting As Boolean
+  Dim i As Integer
+  Dim NOVECTORS As Boolean
+  Dim Columnvector As New Vector
+
+  NOVECTORS = IsNull(m)
+  '** do acending sort
+  If ascend Then
+    Repeat
+      bSorting = False
+      For i = 0 To v.count - 2
+        If v[i] > v[i + 1] Then
+          Swap v[i], v[i + 1]
+          If Not NOVECTORS Then
+            Columnvector = m.Column(i)
+            m.SetColumn(i, m.Column(i + 1))
+            m.SetColumn(i + 1, Columnvector)
+          Endif
+          bSorting = True
+        Endif
+      Next
+    Until Not bSorting
+  Else
+    '** do descending sort
+    Repeat
+      bSorting = False
+      For i = 0 To v.count - 2
+        If v[i] < v[i + 1] Then
+          Swap v[i], v[i + 1]
+          If Not NOVECTORS Then
+            Columnvector = m.Column(i)
+            m.SetColumn(i, m.Column(i + 1))
+            m.SetColumn(i + 1, Columnvector)
+          Endif
+          bSorting = True
+        Endif
+      Next
+    Until Not bSorting
+
+  Endif
+
+End
+
+'**************************************************************************************************BOYS
+
+Public Function boys(n As Long, t As Float) As Float
+  '** Boys function
+
+  Dim res As Float
+
+  If (n = 0) And (t = 0) Then Return 1
+
+  If Abs(t) < 1E-10 Then t = 1E-10
+
+  If (t > 160) Then
+    Return doubleFactorial(2 * n - 1) / (2 ^ (n + 1)) * Sqr(Pi / (T ^ (2 * n + 1)))
+  Else
+    incompleteGamma(n + 1 / 2, T, ByRef res)
+
+    Return res / (2 * (t ^ (n + 1 / 2)))
+    
+  Endif
+
+End
+'**************************************************************************************************DOUBLEFACTORIAL
+
+Fast Public Function doubleFactorial(n As Integer) As Long
+  'get double factorial n(n-2)(n-4)...1
+
+  Dim res As Long = 1
+  Dim iCount As Integer
+
+  If (n <= 1) Then Return 1
+
+  For iCount = n To 2 Step -2
+    res = res * iCount
+  Next
+
+  Return res
+
+End
+'**************************************************************************************************INCOMPLETEGAMMA
+
+Public Function IncompleteGamma(a As Float, x As Float, ByRef gin As Float) As Float
+  '** incomplete gamma function
+
+  Dim xam, r, sum, ga, t0, gim As Float
+  Dim k As Integer
+
+  gin = 0
+
+  If (a < 0.0 Or x < 0) Then
+    Return False
+  Else If (x = 0.0) Then
+    Return True
+  Endif
+
+  xam = -x + a * Log(x)
+
+  If (xam > 600 Or a > 160.0) Then
+    Return False
+  Else If (x <= 1.0 + a) Then
+    sum = 1.0 / a
+    r = sum
+
+    For k = 1 To 80
+      r = r * x / (a + k)
+      sum = sum + r
+      If (Abs(r / sum) <= 1E-16) Then Break
+    Next
+
+    gin = Exp(xam) * sum
+
+  Else
+    t0 = 0.0
+
+    For k = 80 To 1 Step -1
+      t0 = (k - a) / (1.0 + k / (x + t0))
+    Next
+    gim = Exp(xam) / (x + t0)
+    ga = lanczozGamma(a)
+    gin = ga - gim
+  Endif
+
+  Return True
+
+End
+'**************************************************************************************************LANCZOZGAMMA
+
+Fast Public Function lanczozGamma(x As Float) As Float
+  '** Coefficients used by the GNU Scientific Library.
+  '** http: / / en.wikipedia.org / wiki / Lanczos_approximation
+
+  Dim g As Single = 7
+  Dim i As Integer
+  Dim w, t As Float
+  Dim table As Float[] = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059,
+                          12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7]
+
+  If (x < 0.5) Then
+    Return (Pi / (Sin(Pi * x) * lanczozGamma(1.0 - x)))
+    
+  Else
+    x = x - 1
+    t = table[0]
+    For i = 1 To g + 1
+      t = t + (table[i] / (x + i))
+    Next
+    w = x + g + 0.5
+    Return Sqr(2.0 * Pi) * (w ^ (x + 0.5)) * Exp(-w) * t
+    
+  Endif
+
+End
+'**************************************************************************************************FACTORIAL
+
+Public Function factorial(n As Integer) As Long
+  '** get factorial n
+
+  Dim val As Long = 1
+  Dim i As Integer
+
+  If (n <= 1) Then Return 1
+
+  For i = 2 To n
+    val *= i
+  Next
+
+  Return val
+
+End
+'**************************************************************************************************DENMANBEAVERS
+
+Fast Public Function denmanBeavers(mat As Matrix) As Matrix
+  '** Denman-Beaver algorithm to find square-root of matrix
+
+  Dim errorMatrix As Matrix
+  Dim n, flag, i, j As Integer
+  Dim y As New Matrix
+  Dim ident As New Matrix
+  Dim errorLevel, errorTolerance, {error} As Float
+
+  n = mat.Column(0).count
+  ident = Ident.Identity(n, n, False)
+
+  errorLevel = 1
+  errorTolerance = 1.5e-10
+
+  flag = 1
+  While (errorLevel > errorTolerance)
+    y = mat.Copy()
+    mat = (y + ident.Inv()) / 2
+    ident = (ident + y.Inv()) / 2
+    errorMatrix = absoluteValueMatrix(mat - y)
+    errorLevel = 0
+    '** detect the maximum value In the Error matrix
+    For i = 0 To n - 1
+      {error} = 0.0
+      For j = 0 To n - 1
+        If errorMatrix[i, j] > {error} Then {error} = errorMatrix[i, j]
+      Next
+
+      If ({error} > errorLevel) Then errorLevel = {error}
+
+    Next
+    Inc flag
+  Wend
+
+  Return mat
+
+End
+'**************************************************************************************************ABSOLUTEVALUEMATRIX
+
+Public Function absoluteValueMatrix(mat As Matrix) As Matrix
+  '** absolute value of matrix
+  
+  Dim iCol, iRow As Integer
+  Dim v As Vector
+
+  For iCol = 0 To mat.Column(0).count - 1
+    v = mat.Row(iCol)
+    For iRow = 0 To mat.Row(0).count - 1
+      v[iRow] = Abs(v[iRow])
+    Next
+    mat.SetRow(iCol, v)
+  Next
+
+  Return mat
+
+End
+'**************************************************************************************************TRACE
+
+Public Function trace(a As Matrix) As Float
+
+  '** returns trace of square matrix
+  Dim i As Integer
+  Dim sum As Float
+
+  sum = 0.0
+  For i = 0 To a.Column(0).count - 1
+    sum += a[i, i]
+  Next
+
+  Return sum
+
+End
+'**************************************************************************************************GAUSSIANELIMINATION
+
+Fast Public Function gaussianElimination(m As Matrix, v As Vector) As Vector
+
+  '** performs a gaussian elimination
+  Dim i, j, k, n As Integer
+  Dim c, sum As Float
+  Dim x As Vector
+  Dim a As Matrix
+  
+  n = m.Row(0).count - 1
+  a = New Matrix(n + 1, n + 2, False)
+  x = New Vector(n + 1, False)
+  '** create augmented matrix
+  For i = 0 To n
+    a.SetColumn(i, m.Column(i))
+  Next
+  a.SetColumn(n + 1, v)
+  '** Loop For the generation Of upper triangular matrix
+  For j = 0 To n
+    For i = 0 To n
+      If i > j Then
+        Try c = a[i, j] / a[j, j]
+        For k = 1 To n + 1
+          a[i, k] = a[i, k] - c * a[j, k]
+        Next
+      Endif
+    Next
+  Next
+  x[n] = a[n, n + 1] / a[n, n]
+  '** this Loop Is For backward substitution
+  For i = n - 1 To 0 Step -1
+    sum = 0
+    For j = i + 1 To n
+      sum += a[i, j] * x[j]
+    Next
+    Try x[i] = (a[i, n + 1] - sum) / a[i, i]
+  Next
+
+  Return x
+
+End
+
+'**************************************************************************************************QRBALANCE
+Private Procedure QRbalance(ByRef mat As Matrix, ByRef high As Integer, ByRef low As Integer)
+
+ '** balance balances the matrix mat so that the rows With zero entries *
+ '** off the diagonal are isolated And the remaining columns And rows *
+ '** are resized To have one norm Close To 1. *
+
+  Dim basis As Integer = 2                            '** Floating point Radix
+  Dim i, j, k, m, iter As Integer
+  Dim b2, r, c, f, g, s As Float
+  Dim n As Integer = mat.width
+  
+  b2 = basis * basis
+  m = 0                                              '** m starts at first row
+  k = n - 1                                          '** k starts at last row
+
+  Do                                                 '** main loop
+    iter = 0
+    For j = k To 0 Step -1                           '** step down rows
+   
+      r = 0.0
+      For i = 0 To k                                 '** process columns pre-diagonal
+        If i <> j Then r = r + Abs(mat[j, i])        '** off-diagonal sum of row j
+      Next
+      If r = 0 Then                                  '** only diagonal element on row j
+        If j <> k Then                               '** off-diagonal only
+          For i = 0 To k                             '** process below diagonal
+            math.swapMatrixelement(mat, i, j, i, k) '** for rows below k swap columns j and k
+          Next
+          For i = m To n - 1                         '** process columns from m to last
+            math.swapMatrixelement(mat, j, i, k, i) '** for columns post-m swap rows j and k
+          Next
+        Endif
+        Dec k                                        '** move back a row
+        iter = 1                                     '** flag processing has been done
+      Endif
+
+    Next
+  Loop Until iter = 0                                '** no processing this time
+
+  Do                                                 '** main loop
+    iter = 0
+    For j = m To k                                   '** loop over columns
+  
+      c = 0                                          '** find sum of off-diagonal rows for column j
+      For i = m To k
+        If i <> j Then c = c + Abs(mat[i, j])
+      Next
+      If c = 0 Then                                  '** only diagonal element
+        If j <> m Then                               '** if column not j
+          For i = 0 To k                             '** process rows pre-k
+            math.swapMatrixelement(mat, i, j, i, m) '** for rows below k swap columns j and m
+          Next
+          For i = m To n - 1                         '** process columns post-m
+           math.swapMatrixelement(mat, j, i, m, i)  '** for columns post-m swap rows j and m
+          Next
+        Endif
+        Inc m                                        '** move forward
+        iter = 1                                     '** flag processing done
+      Endif 
+    Next
+  Loop Until iter = 0                                '** no processing this time
+
+  low = m                                            '** the rows 0 to low-1 and those from high to n-1  
+  high = k                                           '** contain isolated eigenvalue
+
+  Do                                                 '** main loop resized to have one norm close to 1
+
+    iter = 0
+    For i = m To k                                   '** process from low to high
+    
+      c = 0
+      r = 0
+      For j = m To k
+        If j <> i Then                               '** off-diagonal elements
+          c = c + Abs(mat[j, i])                     '** rows for column i
+          r = r + Abs(mat[i, j])                     '** columns for row i
+        Endif
+      Next
+      g = r / basis
+      f = 1
+      s = c + r
+
+      While c < g
+        f = f * basis
+        c = c * b2
+      Wend
+
+      g = r * basis
+      While c >= g
+        f = f / basis
+        c = c / b2
+      Wend
+
+      If (c + r) / f < 0.95 * s Then
+
+        g = 1 / f
+        iter = 1
+        For j = m To n - 1
+          mat[i, j] = mat[i, j] * g
+        Next
+        For j = 0 To k  
+          mat[j, i] = mat[j, i] * f
+        Next
+
+      Endif
+
+    Next
+  Loop Until iter = 0
+
+End
+'**************************************************************************************************QRHESSENBERG
+Private Function QRhessenberg(mat As Matrix, high As Integer, low As Integer) As Matrix
+
+  Dim i, j, m As Integer
+  Dim x, y As Float
+  Dim n As Integer = mat.Width
+  
+  For m = low + 1 To high - 1
+ 
+    i = m
+    x = 0
+    For j = m To high
+      If Abs(mat[j, m - 1]) > Abs(x) Then
+        x = mat[j, m - 1]
+        i = j
+      Endif
+    Next
+
+    If i <> m Then
+      For j = m - 1 To n - 1 
+        math.swapMatrixElement(mat, i, j, m, j)
+      Next
+      For j = 0 To high
+        math.swapMatrixElement(mat, j, i, j, m)
+      Next
+    Endif
+
+    If x <> 0 Then
+  
+      For i = m + 1 To high
+        y = mat[i, m - 1]
+        If y <> 0 Then
+          y = y / x
+          mat[i, m - 1] = y
+          For j = m To n - 1
+            mat[i, j] = mat[i, j] - y * mat[m, j]
+          Next
+          For j = 0 To high 
+            mat[j, m] = mat[j, m] + y * mat[j, i]
+          Next
+        Endif
+      Next
+    Endif
+  Next
+
+	Return mat
+	
+End
+'**************************************************************************************************QRALGORITHM
+Public Function QRalgorithm(h As Matrix) As Float[]
+'** Reference: "Numerical Algorithms with C  By G. Engeln-Mueller and"
+'** F.Uhlig, Springer - Verlag, 1996 " [BIBLI 11].
+'** http://jean-pierre.moreau.pagesperso-orange.fr/Pascal/feigen0_pas.txt
+  Dim i, j, ll As Integer
+  Dim na, en, iter, k, l, m, rc As Integer
+  Dim p, q, r, s, t, w, x, y, z As Float = 0.0
+  Dim n As Integer = h.width
+  Dim eigCount, eigen As New Float[n]
+  Dim MAXIT As Integer = 50
+  Dim MACHEP As Float = 1E-15
+  Dim high, low As Integer
+  
+  QRbalance(ByRef h, ByRef high, ByRef low)
+  
+  h = QRhessenberg(h, high, low)
+   
+  For i = 0 To n - 1
+    If (i < low) Or (i > high) Then
+      eigen[i] = h[i, i]
+      eigCount[i] = 0
+    Endif
+  Next
+
+  en = high
+
+  While en >= low
+
+    iter = 0
+    na = en - 1
+
+    While True 
+   
+      ll = 999                          
+      For l = en To low + 1 Step -1                                               
+        If Abs(h[l, l - 1]) <= MACHEP * (Abs(h[l - 1, l - 1]) + Abs(h[l, l])) Then
+          ll = l 
+          Break
+        Endif
+      Next
+
+      If ll <> 999 Then 
+        l = ll 
+      Else 
+        l = 0
+      Endif
+
+      x = h[en, en]
+      If l = en Then                           
+        eigen[en] = x + t
+        h[en, en] = x + t
+        eigCount[en] = iter
+        Dec en
+	 	    Break                    
+      Endif
+
+      y = h[na, na]
+      w = h[en, na] * h[na, en]
+
+      If l = na Then                            
+        p = (y - x) * 0.5
+        q = p * p + w
+        z = Sqr(Abs(q))
+        x = x + t
+        h[en, en] = x + t
+        h[na, na] = y + t
+        eigCount[en] = -iter
+        eigCount[na] = iter
+        If q >= 0 Then
+          If p < 0 Then
+            z = p - z 
+          Else 
+            z = p + z
+          Endif
+          eigen[na] = x + z
+          eigen[en] = x - w / z
+          s = w - w / z
+          x = h[en, na]
+          r = Sqr(x * x + z * z)
+        Else                                                                
+          eigen[na] = x + p
+          eigen[en] = x + p
+        Endif
+
+        en = en - 2
+        Break    
+      Endif
+
+      If iter >= MAXIT Then
+        eigCount[en] = MAXIT + 1
+        rc = en
+
+        Return
+      Endif                     
+
+      If (iter <> 0) And (iter Mod 10 = 0) Then
+        t = t + x
+        For i = low To en
+          h[i, i] = h[i, i] - x
+        Next
+        s = Abs(h[en, na]) + Abs(h[na, en - 2])
+        x = 0.75 * s
+        y = x
+        w = -0.4375 * s * s
+      Endif
+
+      Inc iter
+
+      For m = en - 2 To l Step -1
+        z = h[m, m]
+        r = x - z
+        s = y - z
+        p = (r * s - w) / h[m + 1, m] + h[m, m + 1]
+        q = h[m + 1, m + 1] - z - r - s
+        r = h[m + 2, m + 1]
+        s = Abs(p) + Abs(q) + Abs(r)
+        p = p / s
+        q = q / s
+        r = r / s
+        If m = l Then Break
+       If (Abs(h[m, m - 1]) * (Abs(q) + Abs(r)) <= MACHEP * Abs(p) * (Abs(h[m - 1, m - 1]) + Abs(z) + Abs(h[m + 1, m + 1]))) Then Break
+      Next
+
+      For i = m + 2 To en
+        h[i, i - 2] = 0
+      Next
+      For i = m + 3 To en
+        h[i, i - 3] = 0
+      Next
+      For k = m To na
+
+        If k <> m Then   
+          p = h[k, k - 1]
+          q = h[k + 1, k - 1]
+          If k <> na Then 
+            r = h[k + 2, k - 1] 
+          Else 
+            r = 0
+          Endif
+          x = Abs(p) + Abs(q) + Abs(r)
+         If x = 0 Then Break
+          p = p / x
+          q = q / x
+          r = r / x
+        Endif
+        s = Sqr(p * p + q * q + r * r)
+        If p < 0 Then s = -s
+
+        If k <> m Then
+          h[k, k - 1] = -s * x
+        Else If l <> m Then
+          h[k, k - 1] = -h[k, k - 1]
+        Endif
+        p = p + s
+        x = p / s
+        y = q / s
+        z = r / s
+        q = q / p
+        r = r / p
+
+        For j = k To n - 1 
+  
+          p = h[k, j] + q * h[k + 1, j]
+          If k <> na Then
+            p = p + r * h[k + 2, j]
+            h[k + 2, j] = h[k + 2, j] - p * z
+          Endif
+          h[k + 1, j] = h[k + 1, j] - p * y
+          h[k, j] = h[k, j] - p * x
+        Next
+
+        If k + 3 < en Then 
+          j = k + 3 
+        Else 
+          j = en
+        Endif
+        For i = 0 To j
+          p = x * h[i, k] + y * h[i, k + 1]
+          If k <> na Then
+            p = p + z * h[i, k + 2]
+            h[i, k + 2] = h[i, k + 2] - p * r
+          Endif
+          h[i, k + 1] = h[i, k + 1] - p * q
+          h[i, k] = h[i, k] - p
+        Next
+
+      Next 
+
+    Wend 
+
+  Wend   
+
+  rc = 0
+
+  Return eigen
+
+End
+'**************************************************************************************************QRALGORITHM
+Public Procedure swapMatrixElement(ByRef m As Matrix, i As Integer, j As Integer, a As Integer, b As Integer)
+  
+  Dim {temp} As Variant
+  
+  {temp} = m[a, b]
+  m[a, b] = m[i, j]
+  m[i, j] = {temp}
+  
+End
+'**************************************************************************************************MATRIXPRODUCT
+Public Function matrixProduct(a As Matrix, b As Matrix, ah As Integer, aw As Integer, bh As Integer, bw As Integer) As Matrix
+  '** matrix multiplication as gambas * only seems to work for square matrices
+  
+  Dim c As New Matrix(ah, bw)
+  Dim i, j, k As Integer
+  
+  For i = 0 To ah - 1
+    For j = 0 To bw - 1
+      c[i, j] = 0.0
+      For k = 0 To aw - 1
+        c[i, j] += a[i, k] * b[k, j]
+      Next
+    Next
+  Next
+  
+  Return c
+  
+End
+
+'**************************************************************************************************RMSARRAY
+Public Function rmsArray(a As Float[], b As Float[], mode As Integer, dimension As Integer) As Float
+  '** returns the root mean square value of a 2 or 4 dimensional array
+  Dim sum As Float = 0.0
+  Dim i, j, k, l As Integer
+
+  If mode = 2 Then
+    For i = 0 To dimension - 1
+      For j = 0 To dimension - 1
+        sum += (a[i, j] - b[i, j]) ^ 2
+      Next
+    Next
+    
+    Return sum * 0.5
+    
+  Endif
+  
+  If mode = 4 Then
+    For i = 0 To dimension - 1
+      For j = 0 To dimension - 1
+        For k = 0 To dimension - 1
+          For l = 0 To dimension - 1
+            sum = sum + (a[i, j, k, l] - b[i, j, k, l]) ^ 2
+          Next
+        Next
+      Next
+    Next
+    
+    Return sum * 0.5
+    
+  Endif
+
+End
+'**************************************************************************************************QRDECOMPOSITION
+Public Procedure QRdecomposition(matA As Matrix, ByRef matQ As Matrix, Optional matR As Matrix)
+  '** QR decomposition
+  '** matA is [m,n] with m>=n returns matQ upper diagonal [n,n] and matR [m,n]
+  Dim m As Integer = matA.height
+  Dim n As Integer = matA.width
+  Dim j, i, k, c As Integer
+  Dim s, fak As Float
+  
+  Dim d As New Vector(n)
+  Dim matH As New Matrix
+  matH = matH.Identity(m, m)
+ 
+  For j = 0 To n - 1
+    
+    s = 0.0
+    For i = j To m - 1
+      s += matA[i, j] * matA[i, j]
+    Next
+    s = Sqr(s)
+
+    If s = 0 Then Return
+    
+    If matA[j, j] > 0 Then 
+      d[j] = -s
+    Else
+      d[j] = s
+    Endif
+     
+    fak = Sqr(s * (s + Abs(matA[j, j])))
+    matA[j, j] -= d[j]
+    
+    For k = j To m - 1
+      matA[k, j] /= fak
+    Next
+    
+    For i = j + 1 To n - 1
+      s = 0.0
+      For k = j To m - 1
+        s += matA[k, j] * matA[k, i]
+      Next
+      For k = j To m - 1
+        matA[k, i] -= matA[k, j] * s
+      Next
+    Next
+    
+  Next
+
+  '** prepare return matrices  
+  If Not IsMissing(matR) Then
+    For i = 0 To n - 1
+      For j = 0 To n - 1
+        If j > i Then matR[i, j] = matA[i, j]
+      Next
+      matR[i, i] = d[i]
+    Next
+  Endif
+  
+  Dim vvt As New Matrix
+  For k = 0 To n - 1  
+     vvt = {vvt}.Identity(m, m)
+     For i = k To m - 1
+       For j = k To m - 1
+        vvt[i, j] -= matA[j, k] * matA[i, k]
+        Next
+      Next
+    matH = matH * vvt
+
+  Next
+
+  For i = 0 To m - 1
+    For j = 0 To n - 1
+      matQ[i, j] = matH[i, j]
+    Next
+  Next
+  
+End
