@@ -119,7 +119,26 @@ print('For hydrogen molecule in 3-21g basis with 2 electrons and 8 (spin) basis 
 print(scipy.special.comb(2,4), ' determinants')
 ```
 which gives an answer of 28 ie 8 things taken 2 at a time <sup>8</sup>C<sub>2</sub> = !8/!2 !(8-2) = 8.7/2 = 28
-
+</br>Actually we could calculate our own combinations...
+```python
+def combinations(m, k):
+    #compute number of combinations of n things taken k at a time
+    
+    def fact(n):
+        #compute factorial
+        
+        f == 1
+        if n < 0:
+            return -1
+        elif n == 0:
+            return 1
+        else:
+            for i in range(1,n + 1):
+                f *= i
+        return f
+        
+    return  fact(m)/(fact(k)*fact(m-k))  
+```
 what are those combinations? </br>
 (0,7)(0,6)(0,5)(0,4)(0,3)(0,2)(0,1)</br>
 (1,7)(1,6)(1,5)(1,4)(1,3)(1,2)</br>
@@ -166,6 +185,18 @@ now double excitations</br>
 (5,6) = '0000011'</br>
 (5,7) = '00000101'</br>
 (6,7) = '00000011'</br>
+
+We could calculate our own list...</br>
+```python
+def combinationList(combs, start, stop, level):
+    #compute the combinations for taking n things k at a time
+    
+    for i in range(start, stop+1):
+        if level == 0: combs.append(i)
+        combinationList(combs, i+1, stop, level-1)
+    
+    return combs
+```
 
 
 
