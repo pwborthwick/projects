@@ -112,8 +112,63 @@ def phase(det1, det2):
                             
       return -1**occupied
 ```
-         
-        
+How can we get the permutations of the determinants - use scipy.special.comb to get the total number of combinations. As an example H<sub>2</sub> in 3-21g basis
+there are 2 electrons in 4 basis functions, so
+```python
+print('For hydrogen molecule in 3-21g basis with 2 electrons and 8 (spin) basis functions there are.')
+print(scipy.special.comb(2,4), ' determinants')
+```
+which gives an answer of 28 ie 8 things taken 2 at a time <sup>8</sup>C<sub>2</sub> = !8/!2 !(8-2) = 8.7/2 = 28
+
+what are those combinations? </br>
+(0,7)(0,6)(0,5)(0,4)(0,3)(0,2)(0,1)</br>
+(1,7)(1,6)(1,5)(1,4)(1,3)(1,2)</br>
+(2,7)(2,6)(2,5)(2,4)(2,3)</br>
+(3,7)(3,6)(3,5)(3,4)</br>
+(4,7)(4,6)(4,5)</br>
+(5,7)(5,6)</br>
+(6,7)</br>
+this time itertools comes to the rescue
+```python
+for comblist in itertools.combinations(range(2), 8):
+```
+will generate the list in order (0,1)->(0,2)...->(6,7)
+
+Here are the corresponding states...
+first 1&#946; excitations</br>&#945;
+(0,1) = '11'</br>
+(0,2) = '101'</br>
+(0,3) = '1001'</br>
+(0,4) = '10001'</br>
+(0,5) = '100001'</br>
+(0,6) = '1000001'</br>
+(0,7) = '10000001'</br>
+then 1&#945;</br>
+(1,2) = '011'</br>
+(1,3) = '0101'</br>
+(1,4) = '01001'</br>
+(1,5) = '010001'</br>
+(1,6) = '0100001'</br>
+(1,7) = '01000001'</br>
+now double excitations</br>
+(2,3) = '0011'</br>
+(2,4) = '00101'</br>
+(2,5) = '001001'</br>
+(2,6) = '0010001'</br>
+(2,7) = '00100001'</br>
+(3,4) = '00011'</br>
+(3,5) = '000101'</br>
+(3,6) = '0001001'</br>
+(3,7) = '00010001'</br>
+(4,5) = '000011'</br>
+(4,6) = '0000101'</br>
+(4,7) = '00001001'</br>
+(5,6) = '0000011'</br>
+(5,7) = '00000101'</br>
+(6,7) = '00000011'</br>
+
+
+
 
 
     
