@@ -154,7 +154,7 @@ for comblist in itertools.combinations(range(2), 8):
 will generate the list in order (0,1)->(0,2)...->(6,7)
 
 Here are the corresponding states...
-first excitations</br>&#945;
+first excitations</br>
 (0,1) = '11'</br>
 (0,2) = '101'</br>
 (0,3) = '1001'</br>
