@@ -153,8 +153,8 @@ for comblist in itertools.combinations(range(2), 8):
 ```
 will generate the list in order (0,1)->(0,2)...->(6,7)
 
-Here are the corresponding states...
-first excitations</br>
+Here are the corresponding states...</br>
+first single 1&#946 excitations</br>
 (0,1) = '11'</br>
 (0,2) = '101'</br>
 (0,3) = '1001'</br>
@@ -162,7 +162,7 @@ first excitations</br>
 (0,5) = '100001'</br>
 (0,6) = '1000001'</br>
 (0,7) = '10000001'</br>
-then 1&#945;</br>
+then single 1&#945;</br>
 (1,2) = '011'</br>
 (1,3) = '0101'</br>
 (1,4) = '01001'</br>
