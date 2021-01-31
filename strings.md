@@ -100,7 +100,7 @@ def phase(det1, det2):
         #hole has appeared
             for j in range(i+1, ld):
                 if det2[j] == '1' and dt1[j] == '0':
-                #particle has appeared - get occuoied between
+                #particle has appeared - get occupied between
                 #hole and particle
                 occupied = 0
                 for k in range(i+1,j):
@@ -154,7 +154,7 @@ for comblist in itertools.combinations(range(2), 8):
 will generate the list in order (0,1)->(0,2)...->(6,7)
 
 Here are the corresponding states...
-first 1&#946; excitations</br>&#945;
+first excitations</br>&#945;
 (0,1) = '11'</br>
 (0,2) = '101'</br>
 (0,3) = '1001'</br>
@@ -169,7 +169,7 @@ then 1&#945;</br>
 (1,5) = '010001'</br>
 (1,6) = '0100001'</br>
 (1,7) = '01000001'</br>
-now double excitations</br>
+now multiple excitations</br>
 (2,3) = '0011'</br>
 (2,4) = '00101'</br>
 (2,5) = '001001'</br>
@@ -188,15 +188,95 @@ now double excitations</br>
 
 We could calculate our own list...</br>
 ```python
-def combinationList(combs, start, stop, level):
+def combinationList(combs, group, start, stop, level):
     #compute the combinations for taking n things k at a time
     
     for i in range(start, stop+1):
-        if level == 0: combs.append(i)
-        combinationList(combs, i+1, stop, level-1)
+        if level == 0: 
+            s = (group + ',' + str(i))[1:]
+        combs.append(list(map(int, s.split(','))))
+        
+        combinationList(combs, group + ',' + str(i), i+1, stop, level-1)
     
     return combs
+
+#for our problem run as...
+combs = []
+n = 8
+k = 2
+combinations = combinationList(combs, '', 0, n-1, k-1)
 ```
+
+How do we generate the binary strings? </br>
+Well (0,1) we say is 2<sup>0</sup>+2<sup>1</sup> = 3 -> '11', as (1,3) would be 2<sup>1</sup>+2<sup>3</sup> = 2+8 = 10 = '0101' ie a '1' in positions 1 and 3</br>
+For water ((0, 1, 2, 3, 4, 5, 7, 10, 11, 20) state would be 111111010011000000001. Our code for this would be
+```python
+def binaryString(comb):
+    #compute a binary string representation of combination as list
+    
+    sbinary = ''
+    for i in range(max(comb)+1):
+        if i in comb: sbinary = sbinary + '1'
+        else: sbinary = sbinary + '0'
+        
+    return sbinary
+```
+
+Let's put together what we have...
+```python
+#molecule is Hydrogen in 3-21g basis
+nElectrons = 2
+nSpinOrbitals = nElectrons * 2
+
+#how many excited determinants
+determinants = combinations(nSpinOrbitals, nElectrons)
+
+#get list of determinants
+combinations = []
+combinations = combinationList(combinations, '', 0, nSpinOrbitals-1, nElectrons-1)
+
+#get binary string representation
+binary = []
+for det in range(combinations):
+    binary.append(binaryString(combination[det]))
+```
+We now have to build our excited Hamiltonian. This will have dimension len(binary) x len(binary)</br>
+The code will look like
+```python
+for i in range(len(binary)):
+    for j in range(i+1):
+        det1 = binary[i]
+        det2 = binary[j]
+        element = hamiltonianElement(det1, det2)
+        H[i,j] = H[j,i] = element
+```
+Now to define hamiltonianElement. Firstly it must call *normalise* to make determinants equal length, then *excitations* to get the degree of the excitation, then if degree is <= 2 continue to process. It must now call *levels* to get the excitations themselves and finally call *phase* for the phase. </br>
+If it's a double excitation we will have 4 values as say, \[0,3] and \[1,5] this is interpreted as the phase times <01||35>. </br>
+For a single excitation say,\[1,6] this will be phase times &#931; <1n||6n>. Where n are common elements between the determinants. We need to calculate the common elements now. By elements we mean particle so its really just a logical AND. So
+```python
+def commonStates(det1, det2):
+    #compute common states between determinants
+    ld = min(len(det1), len(det2))
+    
+    common = []
+    for i in range(ld):
+        if det1[i] == '1' and det2[i] = '1': common.append(i)
+        
+    return common
+```
+there is also a one-body contribution which for \[1,6] would be H<sub>sc</sub>\[1,6], where H<sub>sc</sub> is the molecular spin core Hamltonian. Finally the zero degree exitations. These are m are the common states (namely anywhere there is a '1' in either determinant) so there is a H<sub>sc</sub>\[m,m] contribution and if m=n there is a pahse times a half times &#931; <mn||mn> for all combinations ie
+```python
+n = commonStates(det1, det2)
+
+sum = 0.0
+for i in range(n):
+    for j in range(n):
+        sum += <i,i||i,j>
+        
+sum += 0.5 * phase
+```
+That's how to build the excited Hamiltonian. To build the molecular basis spin core Hamiltonian firstly bring core Hamiltonian to molecular basis C<sup>T</sup>.H.C, then take kronecker product with I<sub>2</sub> ie H<sub>sc</sub> &#8855; I<sub>2</sub>, where I<sub>2</sub> is the 2x2 identity tensor.
+
 
 
 
