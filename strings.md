@@ -58,7 +58,7 @@ def excitations(det1, det2):
     return excite//2
 ```
 
-Now we need to find the excitation levels. We can see (for single excitation) we need to find where the (first) '1' in determinant 1 has become a '0', then where the (first) '0' has become a '1'. For double excitations we just need to find the second occurrence of the preceding rule too.
+Now we need to find the excitation levels. We can see (for single excitation) we need to find where the (first) '1' in determinant 1 has become a '0', then where the (first) '0' has become a '1' in determinant 2. For double excitations we just need to find the second occurrence of the preceding rule too.
 ```python
 def levels(det1, det2):
     #compute the jumps
