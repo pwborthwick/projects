@@ -116,7 +116,7 @@ How can we get the permutations of the determinants - use scipy.special.comb to 
 there are 2 electrons in 4 basis functions, so
 ```python
 print('For hydrogen molecule in 3-21g basis with 2 electrons and 8 (spin) basis functions there are.')
-print(scipy.special.comb(2,4), ' determinants')
+print(scipy.special.comb(2,8), ' determinants')
 ```
 which gives an answer of 28 ie 8 things taken 2 at a time <sup>8</sup>C<sub>2</sub> = !8/!2 !(8-2) = 8.7/2 = 28
 </br>Actually we could calculate our own combinations...
