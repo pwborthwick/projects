@@ -154,7 +154,7 @@ for comblist in itertools.combinations(range(2), 8):
 will generate the list in order (0,1)->(0,2)...->(6,7)
 
 Here are the corresponding states...</br>
-first single 1&#946 excitations</br>
+first single 1&#946; excitations</br>
 (0,1) = '11'</br>
 (0,2) = '101'</br>
 (0,3) = '1001'</br>
@@ -209,7 +209,7 @@ combinations = combinationList(combs, '', 0, n-1, k-1)
 
 How do we generate the binary strings? </br>
 Well (0,1) we say is 2<sup>0</sup>+2<sup>1</sup> = 3 -> '11', as (1,3) would be 2<sup>1</sup>+2<sup>3</sup> = 2+8 = 10 = '0101' ie a '1' in positions 1 and 3</br>
-For water ((0, 1, 2, 3, 4, 5, 7, 10, 11, 20) state would be 111111010011000000001. Our code for this would be
+For water ((0, 1, 2, 3, 4, 5, 7, 10, 11, 13) state would be 11111101001101. Our code for this would be
 ```python
 def binaryString(comb):
     #compute a binary string representation of combination as list
@@ -276,6 +276,69 @@ for i in range(n):
 sum += 0.5 * phase
 ```
 That's how to build the excited Hamiltonian. To build the molecular basis spin core Hamiltonian firstly bring core Hamiltonian to molecular basis C<sup>T</sup>.H.C, then take kronecker product with I<sub>2</sub> ie H<sub>sc</sub> &#8855; I<sub>2</sub>, where I<sub>2</sub> is the 2x2 identity tensor.
+
+For CISD we need a different approach, first get the residues - which are all combinations of removing two particles from a determinant. 
+```python
+combs = []
+n = 10
+k = 2
+combinations = combinationList(combs, '', 0, n-1, k-1)
+
+ground = '1' * n
+residues = []
+
+for i in range(len(combinations)):
+    residue = ''
+    for j in range(n):
+        s = '1'
+        if j in combinations[i]: s = '0'
+        residue = residue + s
+        
+    residues.append(residue)
+```
+Our *residues* strings have nElectron - 2 particles. We now need to add 2 particles in nOrbitals-nElectron spaces. Eg </br>
+For water our first residue will be '00111111'. First right pad to number of orbitals (spin) ie 14 '001111110000'. We will now have 3 cases. >/br>
+Case 1. Both zeros in unpadded residue are now '1's - this gives 1 case '11111111110000'>/br>
+Case 2. One zero in unpadded residue is a '1' - this, for water, gives right hand strings of '1000', '0100', '0010' and '0001' = 4 times 2 for other zero in unpadded residue. So total of 8. <sup>4</sup>C<<sub>3</sub>/br>
+Case 3. No zeros in unpadded residue are '1's - this, for water, gives right hand strings of '1100', '1010', '1001', '0110', '0101' and '0011' = 6,So total <sup>4</sup>C<sub>2</sub> </br>
+So a total of 15 for each residue. In general, there will be 1 + <sup>n</sup>C<sub>3</sub> + <sup>n</sup>C<sub>2</sub> ,where n is number of spin orbitals - the number of electrons. 
+
+```python
+determinants = []
+
+n = nOrbitals - nElectrons
+
+for i in range(len(residues)):
+    #loop over the residues
+    determinant = residues[i].replace('0', '1') + '0' * n
+    determinants.append(determinant)
+    
+    #get padding for single hole 
+    pad = []
+    k = 3
+    pad = combinationList(pad, '', 0, n-1, k-1)
+    
+    residue1 = residue[i].replace('0', '1', 1)
+    k = residue[i].rfind('0')
+    residue2 = residue[::-1].replace('0', '1', 1)
+    
+    for j in range(len(pad)):
+        s = binaryString(pad[j])
+        determinants.append(residue1 + s)
+        determinants.append(residue2 + s)
+        
+    #get padding for double hole
+    pad = []
+    k = 2
+    pad = combinationList(pad, '', 0, n-1, k-1)
+    
+    for j in range(len(pad)):
+        s = binaryString(pad[j])
+        determinants.append(residues[i] + s)
+        
+return list(set(determinants))
+```
+    
 
 
 
