@@ -26,57 +26,59 @@ All higher excitations are 0. The paper states to implement the rules you need</
 
 The paper uses bit manipulation which is certainly efficient, but does it need to be? Surely the evaluation of the integrals will be the critical stage computationally. We could probably do the 3 steps above using strings. Python strings are limited in length only by the machine RAM so you do not need to worry about stitching variables together when 64 bits are used as in the bit method. Let's see how we go...
 
-Josh has defined a slater determinant as 0b1101 to represent particles at 0&#593;1&#593;1&#946;, that is the lower states are to the right. We shall write this as '1011' that is lower states to the left. We are not constrained by the little-endian storage of binary data. We could store both the un-excited and excited determinants on the same string as say '1101:1011' but for now we'll save as two separate strings.
+Josh has defined a slater determinant as 0b1101 to represent particles at 0&#593;1&#593;1&#946;, that is the lower states are to the right. We shall write this as '1011' that is lower states to the left as this seems more natural. We are not constrained by the little-endian storage of binary data. We could store both the un-excited and excited determinants on the same string as say '1101:1011' but for now we'll save as two separate strings.
 
 Let's take two determinants (Josh's single excitation example) 0b111 and 0b1000101. In our notation these will be '111' and '1010001'</br>
 Firstly, lets get strings to same shape '111' -> '1110000'
 
 ```python
-def normalise(det1, det2):
+def normalise(da, db):
     #pad strings to equal length
     
-    ld = max(det1, det2)
+    ld = max(da, db)
     if len(det1) != ld:
-        det1 = det1 + '0' * (ld - len(det1))
-    if len(det2) != ld:
-        det2 = det2 + '0' * (ld - len(det2))
+        da = da + '0' * (ld - len(da))
+    if len(db) != ld:
+        db = db + '0' * (ld - len(db))
         
-    return det1, det2   
+    return da, db  
 ```
 Now we need to find out how many excitations our determinants represent. Let's put our determinants on top of each other</br>
 '1110000'</br>
 '1010001'</br>
-Everywhere a '1' has become a zero represents an excitation (and where a '0' has become a '1'). The truth table for XoR satisfies this requirement for a bit implementation. We will define
+Everywhere a '1' has become a zero represents an excitation (and where a '0' has become a '1').  We will define
 ```python
-def excitations(det1, det2):
+def excitations(da, db):
     #compute the total excitations
     
     excite = 0
-    for i in range(len(det1)):
-        if det1[i] != det2[i] : excite += 1
+    for i in range(len(da)):
+        if (da[i] == '1') and (db[i] == '0' : excite += 1
     
-    return excite//2
+    return excite
 ```
 
-Now we need to find the excitation levels. We can see (for single excitation) we need to find where the (first) '1' in determinant 1 has become a '0', then where the (first) '0' has become a '1' in determinant 2. For double excitations we just need to find the second occurrence of the preceding rule too.
+Now we need to find the excitation levels. We can see (for single excitation) we need to find where the (first) '1' in determinant 1 has become a '0', then where the (first) '0' has become a '1' in determinant 2. For double excitations we just need to find the second occurrence of the preceding rule too. Once we have found the excitation in the second determinant we must remove it to stop counting it twice, this means we must save a copy of second determinant to restore on exit.
 ```python
-def levels(det1, det2):
+def levels(da, db):
     #compute the jumps
     
-    ld = len(det1)
+    ld = len(da)
     jumps = []
-    
+    t = db
+
     for i in range(ld):
-        if det1[i] == '1' and det2[i] == '0':
+        if da[i] == '1' and db[i] == '0':
             #hole has appeared
-            for j in range(i+1, ld):
-                if det2[j] == '1' and dt1[j] == '0':
+            for j in range(ld):
+                if db[j] == '1' and da[j] == '0':
                 #particle has appeared               
                     jumps.append([i,j])
                     #set excited state to zero so don't count again
-                    det2 = det2[:j] + '0' + det2[l+1:]
+                    db = db[:j] + '0' + db[j+1:]
                     break
-    
+    db = t
+
     return jumps
 ```
 Now for the phase. The paper states *The phase is calculated as −1<sup>Nperm</sup>, where Nperm is the number permutations necessary to bring the spin-orbitals on which the holes are made to the positions of the particles. This number is equal to the number of occupied spin-orbitals between these two positions.*</br> So let's look at our example,</br>
@@ -90,27 +92,29 @@ So we have 1+1+1=3 and the phase is -1<sup>3</sup> = -1. </br>
 Since n+1 has the same parity n-1 (odd or even) instead of adding an extra permutation we could just not count the excited state in the first place. So we would say we have a hole at (0) and an excitation at (3) with one occupied state between, (3) now becomes '0' as we've dealt with it. We have a second hole at (2) and a particle at (5) with no occupied states between, so permutations are 1 and phase is -1.
 
 ```python
-def phase(det1, det2):
-    'compute the phase between the determinants
+def phase(da, db):
+    #compute the phase between the determinants
     
-    ld = len(det1)
-    
+    t = db
+    ld = len(da)
+    occupied = 0
+
     for i in range(ld):
-        if det1[i] == '1' and det2 == '0':
+        if da[i] == '1' and db[i] == '0':
         #hole has appeared
-            for j in range(i+1, ld):
-                if det2[j] == '1' and dt1[j] == '0':
-                #particle has appeared - get occupied between
-                #hole and particle
-                occupied = 0
-                for k in range(i+1,j):
-                    if det2[k] == '1': 
-                        occupied += 1
-                        #is this particle an excitation
-                        if det1[k] == '0':
-                            det2[k] = det2[:k] + '0' + det2[k+1:]
-                            
-      return -1**occupied
+            for j in range(ld):
+                if db[j] == '1' and da[j] == '0':
+                    #particle has appeared - get occupied between hole and particle
+                    m = min(i,j)
+                    n = max(j,i)
+                    occupied += db.count('1', m+1, n)
+
+                    db = db[:j] + '0' + db[j+1:]
+                    break
+     
+    db = t  
+
+    return pow(-1,occupied)
 ```
 How can we get the permutations of the determinants - use scipy.special.comb to get the total number of combinations. As an example H<sub>2</sub> in 3-21g basis
 there are 2 electrons in 4 basis functions, so
@@ -121,13 +125,13 @@ print(scipy.special.comb(2,8), ' determinants')
 which gives an answer of 28 ie 8 things taken 2 at a time <sup>8</sup>C<sub>2</sub> = !8/!2 !(8-2) = 8.7/2 = 28
 </br>Actually we could calculate our own combinations...
 ```python
-def combinations(m, k):
+def determinantCount(m, k):
     #compute number of combinations of n things taken k at a time
     
     def fact(n):
         #compute factorial
         
-        f == 1
+        f = 1
         if n < 0:
             return -1
         elif n == 0:
@@ -137,7 +141,7 @@ def combinations(m, k):
                 f *= i
         return f
         
-    return  fact(m)/(fact(k)*fact(m-k))  
+    return  int(fact(m)/(fact(k)*fact(m-k)))
 ```
 what are those combinations? </br>
 (0,7)(0,6)(0,5)(0,4)(0,3)(0,2)(0,1)</br>
@@ -192,9 +196,10 @@ def combinationList(combs, group, start, stop, level):
     #compute the combinations for taking n things k at a time
     
     for i in range(start, stop+1):
+
         if level == 0: 
             s = (group + ',' + str(i))[1:]
-        combs.append(list(map(int, s.split(','))))
+            combs.append(list(map(int, s.split(','))))
         
         combinationList(combs, group + ',' + str(i), i+1, stop, level-1)
     
@@ -211,7 +216,7 @@ How do we generate the binary strings? </br>
 Well (0,1) we say is 2<sup>0</sup>+2<sup>1</sup> = 3 -> '11', as (1,3) would be 2<sup>1</sup>+2<sup>3</sup> = 2+8 = 10 = '0101' ie a '1' in positions 1 and 3</br>
 For water ((0, 1, 2, 3, 4, 5, 7, 10, 11, 13) state would be 11111101001101. Our code for this would be
 ```python
-def binaryString(comb):
+def binaryString(comb, nOrbitals):
     #compute a binary string representation of combination as list
     
     sbinary = ''
@@ -219,7 +224,7 @@ def binaryString(comb):
         if i in comb: sbinary = sbinary + '1'
         else: sbinary = sbinary + '0'
         
-    return sbinary
+    return sbinary + '0' * (nOrbitals - len(sbinary))
 ```
 
 Let's put together what we have...
@@ -229,7 +234,7 @@ nElectrons = 2
 nSpinOrbitals = nElectrons * 2
 
 #how many excited determinants
-determinants = combinations(nSpinOrbitals, nElectrons)
+determinants = combinationCount(nSpinOrbitals, nElectrons)
 
 #get list of determinants
 combinations = []
@@ -243,100 +248,159 @@ for det in range(combinations):
 We now have to build our excited Hamiltonian. This will have dimension len(binary) x len(binary)</br>
 The code will look like
 ```python
-for i in range(len(binary)):
-    for j in range(i+1):
-        det1 = binary[i]
-        det2 = binary[j]
-        element = hamiltonianElement(det1, det2)
-        H[i,j] = H[j,i] = element
+def buildFCIhamiltonian(determinants, eriMOspin, Hp):
+    #compute the full FCI Hamiltonian
+
+    nH = len(determinants)
+    fciH = np.zeros((nH, nH))
+
+    for i in range(len(determinants)):
+        for j in range(i, len(determinants)):
+            da = determinants[i]
+            db = determinants[j]
+
+            element = hamiltonianElement(da, db, eriMOspin, Hp)
+            fciH[i,j] = fciH[j,i] = element
+
+    return fciH
 ```
-Now to define hamiltonianElement. Firstly it must call *normalise* to make determinants equal length, then *excitations* to get the degree of the excitation, then if degree is <= 2 continue to process. It must now call *levels* to get the excitations themselves and finally call *phase* for the phase. </br>
+Now to define hamiltonianElement. Firstly it must call *excitations* to get the degree of the excitation, then if degree is <= 2 continue to process. It must now call *levels* to get the excitations themselves and finally call *phase* for the phase. </br>
 If it's a double excitation we will have 4 values as say, \[0,3] and \[1,5] this is interpreted as the phase times <01||35>. </br>
 For a single excitation say,\[1,6] this will be phase times &#931; <1n||6n>. Where n are common elements between the determinants. We need to calculate the common elements now. By elements we mean particle so its really just a logical AND. So
 ```python
-def commonStates(det1, det2):
+def commonStates(da, db):
     #compute common states between determinants
-    ld = min(len(det1), len(det2))
+    ld = min(len(da), len(db))
     
     common = []
     for i in range(ld):
-        if det1[i] == '1' and det2[i] = '1': common.append(i)
+        if da[i] == '1' and db[i] == '1': common.append(i)
         
     return common
 ```
-there is also a one-body contribution which for \[1,6] would be H<sub>sc</sub>\[1,6], where H<sub>sc</sub> is the molecular spin core Hamltonian. Finally the zero degree exitations. These are m are the common states (namely anywhere there is a '1' in either determinant) so there is a H<sub>sc</sub>\[m,m] contribution and if m=n there is a pahse times a half times &#931; <mn||mn> for all combinations ie
+there is also a one-body contribution which for \[1,6] would be H<sub>sc</sub>\[1,6], where H<sub>sc</sub> is the molecular spin core Hamltonian. Finally the zero degree exitations. These are m are the common states (namely anywhere there is a '1' in either determinant) so there is a H<sub>sc</sub>\[m,m] contribution and if m=n there is a phase times a half times &#931; <mn||mn> for all combinations giving overall
 ```python
-n = commonStates(det1, det2)
+def hamiltonianElement(da, db, eriMOspin, Hp):
+    #compute an individual Hamiltonian element
 
-sum = 0.0
-for i in range(n):
-    for j in range(n):
-        sum += <i,i||i,j>
-        
-sum += 0.5 * phase
+    #get number of excitions
+    excites = excitations(da, db)
+
+    #excitions above 2 do not contribute
+    if excites > 2 : return 0.0
+
+    #get pahse and excitations for 2,1 and 0
+    theta = phase(da,db)
+    jump = levels(da, db)
+    if excites == 2:
+        return theta * eriMOspin[jump[0][0], jump[1][0], jump[0][1], jump[1][1]]
+
+    elif excites ==1:
+        common = commonStates(da, db)
+        f = Hp[jump[0][0],jump[0][1]]
+        for i in common:
+            f += eriMOspin[jump[0][0], i, jump[0][1], i]
+
+        return theta * f
+
+    elif excites == 0:
+        #really only 1 determinant just as cheap to use common
+        common = commonStates(da, db)
+        f = 0.0
+        for i in common:
+            f += Hp[i, i]
+        for i in common:
+            for j in common:
+             f += 0.5 * eriMOspin[i, j, i, j]
+
+        return theta * f
 ```
-That's how to build the excited Hamiltonian. To build the molecular basis spin core Hamiltonian firstly bring core Hamiltonian to molecular basis C<sup>T</sup>.H.C, then take kronecker product with I<sub>2</sub> ie H<sub>sc</sub> &#8855; I<sub>2</sub>, where I<sub>2</sub> is the 2x2 identity tensor.
+That's how to build the excited Hamiltonian. To build the molecular basis spin core Hamiltonian firstly bring core Hamiltonian to molecular basis C<sup>T</sup>.H.C, then take kronecker product with I<sub>2</sub> ie H<sub>sc</sub> &#8855; I<sub>2</sub>, where I<sub>2</sub> is the 2x2 identity tensor. Alternatively, if you don't have a Kron function you could do...
+```python
+def buildCoreMOspin(spinOrbitals, eigenVectors, core):
+	#transform core -> MO -> spin basis
 
-For CISD we need a different approach, first get the residues - which are all combinations of removing two particles from a determinant. 
+	corespin = zeros((spinOrbitals, spinOrbitals))
+	eigenspin = zeros((spinOrbitals, spinOrbitals))
+
+	for p in range(0, spinOrbitals):
+		for q in range(0, spinOrbitals):
+			corespin[p,q]  = fock[int(p/2), int(q/2)] * ((p % 2) == (q % 2))
+			eigenspin[p,q] = eigenVectors[int(p/2), int(q/2)] * ((p % 2) == (q % 2))
+
+	return dot(eigenspin.T, dot(corespin, eigenspin))
+```
+
+For CISD we need a different approach, first get the residues - which are all combinations of removing two particles from a ground state determinant (nElectrons). 
 ```python
 combs = []
-n = 10
-k = 2
-combinations = combinationList(combs, '', 0, n-1, k-1)
+nElectrons = 10
+nOrder = 2
+combinations = combinationList(combs, '', 0, nElectrons-1, nOrder-1)
 
-ground = '1' * n
-residues = []
+def residues(combinations, n):
+    #compute residues
 
-for i in range(len(combinations)):
-    residue = ''
-    for j in range(n):
-        s = '1'
-        if j in combinations[i]: s = '0'
-        residue = residue + s
+    residueList = []
+
+    for i in range(len(combinations)):
+        residue = ''
+        for j in range(n):
+            s = '1'
+            if j in combinations[i]: s = '0'
+            residue = residue + s
         
-    residues.append(residue)
+        residueList.append(residue)
+
+    return residueList
+    
+holes = residues(combinations, nElectrons)
 ```
-Our *residues* strings have nElectron - 2 particles. We now need to add 2 particles in nOrbitals-nElectron spaces. Eg </br>
-For water our first residue will be '00111111'. First right pad to number of orbitals (spin) ie 14 '001111110000'. We will now have 3 cases. >/br>
-Case 1. Both zeros in unpadded residue are now '1's - this gives 1 case '11111111110000'>/br>
-Case 2. One zero in unpadded residue is a '1' - this, for water, gives right hand strings of '1000', '0100', '0010' and '0001' = 4 times 2 for other zero in unpadded residue. So total of 8. <sup>4</sup>C<<sub>3</sub>/br>
+Our *residues* strings have (nElectron - 2) particles. We now need to add 2 particles in (nOrbitals-nElectron) spaces. Eg </br>
+For H<sub>2</sub> combinations will be (0,1) which will result in residueList being \['00']. For water our first residue will be '00111111'. First right pad to number of orbitals (spin) ie 14 '001111110000'. We will now have 3 cases. </br>
+Case 1. Both zeros in unpadded residue are now '1's - this gives 1 case '11111111110000' </br>
+Case 2. One zero in unpadded residue is a '1' - this, for water, gives right hand strings of '1000', '0100', '0010' and '0001' = 4 times 2 for other zero in unpadded residue. So total of 8. <sup>4</sup>C<<sub>3</sub> </br>
 Case 3. No zeros in unpadded residue are '1's - this, for water, gives right hand strings of '1100', '1010', '1001', '0110', '0101' and '0011' = 6,So total <sup>4</sup>C<sub>2</sub> </br>
 So a total of 15 for each residue. In general, there will be 1 + <sup>n</sup>C<sub>3</sub> + <sup>n</sup>C<sub>2</sub> ,where n is number of spin orbitals - the number of electrons. 
 
 ```python
-determinants = []
+def particles(residues, nElectrons, nOrbitals):
+   #add particles back to spin orbital
 
-n = nOrbitals - nElectrons
+    determinants = []
+    n = nOrbitals - nElectrons
 
-for i in range(len(residues)):
     #loop over the residues
-    determinant = residues[i].replace('0', '1') + '0' * n
-    determinants.append(determinant)
+    for i in range(len(residues)):
+
+        #'11' in holes
+        determinant = residues[i].replace('0', '1') + '0' * n
+        determinants.append(determinant)
+
     
-    #get padding for single hole 
-    pad = []
-    k = 3
-    pad = combinationList(pad, '', 0, n-1, k-1)
-    
-    residue1 = residue[i].replace('0', '1', 1)
-    k = residue[i].rfind('0')
-    residue2 = residue[::-1].replace('0', '1', 1)
-    
-    for j in range(len(pad)):
-        s = binaryString(pad[j])
-        determinants.append(residue1 + s)
-        determinants.append(residue2 + s)
+        #'01' or '10' in holes
+        pad = []
+        k = 1
+        pad = combinationList(pad, '', 0, n-1, k-1)
+
+        residuea = residues[i].replace('0', '1', 1)
+        k = residues[i].rfind('0')
+        residueb = residues[i][:k] + '1' + residues[i][k+1:]
+
+        for j in range(len(pad)):
+            s = binaryString(pad[j], n)
+            determinants.append(residuea + s)
+            determinants.append(residueb + s)
         
-    #get padding for double hole
-    pad = []
-    k = 2
-    pad = combinationList(pad, '', 0, n-1, k-1)
-    
-    for j in range(len(pad)):
-        s = binaryString(pad[j])
-        determinants.append(residues[i] + s)
+        #'00' in holes
+        pad = []
+        k = 2
+        pad = combinationList(pad, '', 0, n-1, k-1)
+        for j in range(len(pad)):
+            s = binaryString(pad[j], n)
+            determinants.append(residues[i] + s)
         
-return list(set(determinants))
+    return list(determinants)
 ```
     
 
