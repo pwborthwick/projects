@@ -244,6 +244,7 @@ combinations = combinationList(combinations, '', 0, nSpinOrbitals-1, nElectrons-
 binary = []
 for det in range(combinations):
     binary.append(binaryString(combination[det]))
+binary.sort()
 ```
 We now have to build our excited Hamiltonian. This will have dimension len(binary) x len(binary)</br>
 The code will look like
@@ -255,7 +256,8 @@ def buildFCIhamiltonian(determinants, eriMOspin, Hp):
     fciH = np.zeros((nH, nH))
 
     for i in range(len(determinants)):
-        for j in range(i, len(determinants)):
+        for j in range(0, i+1):
+
             da = determinants[i]
             db = determinants[j]
 
@@ -278,7 +280,7 @@ def commonStates(da, db):
         
     return common
 ```
-there is also a one-body contribution which for \[1,6] would be H<sub>sc</sub>\[1,6], where H<sub>sc</sub> is the molecular spin core Hamltonian. Finally the zero degree exitations. These are m are the common states (namely anywhere there is a '1' in either determinant) so there is a H<sub>sc</sub>\[m,m] contribution and if m=n there is a phase times a half times &#931; <mn||mn> for all combinations giving overall
+For single excitations there is also a one-body contribution which for \[1,6] would be H<sub>sc</sub>\[1,6], where H<sub>sc</sub> is the molecular spin core Hamltonian. Finally the zero degree exitations. These are m are the common states (namely anywhere there is a '1' in either determinant) so there is a H<sub>sc</sub>\[m,m] contribution and if m=n there is a phase times a half times &#931; <mn||mn> for all combinations giving overall
 ```python
 def hamiltonianElement(da, db, eriMOspin, Hp):
     #compute an individual Hamiltonian element
@@ -400,8 +402,13 @@ def particles(residues, nElectrons, nOrbitals):
             s = binaryString(pad[j], n)
             determinants.append(residues[i] + s)
         
-    return list(determinants)
-```
+    unique = []
+    for i in determinants:
+        if i not in unique: unique.append(i)
+
+    unique.sort()   
+    return unique
+``
     
 
 
