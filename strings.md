@@ -410,12 +410,12 @@ def particles(residues, nElectrons, nOrbitals):
     return unique
 ```
 Can we extend to do T and Q? Residues will produce determinants with as many holes as specified by nOrder in the combination passed to it. But particles is hardcoded for 2 particles. Say we have 4 electrons and 8 spin orbitals and we want triples so nOrder is 3. Calling combinationList(combs, '', 0, 3, 2) will produce combinations \[0, 1, 2], \[0, 1, 3], \[0, 2, 3], \[1, 2, 3]. We now need particles to produce from these residues - > '0001', '0010', '0100', '1000'. Now for say '0001', this will go to '00010000' (for 8 spin orbitals). We have nOrder cases \
-0. Replace nOrder holes in original residue with '1's and do nothing with padded (nOrbitals - nElectrons)=k '0'. \
-1. Replace nOrder-1 holes in original residue with '1's and replace k-1 '0's in padded with '1's. \
-... \
-n. replace nOrder-n holes in original residue with '1's and replace k-n '0's in padded with '1's. \
-... \
-nOrder.  replace nOrder-nOrder holes in original residue with '1's and replace k-nOrder '0's in padded with '1's. \
+Replace nOrder holes in original residue with '1's and do nothing with padded (nOrbitals - nElectrons)=k '0'</br>
+Replace nOrder-1 holes in original residue with '1's and replace k-1 '0's in padded with '1's. </br>
+\...</br>
+Replace nOrder-n holes in original residue with '1's and replace k-n '0's in padded with '1's. </br>
+\...</br>
+nOrder.  Replace nOrder-nOrder holes in original residue with '1's and replace k-nOrder '0's in padded with '1's.</br>
 
 In our example, \
 [0] '11110000' \
@@ -423,7 +423,8 @@ In our example, \
 [2] '0011' + '0011', '0101','0110', '1001', '1010', '1100' and '0101' + '0011', '0101','0110', '1001', '1010', '1100' and '1001' + '0011', '0101','0110', '1001', '1010', '1100' \
 [3] '0000' + '1111'
 
-In general, \
+In general, for the ith level,
+Replace <sup>nOrder</sup>C<sub>(nOrder-i)</sub> add (nElectron-nOrder)'1's + <sup>nOrbital-nElectron)</sup>C<sub>i</sub>
 
 
 
