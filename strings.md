@@ -333,98 +333,56 @@ def buildCoreMOspin(spinOrbitals, eigenVectors, core):
 	return dot(eigenspin.T, dot(corespin, eigenspin))
 ```
 
-For CISD we need a different approach, first get the residues - which are all combinations of removing two particles from a ground state determinant (nElectrons). 
+For CISD we need a different approach. For H<sub>2</sub> we have two parts, the first part is the nElectron ground state eg '11'. Aside from the ground state we want all single '0' substitutions ie '01' and '10', then all double substitutions ie '00'. The second part is the nOrbitals - nElectron part. This must be all combinations of the nOrbitals - nElectron taken k at a time, where k is a number to make total electron count nElectrons. Let's look at an example, \
+For H<sub>2</sub>, \
+'11' + '000000' \
+'01', '10' + '000001', '000010', '000100', '001000', '010000', '100000' \
+'00' + '000011', '000101', '001001', '010001', '100001', '000110', '001010', '010010', '100010', '001100', '010100', '100100', '011000', '101000' \
+total 28. We have code to do this
 ```python
-combs = []
-nElectrons = 10
-nOrder = 2
-combinations = combinationList(combs, '', 0, nElectrons-1, nOrder-1)
+def subDeterminant(n, k, bit):
+        #components of full determinant
 
-def residues(combinations, n):
-    #compute residues
+        sub = []
+        comb = []
+        combinationList(comb, '', 0, n-1, k)
 
-    residueList = []
+        for i in comb:
+            s = bit[0] * n
+            for j in range(k+1):
+                s = s[:i[j]] + bit[1] + s[i[j]+1:]
+            sub.append(s)
 
-    for i in range(len(combinations)):
-        residue = ''
-        for j in range(n):
-            s = '1'
-            if j in combinations[i]: s = '0'
-            residue = residue + s
+        return sub
         
-        residueList.append(residue)
+    #groundstate
+    if 'G' in type:
+        determinants.append('1' * nElectrons + '0' * pad)
 
-    return residueList
-    
-holes = residues(combinations, nElectrons)
+    #generate groundstate single excitations
+    if 'S' in type:
+
+        pre = subDeterminant(nElectrons, 0, '10')
+        post = subDeterminant(pad, 0, '01')
+
+        for i in pre:
+            for j in post:
+                determinants.append(i+j)
+        
+    #generate groundstate double excitations
+    if 'D' in type:
+
+        pre = subDeterminant(nElectrons, 1, '10')
+        post = subDeterminant(pad, 1, '01')
+
+        for i in pre:
+            for j in post:
+                determinants.append(i+j)
+
+    determinants.sort()
+
+    return determinants
 ```
-Our *residues* strings have (nElectron - 2) particles. We now need to add 2 particles in (nOrbitals-nElectron) spaces. Eg </br>
-For H<sub>2</sub> combinations will be (0,1) which will result in residueList being \['00']. For water our first residue will be '00111111'. First right pad to number of orbitals (spin) ie 14 '001111110000'. We will now have 3 cases. </br>
-Case 1. Both zeros in unpadded residue are now '1's - this gives 1 case '11111111110000' </br>
-Case 2. One zero in unpadded residue is a '1' - this, for water, gives right hand strings of '1000', '0100', '0010' and '0001' = 4 times 2 for other zero in unpadded residue. So total of 8. <sup>4</sup>C<<sub>3</sub> </br>
-Case 3. No zeros in unpadded residue are '1's - this, for water, gives right hand strings of '1100', '1010', '1001', '0110', '0101' and '0011' = 6,So total <sup>4</sup>C<sub>2</sub> </br>
-So a total of 15 for each residue. In general, there will be 1 + <sup>n</sup>C<sub>3</sub> + <sup>n</sup>C<sub>2</sub> ,where n is number of spin orbitals - the number of electrons. 
-
-```python
-def particles(residues, nElectrons, nOrbitals):
-   #add particles back to spin orbital
-
-    determinants = []
-    n = nOrbitals - nElectrons
-
-    #loop over the residues
-    for i in range(len(residues)):
-
-        #'11' in holes
-        determinant = residues[i].replace('0', '1') + '0' * n
-        determinants.append(determinant)
-
-    
-        #'01' or '10' in holes
-        pad = []
-        k = 1
-        pad = combinationList(pad, '', 0, n-1, k-1)
-
-        residuea = residues[i].replace('0', '1', 1)
-        k = residues[i].rfind('0')
-        residueb = residues[i][:k] + '1' + residues[i][k+1:]
-
-        for j in range(len(pad)):
-            s = binaryString(pad[j], n)
-            determinants.append(residuea + s)
-            determinants.append(residueb + s)
-        
-        #'00' in holes
-        pad = []
-        k = 2
-        pad = combinationList(pad, '', 0, n-1, k-1)
-        for j in range(len(pad)):
-            s = binaryString(pad[j], n)
-            determinants.append(residues[i] + s)
-        
-    unique = []
-    for i in determinants:
-        if i not in unique: unique.append(i)
-
-    unique.sort()   
-    return unique
-```
-Can we extend to do T and Q? Residues will produce determinants with as many holes as specified by nOrder in the combination passed to it. But particles is hardcoded for 2 particles. Say we have 4 electrons and 8 spin orbitals and we want triples so nOrder is 3. Calling combinationList(combs, '', 0, 3, 2) will produce combinations \[0, 1, 2], \[0, 1, 3], \[0, 2, 3], \[1, 2, 3]. We now need particles to produce from these residues - > '0001', '0010', '0100', '1000'. Now for say '0001', this will go to '00010000' (for 8 spin orbitals). We have nOrder cases \
-Replace nOrder holes in original residue with '1's and do nothing with padded (nOrbitals - nElectrons)=k '0'</br>
-Replace nOrder-1 holes in original residue with '1's and replace k-1 '0's in padded with '1's. </br>
-\...</br>
-Replace nOrder-n holes in original residue with '1's and replace k-n '0's in padded with '1's. </br>
-\...</br>
-nOrder.  Replace nOrder-nOrder holes in original residue with '1's and replace k-nOrder '0's in padded with '1's.</br>
-
-In our example, \
-[0] '11110000' \
-[1] '0111' + '1000','0100','0010', '0001' and '1011' + '1000','0100','0010', '0001' and '0111' + '1000','0100','0010', '0001'. \
-[2] '0011' + '0011', '0101','0110', '1001', '1010', '1100' and '0101' + '0011', '0101','0110', '1001', '1010', '1100' and '1001' + '0011', '0101','0110', '1001', '1010', '1100' \
-[3] '0000' + '1111'
-
-In general, for the ith level,
-Replace <sup>nOrder</sup>C<sub>(nOrder-i)</sub> add (nElectron-nOrder)'1's + <sup>nOrbital-nElectron)</sup>C<sub>i</sub>
 
 
 
