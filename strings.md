@@ -345,7 +345,6 @@ def configurations(nElectrons, nOrbitals, type = 'S'):
     determinants = []
     pad = nOrbitals - nElectrons
 
-
     def subDeterminant(n, k, bit):
         #components of full determinant
 
@@ -360,13 +359,13 @@ def configurations(nElectrons, nOrbitals, type = 'S'):
             sub.append(s)
 
         return sub
-        
+
     #groundstate
     if 'G' in type:
         determinants.append('1' * nElectrons + '0' * pad)
 
     #generate groundstate single excitations
-    if 'S' in type:
+    if ('S' in type) and (nElectrons > 0):
 
         pre = subDeterminant(nElectrons, 0, '10')
         post = subDeterminant(pad, 0, '01')
@@ -376,10 +375,30 @@ def configurations(nElectrons, nOrbitals, type = 'S'):
                 determinants.append(i+j)
         
     #generate groundstate double excitations
-    if 'D' in type:
+    if ('D' in type) and (nElectrons > 1):
 
         pre = subDeterminant(nElectrons, 1, '10')
         post = subDeterminant(pad, 1, '01')
+
+        for i in pre:
+            for j in post:
+                determinants.append(i+j)
+
+    #generate groundstate triple excitations
+    if ('T' in type) and (nElectrons > 2):
+
+        pre = subDeterminant(nElectrons, 2, '10')
+        post = subDeterminant(pad, 2, '01')
+
+        for i in pre:
+            for j in post:
+                determinants.append(i+j)
+
+    #generate groundstate quadruples excitations
+    if ('Q' in type) and (nElectrons > 3):
+
+        pre = subDeterminant(nElectrons, 3, '10')
+        post = subDeterminant(pad, 3, '01')
 
         for i in pre:
             for j in post:
