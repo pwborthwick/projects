@@ -340,7 +340,13 @@ For H<sub>2</sub>, \
 '00' + '000011', '000101', '001001', '010001', '100001', '000110', '001010', '010010', '100010', '001100', '010100', '100100', '011000', '101000' \
 total 28. We have code to do this
 ```python
-def subDeterminant(n, k, bit):
+def configurations(nElectrons, nOrbitals, type = 'S'):
+
+    determinants = []
+    pad = nOrbitals - nElectrons
+
+
+    def subDeterminant(n, k, bit):
         #components of full determinant
 
         sub = []
