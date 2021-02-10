@@ -408,7 +408,7 @@ def configurations(nElectrons, nOrbitals, type = 'S'):
 
     return determinants
 ```
-
+We've implemented configurations( 'S' - for CIS and 'GSD' for CISD.
 
 
 
