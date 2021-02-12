@@ -251,7 +251,8 @@ mgrs = -np.sum(etdm_v * mtdm_l)/w
 ```
 For both one-photon absorption (OPA) and electronic circular dichroism (ECD) the poles are the excitation energies. The residues are: \
     The square of the transition electric dipole moment for OPA: |**&mu;** |<sup>2</sup>  
-    The rotatory strength **R**<sub>ij</sub> for ECD. This is the imaginary part of the product of transition electric and magnetic dipole moments: Im(**&mu;**<sub>ij</sub>**.m**<sub>ij</sub>) \
+    The rotatory strength **R**<sub>ij</sub> for ECD. This is the imaginary part of the product of transition electric and magnetic dipole moments: Im(**&mu;**<sub>ij</sub>**.m**<sub>ij</sub>) 
+The formulas are ![]('../Screenshot from 2021-02-12 11-16-03.png')
 
 
 
