@@ -254,6 +254,9 @@ For both one-photon absorption (OPA) and electronic circular dichroism (ECD) the
     The rotatory strength **R**<sub>ij</sub> for ECD. This is the imaginary part of the product of transition electric and magnetic dipole moments: Im(**&mu;**<sub>ij</sub>**.m**<sub>ij</sub>) 
 The formulas are ![](formula.png)
 
+**note** \
+The Hermitian treatment means you can use symmetric solvers for the eigen problem. However, for the |**X**+**Y**> equation (iii) there is another Hermitian one for |**X**-**Y**> and once you've solved for these quantities you still need to biorthonormalise them to be correct eigenvectors to the problem?
+
 ### Hydrogen Molecule
 Need to sort out why our eigenvectors are wrong. Go back to eaquation (1) and change to
 ```python
@@ -271,14 +274,15 @@ and the eigenvalues (unsorted) are
  0.94523294+0.j 1.17513713+0.j 1.46216701+0.j 1.46216701+0.j
  1.46216701+0.j 0.36147596+0.j 0.94523294+0.j 0.94523294+0.j]
 ```
-The 1st,2nd and 3rd singlet in psi4 is EXCITATION ENERGY = 0.569602280844686, 1.1751383434578857 1.7054080350483756 so eigenvalues OK \
-now use psi4 biorthogonalisation code
+The 1st,2nd and 3rd singlet in psi4 is EXCITATION ENERGY = 0.569602280844686, 1.1751383434578857 1.7054080350483756 so eigenvalues OK 
+
+psi4 biorthogonalisation code
 ```python
 inners = np.einsum("ix,ix->x", Rss, Lss, optimize=True)
 Rss = np.einsum("x,ix->ix", 1. / np.sqrt(inners), Rss, optimize=True)
 Lss = np.einsum("x,ix->ix", 1. / np.sqrt(inners), Lss, optimize=True)
 ```
-This produces nornal vectors but not orthogonal ones - I guess this is takemn care of by the diagonaliser?
+This produces normal vectors but not orthogonal ones - I guess this is taken care of by the diagonaliser? So doesn't help us.
 
 
 
