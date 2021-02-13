@@ -57,15 +57,24 @@ The basic form of the equations \
 **A** = &#948;<sub>𝑖𝑗</sub>**𝑓**<sub>𝑎𝑏</sub> − &#948;<sub>𝑎𝑏</sub>**𝑓**<sub>𝑖𝑗</sub> + <bi||𝑗a> \
 **B** = <bi||ja> \
 
-(**A** - **B**)(**A** + **B**) |**X**<sub>n</sub> + **Y**<sub>n</sub>> =  	&#969;<sup>2</sup> |**X**<sub>n</sub> + **Y**<sub>n</sub>> (i)\
+(**A** - **B**)(**A** + **B**) |**X**<sub>n</sub> + **Y**<sub>n</sub>> =  	&#969;<sup>2</sup> |**X**<sub>n</sub> + **Y**<sub>n</sub>> (i) \
 left multiply by (**A** - **B**)<sup>-&#189;</sup> and right multiply by (**A** - **B**)<sup>&#189;</sup> gives \
 (**A** - **B**)<sup>&#189;</sup>**.**(**A** + **B**)**.**(**A** - **B**)<sup>&#189;</sup> **T**<sub>n</sub> = &#969;<sup>2</sup> **T**<sub>n</sub> (ii) \
 writing (ii) as (left multiply by (**A** - **B**)<sup>&#189;</sup>) gives \
-(**A** - **B**)(**A** + **B**) ((**A** - **B**)<sup>&#189;</sup> 
-**T**<sub>n</sub>) =  &#969;<sup>2</sup> ((**A** - **B**)<sup>&#189;</sup> **T**<sub>n</sub>) \
+(**A** - **B**)(**A** + **B**) ((**A** - **B**)<sup>&#189;</sup>**T**<sub>n</sub>) =  &#969;<sup>2</sup> ((**A** - **B**)<sup>&#189;</sup> **T**<sub>n</sub>) \
 comparing this Hermitian form with (i) gives  |**X**<sub>n</sub> + **Y**<sub>n</sub>>  =  ((**A** - **B**)<sup>&#189;</sup> **T**<sub>n</sub>) (iii) \
+There is a corresponding Hermitian form developed from \
+(**A** + **B**)(**A** - **B**) |**X**<sub>n</sub> - **Y**<sub>n</sub>> =  	&#969;<sup>2</sup> |**X**<sub>n</sub> - **Y**<sub>n</sub>> (iv) \
+(**A** + **B**)<sup>&#189;</sup>**.**(**A** - **B**)**.**(**A** + **B**)<sup>&#189;</sup> **S**<sub>n</sub> = &#969;<sup>2</sup> **S**<sub>n</sub> (v) \
+which gives |**X**<sub>n</sub> - **Y**<sub>n</sub>>  =  ((**A** + **B**)<sup>&#189;</sup> **S**<sub>n</sub>) (vi) \
+Again |**X**<sub>n</sub> - **Y**<sub>n</sub>> and |**X**<sub>n</sub> + **Y**<sub>n</sub>> should be biorthonormal.
 
-Running a TDHF calculation using the Hermitian form gives eigenvalues \
+It is not necessary to separately solve for |**X**<sub>n</sub> - **Y**<sub>n</sub>> if you have |**X**<sub>n</sub> + **Y**<sub>n</sub>> as they are connected through \
+(**A**+**B**)|**X**<sub>n</sub> + **Y**<sub>n</sub>> = &#969; |**X**<sub>n</sub> - **Y**<sub>n</sub>> or \
+(**A**-**B**)|**X**<sub>n</sub> - **Y**<sub>n</sub>> = &#969; |**X**<sub>n</sub> + **Y**<sub>n</sub>> 
+
+
+Running a TDHF calculation using the Hermitian form gives eigenvalues 
 ```
 [  7.75970415   7.75970415   7.75970415   8.15643883   8.15643883
    8.15643883   9.59546498   9.59546498   9.59546498   9.65401306
