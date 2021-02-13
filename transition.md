@@ -77,7 +77,7 @@ from psi4
 ```
 This for first 3 singlets - OK so far.
 
-The eigenvectors from psi4 for alpha eigenvectors right for the first and second singles singlets - alpha and beta are the same. It is clear the eigenvalues are not normalised.
+The eigenvectors from psi4 for alpha eigenvectors right for the first and second singles singlets - alpha and beta are the same. (It is clear the eigenvalues are not themselves normalised.)
 ```
 [[ 1.24887231e-16  5.76788541e-19]
  [-1.08892241e-15 -6.05807431e-17]
