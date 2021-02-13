@@ -257,32 +257,52 @@ The formulas are ![](formula.png)
 **note** \
 The Hermitian treatment means you can use symmetric solvers for the eigen problem. However, for the |**X**+**Y**> equation (iii) there is another Hermitian one for |**X**-**Y**> and once you've solved for these quantities you still need to biorthonormalise them to be correct eigenvectors to the problem?
 
-### Hydrogen Molecule
-Need to sort out why our eigenvectors are wrong. Go back to eaquation (1) and change to
-```python
-HA = A - B
-HB = A + B
-rpaH = np.dot(HA,HB)
+## Tamm-Dancoff Approximation
+Set **B** = 0. For water eigenvalues
+```
+[ 0.28725552  0.28725552  0.28725552  0.34442501  0.34442501  0.34442501
+  0.35646178  0.36598901  0.36598901  0.36598901  0.39451381  0.39451381
+  0.39451381  0.41607175  0.5056283   0.51429     0.51429     0.51429
+```
+From psi4 using
+```
+res = tdscf_excitations(wfn, states=5, tda=True)
 
-from scipy.linalg import lu, eig
-w , Lss, Rss = eig(rpaH, left=True, right=True)
+---> 0.3564619474642684
+[[ 3.62517239e-17 -7.06179792e-20]
+ [-3.74940352e-16 -5.73760059e-18]
+ [ 6.57671825e-16 -9.83232306e-17]
+ [ 2.26894887e-15  1.76536859e-17]
+ [ 1.00000000e+00  1.23948800e-14]]
+---> 0.4160718299870798
+[[ 9.79766595e-17  2.21455727e-17]
+ [ 2.23711109e-15 -3.39925229e-16]
+ [-3.45280790e-16  6.72851332e-15]
+ [ 1.26680223e-14  5.58514303e-15]
+ [-1.23948800e-14  1.00000000e+00]]
+---> 0.505628345495891
+[[-7.84171394e-04 -2.34871529e-16]
+ [-6.40451105e-02  2.66235698e-15]
+ [-5.17607623e-14 -3.44767100e-01]
+ [-9.36500537e-01 -7.29393875e-14]
+ [ 2.06698855e-15  1.44451766e-14]]
+---> 0.5551918484163628
+[[-3.58582709e-17  1.08027457e-03]
+ [-1.17579349e-14  1.50332457e-03]
+ [ 5.52669710e-01 -8.26655554e-14]
+ [-6.41864567e-14  8.33398323e-01]
+ [-3.78179147e-16 -4.59046921e-15]]
 ```
-Our **&mu;**<sub>z</sub> values are  \[[1.01940729e+00 2.70616862e-15 1.61860442e-01]]] and psi4 \[[1.01940686e+00 6.58359141e-16 1.61860088e-01]] \
-and the eigenvalues (unsorted) are 
+From harpy for 3rd eigenvalues and after normalising the eigenvector I get
 ```
-[0.56960194+0.j 1.70540683+0.j 0.36147596+0.j 0.36147596+0.j
- 0.94523294+0.j 1.17513713+0.j 1.46216701+0.j 1.46216701+0.j
- 1.46216701+0.j 0.36147596+0.j 0.94523294+0.j 0.94523294+0.j]
+---> 0.5056283
+[[ 7.84170883e-04  1.10912811e-16]
+ [ 6.40451185e-02 -1.25496455e-15]
+ [ 9.75763912e-15  3.44766688e-01]
+ [ 9.36500688e-01  1.67716412e-14]
+ [ 3.81388604e-30 -3.63440589e-16]]
 ```
-The 1st,2nd and 3rd singlet in psi4 is EXCITATION ENERGY = 0.569602280844686, 1.1751383434578857 1.7054080350483756 so eigenvalues OK 
-
-psi4 biorthogonalisation code
-```python
-inners = np.einsum("ix,ix->x", Rss, Lss, optimize=True)
-Rss = np.einsum("x,ix->ix", 1. / np.sqrt(inners), Rss, optimize=True)
-Lss = np.einsum("x,ix->ix", 1. / np.sqrt(inners), Lss, optimize=True)
-```
-This produces normal vectors but not orthogonal ones - I guess this is taken care of by the diagonaliser? So doesn't help us.
+upto a sign these agree.
 
 
 
