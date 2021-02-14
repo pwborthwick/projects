@@ -55,7 +55,7 @@ so we're OK here.
 To get these we need to do a TDHF calculation. To avoid the left and right eigenvector problem for the moment we'll use the Hermitian form of the equations \
 The basic form of the equations \
 **A** = &#948;<sub>𝑖𝑗</sub>**𝑓**<sub>𝑎𝑏</sub> − &#948;<sub>𝑎𝑏</sub>**𝑓**<sub>𝑖𝑗</sub> + <bi||𝑗a> \
-**B** = <bi||ja> \
+**B** = <bi||ja> 
 
 (**A** - **B**)(**A** + **B**) |**X**<sub>n</sub> + **Y**<sub>n</sub>> =  	&#969;<sup>2</sup> |**X**<sub>n</sub> + **Y**<sub>n</sub>> (i) \
 left multiply by (**A** - **B**)<sup>-&#189;</sup> and right multiply by (**A** - **B**)<sup>&#189;</sup> gives \
@@ -242,9 +242,13 @@ For reference the left alpha eigenvectors are
  [ 4.46370254e-15 -2.81796845e-15]
  [-3.62245267e-14  1.03058747e+00]]
 ```
-We could instead of <&#968;<sub>0</sub>|**&#956;**|&#968;<sub>i</sub> ie length gauge use <&#968;<sub>0</sub>|**&nabla;**|&#968;<sub>i</sub>> ie velocity gauge \
+We could instead of <&#968;<sub>0</sub>|**&#956;**|&#968;<sub>i</sub>> ie length gauge use <&#968;<sub>0</sub>|**&nabla;**|&#968;<sub>i</sub>> ie velocity gauge \
 and calculate as (2)<sup>1/2</sup> *|**X**<sub>n</sub>-**Y**<sub>n</sub>>
-ELECTRIC DIPOLE TRANSITION MOMENT (VEL) = \[7.01779000e-18 2.33393269e-16 1.37034011e-01]
+ELECTRIC DIPOLE TRANSITION MOMENT (VEL) = \[7.01779000e-18 2.33393269e-16 1.37034011e-01] \
+The velocity oscillator strength is calculated as 
+```python
+os = 2/ (3 * np.sqrt(w[9])) * np.sum(np.array(tdm)**2)
+```
 OSCILLATOR STRENGTH (VEL) = 0.035286473435577954
 
 The magnetic transition dipole in length gauge is calculated as (1/2)<sup>1/2</sup>**&omega;.**|**X**<sub>n</sub>-**Y**<sub>n</sub>> ,where **&omega;** are the angular momentum integrals.
