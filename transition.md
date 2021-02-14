@@ -264,7 +264,7 @@ For both one-photon absorption (OPA) and electronic circular dichroism (ECD) the
 The formulas are ![](formula.png)
 
 **note** \
-The Hermitian treatment means you can use symmetric solvers for the eigen problem. However, for the |**X**+**Y**> equation (iii) there is another Hermitian one for |**X**-**Y**> and once you've solved for these quantities you still need to biorthonormalise them to be correct eigenvectors to the problem?
+The Hermitian treatment means you can use symmetric solvers for the eigen problem. However, for the |**X**+**Y**> equation (iii) there is another Hermitian one for |**X**-**Y**> and once you've solved for these quantities you still need to biorthonormalise them to be correct eigenvectors to the problem? I now think that there is no analytic way of generating a biorthonormal set of eigenvectors from a general pair of eigenvectors and it must be done by an iterative process.
 
 ## Tamm-Dancoff Approximation
 Set **B** = 0. For water eigenvalues
@@ -311,17 +311,45 @@ From harpy for 3rd eigenvalues and after normalising the eigenvector I get
  [ 9.36500688e-01  1.67716412e-14]
  [ 3.81388604e-30 -3.63440589e-16]]
 ```
-upto a sign these agree.
+upto a sign these agree. (dipole should have minus but still odd wrong sign)
 
-
-
-
-
-
-
-
-    
-
+The excitations, transition dipole (length) and oscillator strengths from psi4 for first 5 singlet states are
+```
+0.35646194746426896
+[-1.00985303e-15  7.04945335e-16  9.92577450e-02]
+0.0023412658233158954
+0.41607182998707265
+[-8.04597693e-15  7.82930516e-16  7.43339206e-16]
+1.8280331676044886e-29
+0.5056283454958909
+[-7.77099088e-15  4.38874739e-01 -3.07772645e-16]
+0.06492639995293956
+0.5551918484163678
+[-2.04425928e-01 -8.79344690e-14 -1.08171461e-16]
+0.015467630166368004
+0.6553184873358628
+[1.69281940e+00 1.28985824e-14 1.58400793e-17]
+1.2519368251364011
+```
+velocity gauge works but again a sign difference here and there (dipole integral signs agree so difference in the eigenvectors). Magnetic dipole next then find example with non-zero rotary strengths.
+I can now reproduce these results (modulo a sign here and there). In TDA the left eigenvectors are equal to the right eigenvectors. I get
+```
+0.3564617754312789
+[4.12046668e-15, 2.89530978e-21, -0.09925794]
+0.0023412739974649588,
+0.41607174996907337
+[-1.10887617e-14, 3.92186240e-15, 1.95094676e-16]
+3.83839238e-29
+0.505628299588154
+[1.20886205e-14, 0.43887432, 4.15792989e-31]
+0.06492626973606519
+0.5551918931220665
+[-0.20442409, -3.19631675e-15, -3.27682611e-17]
+0.015467354078846973
+0.6553184580683947
+[1.69281951, 1.14084334e-14, -3.29033947e-17]
+1.2519369374141582
+```
 
 
 
