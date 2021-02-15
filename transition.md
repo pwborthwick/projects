@@ -170,10 +170,11 @@ def gs(X, row_vecs=True, norm = False):
 Need to transform the excitation eigenvalue into a No x Nv block of alpha (or beta) values
 ```python
 alpha = []
-for i in range(0,2*No, Nv):
-    j = 2*Nv*i
-    alpha.append(t[j:j+2*Nv:2])
-alpha = np.array(alpha).reshape(No,Nv)
+for i in range(0, 4*nOccupied*nVirtual, 4*nVirtual):
+    for j in range(0, 2*nVirtual, 2):
+        alpha.append(v[i+j, root])
+alpha = np.array(alpha).reshape(nOccupied, nVirtual)
+alpha /= np.linalg.norm(alpha)
 ```
 This gives us
 ```
