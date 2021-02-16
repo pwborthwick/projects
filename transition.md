@@ -254,9 +254,11 @@ OSCILLATOR STRENGTH (VEL) = 0.035286473435577954
 
 The magnetic transition dipole in length gauge is calculated as (1/2)<sup>1/2</sup>**&omega;.**|**X**<sub>n</sub>-**Y**<sub>n</sub>> ,where **&omega;** are the angular momentum integrals.
 
+**note electric dipoles in psi4 are calculated with a center of positive charge gauge center but the magnetic dipole is calculated with the coordinate origin as gauge center**
+
 The length gauge rotatory strength is calculated as 
 ```python
-lgrs = np.sum(etdm_l * mtdm)_l
+lgrs = np.sum(etdm_l * mtdm_l)
 ```
 where etdm_l is the electronic transition dipole momemnt in the length gauge and mtdm_l is the magnetic transition dipole moment in the length gauge. \
 The velocity gauge rotatory strength is calculated as 
@@ -316,7 +318,7 @@ From harpy for 3rd eigenvalues and after normalising the eigenvector I get
  [ 9.36500688e-01  1.67716412e-14]
  [ 3.81388604e-30 -3.63440589e-16]]
 ```
-upto a sign these agree. (dipole should have minus but still odd wrong sign)
+upto a sign these agree. (wavefunction is determined only up to factor of phase so sign may be undetermined)
 
 The excitations, transition dipole (length) and oscillator strengths from psi4 for first 5 singlet states are
 ```
@@ -355,9 +357,37 @@ I can now reproduce these results (modulo a sign here and there). In TDA the lef
 [1.69281951, 1.14084334e-14, -3.29033947e-17]
 1.2519369374141582
 ```
+The rotary strengths from reference 'moxy' molecule
+```
+ROTATORY STRENGTH (LEN) = 0.004232382250797492
+ROTATORY STRENGTH (VEL) = 0.0024718037871167926
+```
 
+## left and right eigenvectors
+The Tamm-Dancoff works OK so we know how to calculate the TDHF properties. If want to do them in full **X** and **Y** form have to biorthonormalize the left and right eigenvectors. Pretty sure now has to be done iteratively. This is the scheme \
+1.  Choose a set of guess vectors **b**.
 
+2.  Start loop
 
+3.  Calculate (**A**+**B**)**b** = **H**<sup>+</sup> and (**A**-**B**)**b** = **H**<sup>-</sup>
+
+4.  Calculate **b.H**<sup>+</sup> and **b.H**<sup>-</sup>
+
+5.  Diagonalise **H**<sup>-</sup> = **Hss**<sup>-</sup>
+
+6.  Form (**Hss**<sup>-</sup>)<sup>1/2</sup>
+
+7.  Form (**Hss**<sup>-</sup>)<sup>1/2</sup>(**A**+**B**)(**Hss**<sup>-</sup>)<sup>1/2</sup> = **Hh**
+
+8.  Diagonalize **Hh**, eigenvalues **w** and eigenvectors **Tss**
+
+9.  Sort **w** and **Tss**. **Rss** = **Hss**<sup>-</sup>)<sup>1/2</sup>**Tss** and **Lss** = (**A**+**B**)**Rss**/**w**
+
+10. Biorthonormalise. **Rss** and **Lss**
+
+11. Choose best vector, check convergence and loop
+
+Details in **psi4/psi4/driver/p4util/solvers.py** and R. Eric Stratmann, G. E. Scuseria, and M. J. Frisch, "An efficient implementation of time-dependent density-functional theory for the calculation of excitation energies of large molecules." J. Chem. Phys.,109, 8218 (1998)
 
 
 
