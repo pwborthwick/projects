@@ -268,8 +268,11 @@ mgrs = -np.sum(etdm_v * mtdm_l)/w
 For both one-photon absorption (OPA) and electronic circular dichroism (ECD) the poles are the excitation energies. The residues are: \
     The square of the transition electric dipole moment for OPA: |**&mu;** |<sup>2</sup>  
     The rotatory strength **R**<sub>ij</sub> for ECD. This is the imaginary part of the product of transition electric and magnetic dipole moments: Im(**&mu;**<sub>ij</sub>**.m**<sub>ij</sub>) 
-The formulas are ![](formula.png)
+    
+The implementation assumes these quantities are given in the length gauge.
 
+The formulas are ![](formula.png)
+ 
 **note** \
 The Hermitian treatment means you can use symmetric solvers for the eigen problem. However, for the |**X**+**Y**> equation (iii) there is another Hermitian one for |**X**-**Y**> and once you've solved for these quantities you still need to biorthonormalise them to be correct eigenvectors to the problem? I now think that there is no analytic way of generating a biorthonormal set of eigenvectors from a general pair of eigenvectors and it must be done by an iterative process.
 
