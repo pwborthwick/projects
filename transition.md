@@ -267,12 +267,27 @@ mgrs = -np.sum(etdm_v * mtdm_l)/w
 ```
 For both one-photon absorption (OPA) and electronic circular dichroism (ECD) the poles are the excitation energies. The residues are: \
     The square of the transition electric dipole moment for OPA: |**&mu;** |<sup>2</sup>  
-    The rotatory strength **R**<sub>ij</sub> for ECD. This is the imaginary part of the product of transition electric and magnetic dipole moments: Im(**&mu;**<sub>ij</sub>**.m**<sub>ij</sub>) 
+    The rotatory strength **R**<sub>ij</sub> for ECD. This is the imaginary part of the product of transition electric and magnetic dipole moments: Im(**&mu;**<sub>ij</sub>**.m**<sub>ij</sub>) \
+**g**<sub>ij</sub> is the line-shape function.
     
 The implementation assumes these quantities are given in the length gauge.
 
 The formulas are ![](formula.png)
- 
+
+The prefactor is computed in SI units and then adjusted for the fact that atomic units are used to express microscopic observables: excitation energies
+and transition dipole moments.
+The refractive index *n* is, in general, frequency-dependent. We assume it to be constant and equal to 1.
+*N<sub>A</sub>* is Avagadro constant, *c* the speed of light, *&#295;* is reduced Planck constant, *e<sub>0</sub>* is the electric constant.
+
+for absorption need conversion au->Ccm (Coulomb centimeters) \
+*elementary charge x bohr radius x 1000*. (1000 is m->cm)
+
+prefactor calculated as \
+(4.&#960;.<sup>2</sup>*N<sub>A</sub>*/(3.1000.ln(10).(4.&#960;.*e<sub>0</sub>*).*&#295;*,*c*)).(C->cm)<sup>2</sup>
+
+for circular dichroism also need conversion au-> JT<sup>-1</sup> (Joules inverse Tesla) \
+*2.&mu;<sub>B</sub>.1000*, where &mu;<sub>B</sub> is the Bohr magnetron.
+
 **note** \
 The Hermitian treatment means you can use symmetric solvers for the eigen problem. However, for the |**X**+**Y**> equation (iii) there is another Hermitian one for |**X**-**Y**> and once you've solved for these quantities you still need to biorthonormalise them to be correct eigenvectors to the problem? I now think that there is no analytic way of generating a biorthonormal set of eigenvectors from a general pair of eigenvectors and it must be done by an iterative process.
 
@@ -370,6 +385,9 @@ ROTATORY STRENGTH (VEL) = 0.0024718037871167926
 The Tamm-Dancoff works OK so we know how to calculate the TDHF properties. If want to do them in full **X** and **Y** form have to biorthonormalize the left and right eigenvectors. Pretty sure now has to be done iteratively. This is the scheme \
 1.  Choose a set of guess vectors **b**.
 
+Get **e**\[:occ] and **e**\[occ:], then find all combinations **e**<sub>a</sub>-**e**<sub>i</sub>, sort on difference, so have a sorted list \[&Delta;,i,a] \
+Loop over sorted list v.set(irrep,i,a,1.0)
+
 2.  Start loop
 
 3.  Calculate (**A**+**B**)**b** = **H**<sup>+</sup> and (**A**-**B**)**b** = **H**<sup>-</sup>
@@ -389,6 +407,11 @@ The Tamm-Dancoff works OK so we know how to calculate the TDHF properties. If wa
 10. Biorthonormalise. **Rss** and **Lss**
 
 11. Choose best vector, check convergence and loop
+
+    Compute the best approximation of the true eigenvectors as a linear combination of basis vectors:
+    V<sub>k</sub> = &Sigma; V'<sub>i,k</sub>X<sub>i</sub> \
+    Where V' is the matrix with columns that are eigenvectors of the subspace matrix. And X<sub>i</sub> is a basis vector.
+
 
 Details in **psi4/psi4/driver/p4util/solvers.py** and R. Eric Stratmann, G. E. Scuseria, and M. J. Frisch, "An efficient implementation of time-dependent density-functional theory for the calculation of excitation energies of large molecules." J. Chem. Phys.,109, 8218 (1998)
 
