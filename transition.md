@@ -384,12 +384,47 @@ ROTATORY STRENGTH (VEL) = 0.0024718037871167926
 ## left and right eigenvectors
 The Tamm-Dancoff works OK so we know how to calculate the TDHF properties. If want to do them in full **X** and **Y** form have to biorthonormalize the left and right eigenvectors. Pretty sure now has to be done iteratively. This is the scheme \
 1.  Choose a set of guess vectors **b**.
+```python
+nOccupied = 5
+nVirtual = 2
 
-Get **e**\[:occ] and **e**\[occ:], then find all combinations **e**<sub>a</sub>-**e**<sub>i</sub>, sort on difference, so have a sorted list \[&Delta;,i,a] \
-Loop over sorted list v.set(irrep,i,a,1.0)
+eOccupied = e[:nOccupied]
+eVirtual = e[nOccupied:]
+
+delta = []
+for i, ei in enumerate(eOccupied):
+    for a, ea in enumerate(eVirtual):
+        delta.append(ei - ea, i, a)
+        
+deltaSort = sorted(delta, key=lambda x:x[0])
+
+nguess = 10
+nguess = min(nguess, len(deltaSort))
+
+guess = []
+for i in range(nguess):
+
+    m = np.zeros((nOccupied, nVirtual))
+    oidx = deltaSort[i][1]
+    vidx = deltaSort[i][2]
+    m[oidx, vidx] = 1.0
+    
+    guess.append(m)
+    
+print(guess[0])
+---------------------
+[[0. 1.]
+ [0. 0.]
+ [0. 0.]
+ [0. 0.]
+ [0. 0.]]
+---------------------
+```
 
 2.  Start loop
-
+```python
+while iteration < maxIterations:
+```
 3.  Calculate (**A**+**B**)**b** = **H**<sup>+</sup> and (**A**-**B**)**b** = **H**<sup>-</sup>
 
 4.  Calculate **b.H**<sup>+</sup> and **b.H**<sup>-</sup>
