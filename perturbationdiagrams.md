@@ -1,7 +1,7 @@
 ## Hugenholtz Diagrams
 
 The perturbation series for the ground state energy can be given by diagrams in the Hugenholtz vein constructed according to the following rules 
-For an *n*<sup>th</sup> order diagram, n dots (vertices) are drawn in a column. Thesvertices are connected by directed lines subject to the conditions
+For an *n*<sup>th</sup> order diagram, n dots (vertices) are drawn in a column. These vertices are connected by directed lines subject to the conditions
 1. Each vertex has two lines pointing in and two pointing out.
 2. Each diagram is connected, i.e.  one must be able to go from any one vertex to any other by following some number of lines.
 3. No line connects a vertex with itself.
@@ -307,9 +307,10 @@ Base diagram  [2, 1, 1, 1, 1, 2]
            arrow combination [ 39 ]  [2, 0, 0, 1, 1, 1]
 ```
 For example
+```
 Base diagram  \[3, 1, 0, 0, 1, 3]
-           arrow combination \[ 20 ]  \[1, 1, 0, 0, 0, 2]
+           arrow combination \[ 20 ]  \[1, 1, 0, 0, 0, 2]           
            arrow combination \[ 21 ]  \[2, 0, 0, 0, 1, 1]
-           
+```           
 corresponds to the two 4th order diagrams ![](310013.png)
 
