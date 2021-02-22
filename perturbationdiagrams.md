@@ -1,5 +1,7 @@
 ## Hugenholtz Diagrams
 
+The idea is to analytically generate all the Hugenholtz diagrams of a given order. An approach is given [here](http://cds.cern.ch/record/609508/files/0303069.pdf). Also see Szabo and Ostlund (pg 256-262).
+
 The perturbation series for the ground state energy can be given by diagrams in the Hugenholtz vein constructed according to the following rules 
 For an *n*<sup>th</sup> order diagram, n dots (vertices) are drawn in a column. These vertices are connected by directed lines subject to the conditions
 1. Each vertex has two lines pointing in and two pointing out.
@@ -313,4 +315,18 @@ Base diagram  \[3, 1, 0, 0, 1, 3]
            arrow combination \[ 21 ]  \[2, 0, 0, 0, 1, 1]
 ```           
 corresponds to the two 4th order diagrams ![](310013.png)
+
+To get the down arrows subtract the up arrows at each pair from the number of pairs at each node (take absolute value). So eg if \
+\[3,1,0,0,1,3] is the base diagram and \[1,1,0,0,0,2] is the up arrow combination then \[2,0,0,0,1,1] is the down arrow combination. The code is
+```python
+def downArrow_hh(diagram, arrow, pairs):
+    #compute the down arrows from an up arrow specification
+
+    down = [0] * pairs
+    for pair in range(pairs):
+        down[pair] = abs(diagram[pair] - arrow[pair])
+    
+    return down
+```
+It is possible (but not easy) to draw the diagrams using pyplot and patches.Arc.
 
