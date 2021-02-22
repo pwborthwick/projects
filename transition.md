@@ -383,7 +383,7 @@ ROTATORY STRENGTH (VEL) = 0.0024718037871167926
 
 ## left and right eigenvectors
 The Tamm-Dancoff works OK so we know how to calculate the TDHF properties. If want to do them in full **X** and **Y** form have to biorthonormalize the left and right eigenvectors. Pretty sure now has to be done iteratively. This is the scheme \
-1.  Choose a set of guess vectors **b**.
+1.  Choose a set of guess vectors **b** > number of roots (nroots)
 ```python
 nOccupied = 5
 nVirtual = 2
@@ -425,21 +425,78 @@ print(guess[0])
 ```python
 while iteration < maxIterations:
 ```
-3.  Calculate (**A**+**B**)**b** = **H**<sup>+</sup> and (**A**-**B**)**b** = **H**<sup>-</sup>
+3.  Calculate (**A**+**B**)**b** = **H**<sup>+</sup> and (**A**-**B**)**b** = **H**<sup>-</sup> 
+    
+    The guess vectors are \[nOccupied, nVirtual] we need them to be \[2*\nOccupied\*2\*nVirtual\*,1]. The column vector is made up of nOccupied\*2 blocks of nVirtual\*2 length. The blocks alternate &alpha; and &beta; spin and within each block also. In our RHF case g<sub>ia</sub><sup>&alpha;</sup> = g<sub>ia</sub><sup>&beta;</sup> = g<sub>ia</sub>. 
+```python
+vec= np.zeros((2*nOccupied*2*nVirtual, nguess))
+for i, g in enumerate(guess_vectors):
+    v = np.zeros(2*nOccupied*2*nVirtual)
+    n = 0
+    for j in range(nOccupied):
+         for a in range(nVirtual):
+             v[n] = g[n//4, n % 2]
+             n += 1
 
-4.  Calculate **b.H**<sup>+</sup> and **b.H**<sup>-</sup>
+    vec[:,i] = v[:]
+```
+The guess vectors are now in shape \[2\*nOccupied\*2\*nVirtual, nguess] and compatible for dot products
+```python
+Hpv = np.dot((A+B), vec)
+Hmv = np.dot((A-B), vec)
+```
+
+4.  Calculate **<b,H>**<sup>+</sup> and **<b,H>**<sup>-</sup>
+
+This is straightforward as <s,r> = r<sup>T</sup>.s (ss - sub-space)
+```
+Hp_ss = np.dot(Hpv.T, vec)
+Hm_ss = np.dot(Hmv.T, vec)
+```
 
 5.  Diagonalise **H**<sup>-</sup> = **Hss**<sup>-</sup>
+```python
+Hm_ss_val, Hm_ss_vec = np.linalg.eigh(Hm_ss)
+```
 
 6.  Form (**Hss**<sup>-</sup>)<sup>1/2</sup>
+```python
+H2_ss_half = np.einsum("ik,k,jk->ij", H2_ss_vec, np.sqrt(H2_ss_val), H2_ss_vec, optimize=True)
+```
 
 7.  Form (**Hss**<sup>-</sup>)<sup>1/2</sup>(**A**+**B**)(**Hss**<sup>-</sup>)<sup>1/2</sup> = **Hh**
+```python
+Hss = np.einsum('ij,jk,km->im', Hm_ss_half, Hp_ss, Hm_ss_half, optimize=True)
+```
 
 8.  Diagonalize **Hh**, eigenvalues **w** and eigenvectors **Tss**
+```python
+ww, Tss = np.linalg.eigh(Hss)
+```
 
-9.  Sort **w** and **Tss**. **Rss** = **Hss**<sup>-</sup>)<sup>1/2</sup>**Tss** and **Lss** = (**A**+**B**)**Rss**/**w**
+9.  Sort **w** and **Tss**. **Rss** = **Hss**<sup>-</sup><sup>1/2</sup>**Tss** and **Lss** = ((**A**+**B**).**b**)<sup>T</sup>.**b.Rss**/**w**
+```python
+Tss = Tss[:, ww > 1.0e-10]
+ww = ww[ww > 1.0e-10]
 
+with np.errstate(invalid='raise'):
+     w = np.sqrt(ww)
+
+# sort roots
+idx = w.argsort()[:nroots]
+Tss = Tss[:, idx]
+w = w[idx]
+
+Rss = np.dot(H2_ss_half, Tss)
+Lss = np.dot(H1_ss, Rss).dot(np.diag(1.0 / w))
+
+```
 10. Biorthonormalise. **Rss** and **Lss**
+```python
+inners = np.einsum("ix,ix->x", Rss, Lss, optimize=True)
+Rss = np.einsum("x,ix->ix", 1. / np.sqrt(inners), Rss, optimize=True)
+Lss = np.einsum("x,ix->ix", 1. / np.sqrt(inners), Lss, optimize=True)
+```
 
 11. Choose best vector, check convergence and loop
 
