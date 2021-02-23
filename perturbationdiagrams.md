@@ -9,6 +9,8 @@ For an *n*<sup>th</sup> order diagram, n dots (vertices) are drawn in a column. 
 3. No line connects a vertex with itself.
 4. Each diagram is topologically distinct.
 
+We will number vertices from 0 at the top, and down arrows are 'holes' (labelled a,b,c,...) and up arrows 'particles' (labelled r,s,t,...).
+
 ![](hugenholtz.png)
 
 For order *n* there will be &half;*n*(*n*-1) pairs of nodes. So for order 2 there will be &half;2.1=1, and for 3 there will be &half;3.2=3 pairs as seen above.
@@ -329,4 +331,72 @@ def downArrow_hh(diagram, arrow, pairs):
     return down
 ```
 It is possible (but not easy) to draw the diagrams using pyplot and patches.Arc.
+
+The first two rules for translating diagrams into algebraic expressions are:
+
+1.  Each dot contributes an antisymmetric matrix element <in<sub>1</sub>in<sub>2</sub>||out<sub>1</sub>out<sub>2</sub>> to the numerator.
+2.  Each pair of adjacent vertices contributes the denominator factor **&Sigma;** &epsilon;<sub>holes</sub> - **&Sigma;** &epsilon;<sub>particles</sub> 
+    where the sums run over the labels of all hole and particle lines ceossing an imaginary line separating the pair of vertices.
+    
+In order to evaluate the above rules we need to know the nodes connecting a given node for both the in and out lines and the direction of the arrows on those lines.
+```python
+def nodalFlows_hh(up, down, order):
+    #collect the in and out lines at the node and their directions
+
+    def coupledSort(p, q):
+        #sort two list in synch
+
+        p, q = (list(tuple) for tuple in zip(*sorted(zip(p, q))))
+
+        return p, q
+
+    l = []
+
+    #loop over each node
+    for node in range(order):
+
+        _in   = []
+        _out  = []
+        _inArrow  = []
+        _outArrow = []
+
+        #loop over pairs
+        pairs = nodalPairs_hh(order)
+        for i, pair in enumerate(pairs):
+
+            #determine if in and out arrows are up or down
+            if node == pair[0] and up[i] != 0:
+                _in.append(pair[1])
+                _inArrow.append('u')
+            if node == pair[1] and up[i] != 0:
+                _out.append(pair[0])
+                _outArrow.append('u')
+            if node == pair[0] and down[i] != 0:
+                _out.append(pair[1])
+                _outArrow.append('d')
+            if node == pair[1] and down[i] != 0:
+                _in.append(pair[0])
+                _inArrow.append('d')
+
+        l.append([coupledSort(_in, _inArrow), coupledSort(_out, _outArrow) ])
+
+    #split for in and out connections and up and down directions at each node
+    direction  = []
+    connection = []
+
+    for node in l:
+        for arrow in node:
+            connection.append(arrow[0])
+            direction.append(arrow[1])
+
+    return connection, direction
+```
+This routine will return eg
+```
+flow at each node in - out
+[[1, 3], [1, 2], [0, 2], [0, 3], [0, 3], [1, 3], [1, 2], [0, 2]]
+Directions at each node
+[['u', 'u'], ['d', 'd'], ['d', 'u'], ['u', 'd'], ['d', 'u'], ['u', 'd'], ['d', 'd'], ['u', 'u']]
+```
+From this the numerator can be read off directly as <13|12><02|03><03|13><12|02>
 
