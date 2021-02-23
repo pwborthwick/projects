@@ -338,17 +338,17 @@ The first two rules for translating diagrams into algebraic expressions are:
 2.  Each pair of adjacent vertices contributes the denominator factor **&Sigma;** &epsilon;<sub>holes</sub> - **&Sigma;** &epsilon;<sub>particles</sub> 
     where the sums run over the labels of all hole and particle lines ceossing an imaginary line separating the pair of vertices.
     
-In order to evaluate the above rules we need to know the nodes connecting a given node for both the in and out lines and the direction of the arrows on those lines.
+In order to evaluate the above rules we need to know the nodes connecting a given node for both the in and out lines and the direction of the arrows on those lines. We will represent a join from node n to m as 'n:m' with n<m.
 ```python
 def nodalFlows_hh(up, down, order):
     #collect the in and out lines at the node and their directions
 
-    def coupledSort(p, q):
-        #sort two list in synch
+    def sLine(node, p, d):
+        #Construct line as 'node1node2' ordered
 
-        p, q = (list(tuple) for tuple in zip(*sorted(zip(p, q))))
-
-        return p, q
+        join = [node, p]
+        join.sort()
+        return str(join[0]) + ':' + str(join[1]) + ':' + d
 
     l = []
 
@@ -357,8 +357,6 @@ def nodalFlows_hh(up, down, order):
 
         _in   = []
         _out  = []
-        _inArrow  = []
-        _outArrow = []
 
         #loop over pairs
         pairs = nodalPairs_hh(order)
@@ -366,37 +364,86 @@ def nodalFlows_hh(up, down, order):
 
             #determine if in and out arrows are up or down
             if node == pair[0] and up[i] != 0:
-                _in.append(pair[1])
-                _inArrow.append('u')
+                _in.append(sLine(node,pair[1], 'u'))
             if node == pair[1] and up[i] != 0:
-                _out.append(pair[0])
-                _outArrow.append('u')
+                _out.append(sLine(node,pair[0], 'u'))
             if node == pair[0] and down[i] != 0:
-                _out.append(pair[1])
-                _outArrow.append('d')
+                _out.append(sLine(node,pair[1], 'd'))
             if node == pair[1] and down[i] != 0:
-                _in.append(pair[0])
-                _inArrow.append('d')
+                _in.append(sLine(node,pair[0], 'd'))
 
-        l.append([coupledSort(_in, _inArrow), coupledSort(_out, _outArrow) ])
 
-    #split for in and out connections and up and down directions at each node
-    direction  = []
-    connection = []
+        l.append([_in, _out ])
 
-    for node in l:
-        for arrow in node:
-            connection.append(arrow[0])
-            direction.append(arrow[1])
-
-    return connection, direction
+    return l
 ```
 This routine will return eg
 ```
 flow at each node in - out
-[[1, 3], [1, 2], [0, 2], [0, 3], [0, 3], [1, 3], [1, 2], [0, 2]]
-Directions at each node
-[['u', 'u'], ['d', 'd'], ['d', 'u'], ['u', 'd'], ['d', 'u'], ['u', 'd'], ['d', 'd'], ['u', 'u']]
+[[['0:1:u', '0:3:u'], ['0:1:d', '0:2:d']], [['0:1:d', '1:2:u'], ['0:1:u', '1:3:d']], 
+[ ['0:2:d', '2:3:u'], ['1:2:u', '2:3:d']], [['1:3:d', '2:3:d'], ['0:3:u', '2:3:u']]]
 ```
-From this the numerator can be read off directly as <13|12><02|03><03|13><12|02>
+From this the numerator can be read off directly as <'0:1:u''0:3:u'|'0:1:d''0:2:d'>... or substituting letters ('0:1:u'=r, '0:2:u' = s...'0:1:d'=a etc) then <rt||ab><au||re><bw|uf><ef||tw>. \
+The denominators are found from
+```python
+def denominators_hh(connection, order):
+    #Determine numerators of expression following rule 2
+
+    def getNode(sNode,i):
+        #decode line string 'n:m:d'
+        if i == 0: return int(sNode[:sNode.find(':')])
+        elif i == 1:
+            idx = sNode.find(':')
+            jdx = sNode.find(':', idx+1)
+            return int(sNode[idx+1:jdx])
+        elif i == 2:
+            idx = sNode.find(':')
+            jdx = sNode.find(':', idx+1)
+            return sNode[jdx+1:]
+
+    particles = []
+    holes = []
+
+    #loop over lines betwwen each pair of adjacent nodes
+    for line in range(order-1):
+
+        p = []
+        h = []
+
+        #enumerate of in and out connection pairs [[1:1,2:2],[3:3,4:4]]
+        for i, pair in enumerate(connection):
+            
+            #enumerate each pair for in or out [1:1,2:2], [3:3,4:4]
+            for j, arrow in enumerate(pair):
+
+                #loop over joins in each pair 1:1, 2:2
+                for join in range(2):
+
+                    if getNode(arrow[join],0) <= line and getNode(arrow[join],1) > line:
+
+                        if getNode(arrow[join],2) == 'u': p.append(arrow[join])
+                        else: h.append(arrow[join])
+
+        #use set to avoid double counting lines
+        particles.append(list(set(p)))
+        holes.append(list(set(h)))
+
+    return particles, holes
+```
+which returns
+```
+Particles 
+[['0:3:u', '0:1:u'], ['1:2:u', '0:3:u'], ['0:3:u', '2:3:u']]
+holes
+[['0:2:d', '0:1:d'], ['0:2:d', '1:3:d'], ['2:3:d', '1:3:d']]
+```
+or (**&epsilon;**<sub>b</sub>+**&epsilon;**<sub>a</sub>-**&epsilon;**<sub>t</sub>-**&epsilon;**<sub>r</sub>)(**&epsilon;**<sub>b</sub>+**&epsilon;**<sub>e</sub>-**&epsilon;**<sub>u</sub>-**&epsilon;**<sub>t</sub>)(**&epsilon;**<sub>f</sub>+**&epsilon;**<sub>e</sub>-**&epsilon;**<sub>t</sub>-**&epsilon;**<sub>w</sub>)
+
+The next rule is \
+The overall sign of the expression is (-1)<sup>h+l</sup> where h and l are the number of hole lines and closed loops, respectively. The closed loops are determined as follows: \
+Write down the matrix elements eg 
+<'0:1:u''0:3:u'|'0:1:d''0:2:d'><'0:1:d''1:2:u'|'0:1:u''1:3:d'><'0:2:d''2:3:u'|'1:2:u''2:3:d'><'1:3:d''2:3:d'|'0:3:u''2:3:u'> \
+take element 1 **'0:1:u'** goto element 3 '0:1:d', goto next term element 2 '1:2:u' goto element 4 '1:3:d' continue with this pattern '0:2:d' -> '1:2:u' -> '2:3:d' -> '2:3:u' -> '0:3:u' -> '0:2:d' -> '0:1:d' -> **'0:1:u'**, when we get back to the starting element the number of elements in the sequence is the number of closed loops ie 11. The order is like <1.||..> -> <..||2.> -> <.3||..> -> <..||.4> -> <.5||..> -> <..||.6> *note when you cycle back to start use the other  number ie <.5||..> not <5.||..>. 
+.
+
 
