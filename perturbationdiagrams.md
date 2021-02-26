@@ -332,6 +332,96 @@ def downArrow_hh(diagram, arrow, pairs):
 ```
 It is possible (but not easy) to draw the diagrams using pyplot and patches.Arc.
 
+In order to evaluate eg MPn terms we will need to define a detailed specification of the connections in the diagram. For a specific diagram there will be 4 lines at each node, 2 going in and 2 going out. Our full specification will then be 4 times the number of nodes long, each specification will be of the form \[node1, node2, direction of arrow, whether in or out of node, identifier] eg \[1,2,'d'.'i','a'] and if this is the nth element of specification vector then it relates to node n//4.
+The routine to do this is
+```python
+def connectionFlow_hh(up, down, order):
+    #determine characteristics of each node
+
+    #special case order 2
+    if order == 2: return [[0,1,'d','o','a'],[0,1,'d','o','b'],[0,1,'u','i','r'], [0,1,'u','i','s'], \
+                           [0,1,'d','i','a'],[0,1,'d','i','b'],[0,1,'u','o','r'], [0,1,'u','o','s']]
+
+    def nodalFlow(pair, p, a, d, id, flows):
+        #assign flow list element
+
+        i, j= pair
+        la = [i, j, a, d, id]
+        id += 1
+
+        #allow for two lines in same direction between same pair
+        if p == 2: 
+            lb = [i, j, a, d, id]
+            id += 1
+            flows.append(la)
+            flows.append(lb)
+        else: flows.append(la)
+
+        return id, flows
+
+    pairs = nodalPairs_hh(order)
+    id = 1
+    flowPattern = []
+
+    for node in range(order):
+
+        for i, pair in enumerate(pairs):
+
+            #determine defining attributes of each line
+            if node == pair[0] and up[i] != 0:
+                id, flowPattern = nodalFlow(pair, up[i], 'u', 'i', id, flowPattern)
+            if node == pair[0] and down[i] != 0:
+                id, flowPattern = nodalFlow(pair, down[i], 'd', 'o', id, flowPattern)
+            if node == pair[1] and up[i] != 0:
+                id, flowPattern = nodalFlow(pair, up[i], 'u', 'o', id, flowPattern)
+            if node == pair[1] and down[i] != 0:
+                id, flowPattern = nodalFlow(pair, down[i], 'd', 'i', id, flowPattern)
+
+    #rationalize numbering so each line has unique number
+    connection = 0
+    processed = []
+    while connection != 2 * nodalLineCount_hh(order) :
+
+        #current connection
+        i,j,a,d,id = flowPattern[connection]
+
+        #see if match in other direction
+        for f in range(connection+1, len(flowPattern)):
+            if flowPattern[f][:3] == [i,j,a] and flowPattern[f][3] != d :
+
+                #if not already changed relabel and mark as changed
+                if not f in processed:
+                    flowPattern[f][4] = id
+                    processed += [f]
+                    break
+
+        connection += 1
+
+    #change to symbols
+    holes =     ['a','b','c','d','e','f','g','h']
+    particles = ['r','s','t','u','v','w','x','y']
+
+    for i, line in enumerate(flowPattern):
+
+        ID = line[4]
+        if str(ID).isdigit():
+            if line[2] == 'd': id = holes[0]
+            else: id = particles[0]
+
+            for j in range(i, len(flowPattern)):
+                if flowPattern[j][4] == ID: flowPattern[j][4] = id
+
+            if id in holes: del holes[0]
+            else: del particles[0]
+    
+    return flowPattern
+```
+this will result in, for \[2,1,1,1,1,2] \[2,0,0,1,1,1]
+```
+[[0, 1, 'u', 'i', 'r'], [0, 1, 'u', 'i', 's'], [0, 2, 'd', 'o', 'a'], [0, 3, 'd', 'o', 'b'], [0, 1, 'u', 'o', 'r'], [0, 1, 'u', 'o', 's'], [1, 2, 'u', 'i', 't'], [1, 3, 'u', 'i', 'u'], [0, 2, 'd', 'i', 'a'], [1, 2, 'u', 'o', 't'], [2, 3, 'u', 'i', 'v'], [2, 3, 'd', 'o', 'c'], [0, 3, 'd', 'i', 'b'], [1, 3, 'u', 'o', 'u'], [2, 3, 'u', 'o', 'v'], [2, 3, 'd', 'i', 'c']]
+```
+this fully defines the diagram.
+
 The first two rules for translating diagrams into algebraic expressions are:
 
 1.  Each dot contributes an antisymmetric matrix element <in<sub>1</sub>in<sub>2</sub>||out<sub>1</sub>out<sub>2</sub>> to the numerator.
