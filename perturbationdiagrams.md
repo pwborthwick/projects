@@ -312,9 +312,9 @@ Base diagram  [2, 1, 1, 1, 1, 2]
 ```
 For example
 ```
-Base diagram  \[3, 1, 0, 0, 1, 3]
-           arrow combination \[ 20 ]  \[1, 1, 0, 0, 0, 2]           
-           arrow combination \[ 21 ]  \[2, 0, 0, 0, 1, 1]
+Base diagram  [3, 1, 0, 0, 1, 3]
+           arrow combination [ 20 ]  [1, 1, 0, 0, 0, 2]           
+           arrow combination [ 21 ]  [2, 0, 0, 0, 1, 1]
 ```           
 corresponds to the two 4th order diagrams ![](310013.png)
 
@@ -332,7 +332,7 @@ def downArrow_hh(diagram, arrow, pairs):
 ```
 It is possible (but not easy) to draw the diagrams using pyplot and patches.Arc.
 
-In order to evaluate eg MPn terms we will need to define a detailed specification of the connections in the diagram. For a specific diagram there will be 4 lines at each node, 2 going in and 2 going out. Our full specification will then be 4 times the number of nodes long, each specification will be of the form \[node1, node2, direction of arrow, whether in or out of node, identifier] eg \[1,2,'d'.'i','a'] and if this is the nth element of specification vector then it relates to node n//4.
+In order to evaluate eg MPn terms we will need to define a detailed specification of the connections in the diagram. For a specific diagram there will be 4 lines at each node, 2 going in and 2 going out. Our full specification will then be 4 times the number of nodes long, each specification will be of the form \[node1, node2, direction of arrow, whether in or out of node, identifier] eg \[1,2,'d'.'i','a'] and if this is the nth element of specification vector then it relates to node n//4. Like Szabo & Ostlund we have numbered nodes from the bottom up.
 The routine to do this is
 ```python
 def connectionFlow_hh(up, down, order):
@@ -369,13 +369,13 @@ def connectionFlow_hh(up, down, order):
 
             #determine defining attributes of each line
             if node == pair[0] and up[i] != 0:
-                id, flowPattern = nodalFlow(pair, up[i], 'u', 'i', id, flowPattern)
-            if node == pair[0] and down[i] != 0:
-                id, flowPattern = nodalFlow(pair, down[i], 'd', 'o', id, flowPattern)
-            if node == pair[1] and up[i] != 0:
                 id, flowPattern = nodalFlow(pair, up[i], 'u', 'o', id, flowPattern)
-            if node == pair[1] and down[i] != 0:
+            if node == pair[0] and down[i] != 0:
                 id, flowPattern = nodalFlow(pair, down[i], 'd', 'i', id, flowPattern)
+            if node == pair[1] and up[i] != 0:
+                id, flowPattern = nodalFlow(pair, up[i], 'u', 'i', id, flowPattern)
+            if node == pair[1] and down[i] != 0:
+                id, flowPattern = nodalFlow(pair, down[i], 'd', 'o', id, flowPattern)
 
     #rationalize numbering so each line has unique number
     connection = 0
@@ -418,7 +418,9 @@ def connectionFlow_hh(up, down, order):
 ```
 this will result in, for \[2,1,1,1,1,2] \[2,0,0,1,1,1]
 ```
-[[0, 1, 'u', 'i', 'r'], [0, 1, 'u', 'i', 's'], [0, 2, 'd', 'o', 'a'], [0, 3, 'd', 'o', 'b'], [0, 1, 'u', 'o', 'r'], [0, 1, 'u', 'o', 's'], [1, 2, 'u', 'i', 't'], [1, 3, 'u', 'i', 'u'], [0, 2, 'd', 'i', 'a'], [1, 2, 'u', 'o', 't'], [2, 3, 'u', 'i', 'v'], [2, 3, 'd', 'o', 'c'], [0, 3, 'd', 'i', 'b'], [1, 3, 'u', 'o', 'u'], [2, 3, 'u', 'o', 'v'], [2, 3, 'd', 'i', 'c']]
+[[0, 1, 'u', 'o', 'r'], [0, 1, 'u', 'o', 's'], [0, 2, 'd', 'i', 'a'], [0, 3, 'd', 'i', 'b'], [0, 1, 'u', 'i', 'r'], [0, 1, 'u', 'i', 's'], 
+ [1, 2, 'u', 'o', 't'], [1, 3, 'u', 'o', 'u'], [0, 2, 'd', 'o', 'a'], [1, 2, 'u', 'i', 't'], [2, 3, 'u', 'o', 'v'], [2, 3, 'd', 'i', 'c'], 
+ [0, 3, 'd', 'o', 'b'], [1, 3, 'u', 'i', 'u'], [2, 3, 'u', 'i', 'v'], [2, 3, 'd', 'o', 'c']]
 ```
 this fully defines the diagram.
 
@@ -428,3 +430,136 @@ The first two rules for translating diagrams into algebraic expressions are:
 2.  Each pair of adjacent vertices contributes the denominator factor **&Sigma;** &epsilon;<sub>holes</sub> - **&Sigma;** &epsilon;<sub>particles</sub> 
     where the sums run over the labels of all hole and particle lines ceossing an imaginary line separating the pair of vertices.
     
+Rule 1 can be evaluated by eg
+```python
+
+    rules = []
+
+    eri = ''
+
+    for i in range(order):
+
+        nodalFlow = flows[4*i: 4*i+4]
+        #sort to get 'in' lines first        
+        nodalFlow.sort(reverse = False, key=lambda i :i[3])
+
+        eri += nodalFlow[0][4] + nodalFlow[1][4] + nodalFlow[2][4] + nodalFlow[3][4] + ','
+    
+    rules.append(eri[:-1])
+```
+and Rule 2
+```python
+    levels = []
+    for level in range(order-1):
+        
+        e = ''
+        for f in flows:
+            i,j,a,d,id = f
+
+            #stop double counting by just taking 'in'
+            if d == 'o': continue
+            if i <=  level and j > level:
+
+                if a == 'd': 
+                    e += '+' + id
+                else: e += '-' + id
+
+        levels.append(e[1:])
+    rules.append(levels)
+```
+These will return the following strings
+```
+'abrs,rstu,tcav,uvbc', ['a+b-r-s', 'a+b-t-u', 'b+c-u-v']
+```
+We must now evalute the rules for determining the sign of the expression
+
+3.  The overall sign of the expression is(-1)<sup>h+l</sup>, where *h* and *l* are the number of hole lines and closed loops respectively. 
+4.  Sum expression over all hole and particle indices.
+5. Multiply the expression by a weight factor 2<sup>-2</sup>, where k is the number of equivalent lines. Two lines are equivalent is they share the same nodes and their directions are the same.
+
+We can evaluate these rules by eg
+```python
+    h = 0
+    for f in flows:
+        if f[2] == 'd': h += 1
+
+    #get string of labels
+    labelString = rules[0].replace(',','')
+    #list to keep record of visited labels and unique list
+    labels = list(set(labelString))
+    visited=[]
+    #convert label string to list (2 times length)
+    labelSequence = []
+    for a in labelString:labelSequence.append(a)
+    labelSequence += labelSequence
+
+    #loop through label list (max 4) to ensure visted all positions)
+    cycles = []
+
+    for k in range(4):
+
+        #initiate new search
+        cycle = ''
+        i = k                                  #start at offset each time
+        while True:                            #check not been here
+            current = labelSequence[i]         #search character
+            if current in visited: i += 1      #done this character try next
+            else: break                        #we have search seed
+        cycle += current
+
+        visited += [current]                   #add current to visited labels
+        while i < order*4*2:                     #search along label sequence (order*4) length
+            i+=2                               #jump to next label
+            t = labelSequence[i]               #get this label
+            cycle += '->' + t
+            visited.append(t)                  #we've been here now
+            if t==current:                     #we've completed loop
+                break                          #process this cycle root->root
+            i = labelSequence.index(t, i+1)    #search up label string for this label and start new search
+
+        cycles.append(cycle)
+
+        complete = True                        #have we visited all labels?
+        for i in labels:
+            if not i in visited: complete = False
+
+        if complete: break                     #visited all labels finish
+
+    rules.append([h//2, k+1])
+    rules.append(cycles)
+
+    #rule 5
+
+    equivalent = 0
+    for i in range(4*order-1):
+        if flows[i][:3] == flows[i+1][:3]:
+            equivalent += 1
+
+    rules.append(equivalent//2)
+```
+This will output
+```
+[3, 3], ['a->r->t->a', 'b->s->u->b', 'c->v->c'], 1
+```
+For the 3 3rd order diagrams the results are
+```
+[0,2,0]
+['abrs,cdab,rscd', ['a+b-r-s', 'c+d-r-s'], [4, 2], ['a->r->c->a', 'b->s->d->b'], 3]
+
+[2,0,2]
+['abrs,rstu,tuab', ['a+b-r-s', 'a+b-t-u'], [2, 2], ['a->r->t->a', 'b->s->u->b'], 3]
+
+[1,1,1]
+['abrs,rcat,stbc', ['a+b-r-s', 'b+c-s-t'], [3, 3], ['a->r->a', 'b->s->b', 'c->t->c'], 0]
+```
+These results can be compared with Szabo & Ostlund pg 361. It is not immediately clear that \[1,1,1] is equivalent to the S&O version, however we can see that
+'abrs,rcat,stbc' is since ab are just labels \
+'bars,rcbt,stac' which is since rs are also just labels \
+'basr,scbt,rtac' which changing order of terms and noting <12||34> = <21||43>
+'abrs,cstb,rtac' which is the same as S&O labelling.
+
+The first expression for \[0,2,0] can be readily written as \
+(-1)<sup>4+2</sup>(2)<sup>3</sup><ab||rs><cd||ab><rs||cd> / ((&epsilon;<sub>a</sub>+&epsilon;<sub>b</sub>-&epsilon;<sub>r</sub>-&epsilon;<sub>s</sub>)(&epsilon;<sub>c</sub>+&epsilon;<sub>d</sub>-&epsilon;<sub>r</sub>-&epsilon;<sub>s</sub>))
+
+
+
