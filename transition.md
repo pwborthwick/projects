@@ -380,44 +380,56 @@ The rotary strengths from reference 'moxy' molecule
 ROTATORY STRENGTH (LEN) = 0.004232382250797492
 ROTATORY STRENGTH (VEL) = 0.0024718037871167926
 ```
+We can use the residues to plot spectra of OPA and ECD with either Gaussian or Lorentzian broadening (here are the harpy plots for S-Methyloxirane)
+![opa-ecd](https://user-images.githubusercontent.com/73105740/109809394-2797f580-7c20-11eb-8c11-d123f9abd18e.png)
 
 ## left and right eigenvectors
-The Tamm-Dancoff works OK so we know how to calculate the TDHF properties. If want to do them in full **X** and **Y** form have to biorthonormalize the left and right eigenvectors. Pretty sure now has to be done iteratively. This is the scheme \
+The Tamm-Dancoff works OK so we know how to calculate the TDHF properties. If want to do them in full **X** and **Y** form have to biorthonormalize the left and right eigenvectors. Pretty sure now has to be done iteratively as any elementary row or column operation will alter the eigensolution. This is the scheme \
 1.  Choose a set of guess vectors **b** > number of roots (nroots)
 ```python
-nOccupied = 5
-nVirtual = 2
+def initialVectors(e):
+    #get initial set of vectors based on orbital energy differences
 
-eOccupied = e[:nOccupied]
-eVirtual = e[nOccupied:]
+    eocc = e[:ndocc]
+    evir = e[ndocc:]
 
-delta = []
-for i, ei in enumerate(eOccupied):
-    for a, ea in enumerate(eVirtual):
-        delta.append(ei - ea, i, a)
+    delta = []
+    for i, ei in enumerate(eocc):
+        for a, ea in enumerate(evir):
+            delta.append([ea - ei, i, a])
         
-deltaSort = sorted(delta, key=lambda x:x[0])
+    deltaSort = sorted(delta, key=lambda x:x[0])
 
-nguess = 10
-nguess = min(nguess, len(deltaSort))
+    l = min(nsubspace, len(deltaSort))
 
-guess = []
-for i in range(nguess):
+    vec= np.zeros((nrot, l))
+    for i in range(l):
 
-    m = np.zeros((nOccupied, nVirtual))
-    oidx = deltaSort[i][1]
-    vidx = deltaSort[i][2]
-    m[oidx, vidx] = 1.0
+        v = np.zeros(nrot)
+
+        oidx = deltaSort[i][1]
+        vidx = deltaSort[i][2]
+        v[oidx*2*nvirt + vidx*2] = 1.0
+        v[oidx*2*nvirt + 2*nvirt + vidx*2 + 1] = 1.0
     
-    guess.append(m)
+        vec[:,i]= v
     
-print(guess[0])
+    return l, vec
+    
+print(vec) #for H2 in 3-21g basis ndocc=1, nvirt=3
 ---------------------
-[[0. 1.]
- [0. 0.]
- [0. 0.]
- [0. 0.]
- [0. 0.]]
+[[1. 0. 0.]
+ [0. 0. 0.]
+ [0. 1. 0.]
+ [0. 0. 0.]
+ [0. 0. 1.]
+ [0. 0. 0.]
+ [0. 0. 0.]
+ [1. 0. 0.]
+ [0. 0. 0.]
+ [0. 1. 0.]
+ [0. 0. 0.]
+ [0. 0. 1.]]
 ---------------------
 ```
 
@@ -427,54 +439,43 @@ while iteration < maxIterations:
 ```
 3.  Calculate (**A**+**B**)**b** = **H**<sup>+</sup> and (**A**-**B**)**b** = **H**<sup>-</sup> 
     
-    The guess vectors are \[nOccupied, nVirtual] we need them to be \[2*\nOccupied\*2\*nVirtual\*,1]. The column vector is made up of nOccupied\*2 blocks of nVirtual\*2 length. The blocks alternate &alpha; and &beta; spin and within each block also. In our RHF case g<sub>ia</sub><sup>&alpha;</sup> = g<sub>ia</sub><sup>&beta;</sup> = g<sub>ia</sub>. 
 ```python
-vec= np.zeros((2*nOccupied*2*nVirtual, nguess))
-for i, g in enumerate(guess_vectors):
-    v = np.zeros(2*nOccupied*2*nVirtual)
-    n = 0
-    for j in range(nOccupied):
-         for a in range(nVirtual):
-             v[n] = g[n//4, n % 2]
-             n += 1
-
-    vec[:,i] = v[:]
-```
-The guess vectors are now in shape \[2\*nOccupied\*2\*nVirtual, nguess] and compatible for dot products
-```python
-Hpv = np.dot((A+B), vec)
-Hmv = np.dot((A-B), vec)
+H1x = np.dot((A+B), vec)
+H2x = np.dot((A-B), vec)
 ```
 
 4.  Calculate **<b,H>**<sup>+</sup> and **<b,H>**<sup>-</sup>
 
 This is straightforward as <s,r> = r<sup>T</sup>.s (ss - sub-space)
 ```
-Hp_ss = np.dot(Hpv.T, vec)
-Hm_ss = np.dot(Hmv.T, vec)
+H1_ss = np.dot(H1x.T, vec) * 0.5
+H2_ss = np.dot(H2x.T, vec) * 0.5
 ```
+We need a factor of half because of &alpha; and &beta;. This now agrees with Psi4 (using jupyter notebook with verbose=5)
 
-5.  Diagonalise **H**<sup>-</sup> = **Hss**<sup>-</sup>
+5.  Could do a diagonalization to test stablity
 ```python
-Hm_ss_val, Hm_ss_vec = np.linalg.eigh(Hm_ss)
+if np.any(H2_ss_val < 0.0):
+    msg = ("The H2 matrix is not Positive Definite. " "This means the reference state is not stable.")
+    raise RuntimeError(msg)
 ```
-
-6.  Form (**Hss**<sup>-</sup>)<sup>1/2</sup>
+6.  Form (**H2_ss**<sup>-</sup>)<sup>1/2</sup>
 ```python
-H2_ss_half = np.einsum("ik,k,jk->ij", H2_ss_vec, np.sqrt(H2_ss_val), H2_ss_vec, optimize=True)
+from scipy.linalg import fractional_matrix_power as fractPow
+H2_ss_half = fractPow(H2_ss, 0.5)```
 ```
-
-7.  Form (**Hss**<sup>-</sup>)<sup>1/2</sup>(**A**+**B**)(**Hss**<sup>-</sup>)<sup>1/2</sup> = **Hh**
+7.  Form (**H2_ss**<sup>-</sup>)<sup>1/2</sup>(**A**+**B**)(**H2_ss**<sup>-</sup>)<sup>1/2</sup> 
 ```python
-Hss = np.einsum('ij,jk,km->im', Hm_ss_half, Hp_ss, Hm_ss_half, optimize=True)
+Hss = Hss = np.dot(H2_ss_half,np.dot(H1_ss, H2_ss_half))  
 ```
 
-8.  Diagonalize **Hh**, eigenvalues **w** and eigenvectors **Tss**
+8.  Diagonalize **H2_ss**, eigenvalues **w2** and eigenvectors **Tss**
 ```python
-ww, Tss = np.linalg.eigh(Hss)
+w2, Tss = np.linalg.eigh(Hss)
 ```
+So far all agrees with psi4
 
-9.  Sort **w** and **Tss**. **Rss** = **Hss**<sup>-</sup><sup>1/2</sup>**Tss** and **Lss** = ((**A**+**B**).**b**)<sup>T</sup>.**b.Rss**/**w**
+9.  Pick significant roots, sort **w** and **Tss**. **Rss** = **Hss**<sup>-</sup><sup>1/2</sup>**Tss** and **Lss** = ((**A**+**B**).**b**)<sup>T</sup>.**b.Rss**/**w**
 ```python
 Tss = Tss[:, ww > 1.0e-10]
 ww = ww[ww > 1.0e-10]
@@ -483,7 +484,7 @@ with np.errstate(invalid='raise'):
      w = np.sqrt(ww)
 
 # sort roots
-idx = w.argsort()[:nroots]
+idx = w.argsort()[:k]
 Tss = Tss[:, idx]
 w = w[idx]
 
@@ -496,13 +497,60 @@ Lss = np.dot(H1_ss, Rss).dot(np.diag(1.0 / w))
 inners = np.einsum("ix,ix->x", Rss, Lss, optimize=True)
 Rss = np.einsum("x,ix->ix", 1. / np.sqrt(inners), Rss, optimize=True)
 Lss = np.einsum("x,ix->ix", 1. / np.sqrt(inners), Lss, optimize=True)
+
+or
+
+inners = np.zeros(Lss.shape[1])
+for i in range(Lss.shape[1]):
+    for j in range(Lss.shape[0]):
+        inners[j] += Lss[i,j] * Rss[i,j]
+inners = 1.0/np.sqrt(inners)
+
+Lss = inners * Lss
+Rss = inners * Rss
 ```
 
-11. Choose best vector, check convergence and loop
+11. Choose best vector.
 
     Compute the best approximation of the true eigenvectors as a linear combination of basis vectors:
     V<sub>k</sub> = &Sigma; V'<sub>i,k</sub>X<sub>i</sub> \
     Where V' is the matrix with columns that are eigenvectors of the subspace matrix. And X<sub>i</sub> is a basis vector.
+```
+python
+def optimumVectors(ssMatrix, vectors):
+    #get the best set of vectors
+
+    l, n = ssMatrix.shape
+
+    v = np.zeros_like(vectors)
+    for i in range(n):
+
+        for j in range(l):
+            v[:, i] += ssMatrix[j,i] * vectors[:,j]
+
+    return v
+    
+L = optimumVectors(Lss[:,:k], vecs)
+R = optimumVectors(Rss[:,:k], vecs)
+
+```
+
+12. For each root get residual vectors and check convergence. Residual vectors defined as **W**<sup>L</sup><sub>n</sub>=(**A**+**B**) |**R**<sub>n</sub>> - w<sub>n</sub>|**L**<sub>n</sub>> and **W**<sup>R</sup><sub>n</sub>=(**A**-**B**) |**L**<sub>n</sub>> - w<sub>n</sub>|**R**<sub>n</sub>>. Note eg (**A**+**B**)**R** is
+~(**A**+**B**)**b** = **Hx1** which is how it is implemented in psi4. We check convergence against norms of the residuals.
+```python
+    for i in range(k):          #Loop over k roots
+
+        wk = w[i]
+
+        wl = np.dot((A+B), R) - wk*L
+        wr = np.dot((A-B), L )- wk*R
+        
+        normL = np.linalg.norm(wl)
+        normR = np.linalg.norm(wr)
+        normA = normL + normR
+```
+13. Precondition the residuals. Q<sub>in</sub> = (w<sub>n</sub> - D<sub>i</sub>)<sup>-1</sup> W<sub>in</sub> , where n runs 1,..,A.shape\[0]
+
 
 
 Details in **psi4/psi4/driver/p4util/solvers.py** and R. Eric Stratmann, G. E. Scuseria, and M. J. Frisch, "An efficient implementation of time-dependent density-functional theory for the calculation of excitation energies of large molecules." J. Chem. Phys.,109, 8218 (1998)
