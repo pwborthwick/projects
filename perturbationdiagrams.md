@@ -484,58 +484,69 @@ We can evaluate these rules by eg
         if f[2] == 'd': h += 1
 
     #get string of labels
-    labelString = rules[0].replace(',','')
-    #list to keep record of visited labels and unique list
-    labels = list(set(labelString))
-    visited=[]
-    #convert label string to list (2 times length)
-    labelSequence = []
-    for a in labelString:labelSequence.append(a)
-    labelSequence += labelSequence
+    eri = rules['doubleBars'].replace(',','')
 
-    #loop through label list (max 4) to ensure visted all positions)
+    labels = []
     cycles = []
 
-    for k in range(4):
+    current = 0
 
-        #initiate new search
+    while True:
+
+        #target of cycle
+        target = eri[current]
+
+        labels.append(target)
+        cycle = target + '->'
+
+        #search string cyclically
+        while True:
+
+            current += 2
+            next = eri[current]
+            labels.append(next)
+
+            cycle += next + '->'
+            if target == next: break
+
+            if next in eri[current+1:]:
+                current = eri.index(next, current+1) 
+            else:
+                current = 0
+                current = eri.index(next, current+1)
+
+        #cycle finished
+        cycles.append(cycle[:-2])
         cycle = ''
-        i = k                                  #start at offset each time
-        while True:                            #check not been here
-            current = labelSequence[i]         #search character
-            if current in visited: i += 1      #done this character try next
-            else: break                        #we have search seed
-        cycle += current
 
-        visited += [current]                   #add current to visited labels
-        while i < order*4*2:                     #search along label sequence (order*4) length
-            i+=2                               #jump to next label
-            t = labelSequence[i]               #get this label
-            cycle += '->' + t
-            visited.append(t)                  #we've been here now
-            if t==current:                     #we've completed loop
-                break                          #process this cycle root->root
-            i = labelSequence.index(t, i+1)    #search up label string for this label and start new search
+        #see if we've done all labels
+        visited = True
+        for i, a in enumerate(eri):
+            if a not in labels: 
+                visited = False
+                break
 
-        cycles.append(cycle)
+        if visited: break
 
-        complete = True                        #have we visited all labels?
-        for i in labels:
-            if not i in visited: complete = False
+        #start where label still not visited
+        current = i
 
-        if complete: break                     #visited all labels finish
-
-    rules.append([h//2, k+1])
-    rules.append(cycles)
+    rules['sign'] = [h//2, len(cycles)]
+    rules['cycles'] = cycles
 
     #rule 5
 
-    equivalent = 0
-    for i in range(4*order-1):
-        if flows[i][:3] == flows[i+1][:3]:
-            equivalent += 1
+    equivalent = []
+    for f in flows:
+        if f[3] == 'i': equivalent.append(f)
+    equivalent.sort()
 
-    rules.append(equivalent//2)
+    count = 0
+    for i in range(len(equivalent)-1):
+        if equivalent[i][:3] == equivalent[i+1][:3]:
+            count += 1
+  
+    rules['powerTwo'] = -count
 ```
 This will output
 ```
@@ -561,5 +572,17 @@ These results can be compared with Szabo & Ostlund pg 361. It is not immediately
 The first expression for \[0,2,0] can be readily written as \
 (-1)<sup>4+2</sup>(2)<sup>3</sup><ab||rs><cd||ab><rs||cd> / ((&epsilon;<sub>a</sub>+&epsilon;<sub>b</sub>-&epsilon;<sub>r</sub>-&epsilon;<sub>s</sub>)(&epsilon;<sub>c</sub>+&epsilon;<sub>d</sub>-&epsilon;<sub>r</sub>-&epsilon;<sub>s</sub>))
 
+It is possible to write a routine that will output in HTML format the algebraic form of the diagram, below is an example of what can be produced using the <math> facility of HTML
+![order3](https://user-images.githubusercontent.com/73105740/110446281-e76cc300-80b6-11eb-93f2-f917ae294a5a.png)
 
-
+It is also possible to automatically generate python code to evaluate the diagrams. Essentially the string eg 'abrs,rcat,stbc', can be directly used in einsum, an example of the code generated for a diagram defined by \
+{'doubleBars': 'abrs,rcab,dect,stde', 'orbitalEnergies': \['a+b-r-s', 'c-s', 'd+e-s-t'], 'sign': \[5, 3], 'cycles': \['a->r->a', 'b->s->d->c->b', 'e->t->e'], 'powerTwo': -3}\
+looks like 
+```python
+f = []
+f.append( 1/(eocc.reshape(-1,1,1,1) + eocc.reshape(-1,1,1) - evir.reshape(-1,1) - evir))
+f.append( 1/(eocc.reshape(-1,1) - evir))
+f.append( 1/(eocc.reshape(-1,1,1,1) + eocc.reshape(-1,1,1) - evir.reshape(-1,1) - evir))
+mp = pow(1/2, 3) * np.einsum('abrs,rcab,dect,stde,abrs,cs,dest', MO[o,o,v,v],MO[v,o,o,o],MO[o,o,o,v],MO[v,v,o,o], f[0],f[1],f[2])
+```
+Once the code is generated the python *exec* method can be used to run the code. See the mbpt module in harpy for details. Harpy can do a SCF+mp2+mp3+mp4 calculation in under 10sec.
