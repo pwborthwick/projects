@@ -40,7 +40,7 @@ def nodalPairs_hh(order):
             
     return pairs 
 ```
-We need a list of lists of all combinations of connection between the pairs. Each element of the list will be the number of nodal pairs long. We generate it by a recursive subroutine which initially takes a list of zeros, nodal pairs long and a pair number 0 initially. So for order 3 it will take \[0,0,0] and 0. The routine then append to the initial list all possibilities on on the pair number ie \[0,0,0],\[1,0,0],\[2,0,0],\[3,0,0]. This list is then passed back to the routine with the pair number incremented, and so on until the pair number exceeds the number of nodal pairs. We can reduce the number of combinations by not allowing those where the sum of the connections exceeds the number of lines of the diagram order as any subsequent connections will still be above the limit. Once all pairs have been processed a routine is called to verify that the combination is valid according to the rules.
+We need a list of lists of all combinations of connections between the pairs. Each element of the list will be the number of nodal pairs long. We generate it by a recursive subroutine which initially takes a list of zeros, nodal pairs long, and a pair number 0 initially. So for order 3 it will take \[0,0,0] and 0. The routine then appends to the initial list all possibilities on on the pair number ie \[0,0,0],\[1,0,0],\[2,0,0],\[3,0,0]. This list is then passed back to the routine with the pair number incremented, and so on until the pair number exceeds the number of nodal pairs. We can reduce the number of combinations by not allowing those where the sum of the connections exceeds the number of lines of the diagram order as any subsequent connections will still be above the limit. Once all pairs have been processed a routine is called to verify that the combination is valid according to the rules. So a diagram specification of \[2,2,2] means there are 2 connections between nodes 0 and 1, 2 connections between 0 and 2 and 2 connections between 1 and 2. 
 ```python
 connections = [[0] * nodalPairCount_hh(order)]
 nodePair = 0
@@ -88,7 +88,7 @@ def nodalPairConnectionsCombinations_hh(connections, nodePair, pairCount, order)
         
     return node
 ```
-Now need to check that connection combinations are valid. There are two checks 1. That the total number of connections equals the number of lines (2.order) and 2. That the diagram is connected ie you can get from node 0 to node order-1 via all other nodes. The first pair is always 0->1 so then first connection is from node 1. *tested* is an array initially set to False values that are set to true when a nodal pair has contributed to the route (the first element is True as we essentially start at node 1).
+Now need to check that connection combinations are valid. There are two checks (1.) That the total number of connections equals the number of lines (2 times order) and (2.) That the diagram is connected ie you can get from node 0 to node order-1 via all other nodes. The first pair is always 0->1. *tested* is an array initially set to False values that are set to true when a nodal pair has contributed to the route (the first element is True as we essentially start at node 1).
 ```python
 def validDiagrams_hh(diagrams, order):
     #perform checks on diagrams for validity
@@ -330,7 +330,10 @@ def downArrow_hh(diagram, arrow, pairs):
     
     return down
 ```
-It is possible (but not easy) to draw the diagrams using pyplot and patches.Arc.
+It is possible (but not easy) to draw the diagrams using pyplot and patches.Arc. Here's an example of output from a routine which does this
+
+![hugenholtz](https://user-images.githubusercontent.com/73105740/110453093-be9bfc00-80bd-11eb-9ffa-b7a1373cfd4d.png)
+
 
 In order to evaluate eg MPn terms we will need to define a detailed specification of the connections in the diagram. For a specific diagram there will be 4 lines at each node, 2 going in and 2 going out. Our full specification will then be 4 times the number of nodes long, each specification will be of the form \[node1, node2, direction of arrow, whether in or out of node, identifier] eg \[1,2,'d'.'i','a'] and if this is the nth element of specification vector then it relates to node n//4. Like Szabo & Ostlund we have numbered nodes from the bottom up.
 The routine to do this is
