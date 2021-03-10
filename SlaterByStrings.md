@@ -410,7 +410,38 @@ def configurations(nElectrons, nOrbitals, type = 'S'):
 ```
 We've implemented configurations( 'S' - for CIS and 'GSD' for CISD.
 
+If we want to get back the alpha and beta spin determinants we can use
+```python
+def getSpinState(da, nBasis):
+    #get the alpha and beta spin states
 
+    alpha = da[0:-2:2]
+    beta  = da[1:-2:2]
+
+    return  alpha + '0'*(nBasis - len(alpha)) , beta + '0'*(nBasis - len(beta))
+    
+print(getSpinState('00100101001111',7))
+
+('0100010', '0011010')
+```
+The occupancy of the spatial can be found by
+```python
+def getOccupancy(determinant, nBasis):
+    #get the unoccupied, singe and double occupancy (spatial) orbitals
+
+    alpha , beta = getSpinState(determinant, nBasis)
+
+    occupancy = ''
+    for i in range(len(alpha)):
+        occupancy += str(int(alpha[i]) + int(beta[i]))
+
+    return occupancy
+
+print(getOccupancy('00100101001111',7))
+
+0111020
+
+```
 
 
 
