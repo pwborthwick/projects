@@ -415,14 +415,14 @@ If we want to get back the alpha and beta spin determinants we can use
 def getSpinState(da, nBasis):
     #get the alpha and beta spin states
 
-    alpha = da[0:-2:2]
-    beta  = da[1:-2:2]
+    alpha = da[0::2]
+    beta  = da[1::2]
 
     return  alpha + '0'*(nBasis - len(alpha)) , beta + '0'*(nBasis - len(beta))
     
 print(getSpinState('00100101001111',7))
 
-('0100010', '0011010')
+('0100011', '0011011')
 ```
 The occupancy of the spatial can be found by
 ```python
@@ -439,7 +439,7 @@ def getOccupancy(determinant, nBasis):
 
 print(getOccupancy('00100101001111',7))
 
-0111020
+0111022
 
 ```
 
