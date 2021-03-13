@@ -442,6 +442,171 @@ print(getOccupancy('00100101001111',7))
 0111022
 
 ```
+### Bit Manipulation
+Using textual bit strings makes thing clear, and for our needs are fast enough plus they can work with any number of orbitals. 
+However, it has been pointed out to me that in eg selected Configuration Interaction determinants need to be generated in a 'as needed'
+basis, rather than in one operation as is done here. So we will look at the more traditional bit-opertions techniques limiting to 64bits (spin orbitals).
+A python integer word is 64 bits long, so does that mean we are limited to bit strings of 64 orbitals...
+```python
+h = '0b1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111'
+print('Decimal representation...',int(h,2))
+
+1Decimal representation...267650600228229401496703205375
+```
+this is a bit string of 100 bits and python handles it OK. Josh Goings points out that with numpy use dtype=object 
+to prevent it using int64 and overflow occuring
+
+The number of combinations can be found by using scipy.special.comb, so nOrbitals filled by nElectrons at a time is (eg water)
+```python
+nBasis = 7
+spinOrbitals = nBasis * 2
+nElectrons = 10
+
+from scipy.special import comb
+print("Number determinants... ",comb(spinOrbitals, nElectrons, exact=True))
+
+Number of determinants...1001
+```
+Now to get the combinations of where the nElectrons are in the spinOrbitals we can use
+```python
+from itertools import combinations
+for determinant in combinations(range(spinOrbitals), nElectrons):
+    print(determinant)
+```
+this returns values in determinant as eg (3, 4, 5, 6, 7, 8, 9, 11, 12, 13), that is nElectrons positions in a 0-spinOrbitals-1 range.
+We now need this as a bit string which for the above example would be 00011111110111. We are in a little-endian world though so we need to reverse
+string to 11101111111000 and add '0b' in front, then we will encode it bit string as a denary digit
+```python
+determinant = (3, 4, 5, 6, 7, 8, 9, 11, 12, 13)
+
+bits = '0b'
+for i in range(spinOrbitals-1, -1, -1): 
+    if i in determinant: bits += '1'
+    else: bits += '0'
+
+print('Bit string...',bits)
+
+Bit string...0b11101111111000
+
+print('Decimal representation of ',bits, ' is ',int(bits,2))
+
+Decimal representation of 0b11101111111000 is 15352 
+```
+Now put it all together to get a list of all combinations
+```python
+def determinants(spinOrbitals, nElectrons):
+    #create list of all combinations of nElectrons in spinOrbital orbitals
+
+    determinantList = []
+
+    for determinant in combinations(range(spinOrbitals), nElectrons):
+
+        #make bit string representing occupied spin orbitals
+        bits = '0b'
+        for i in range(spinOrbitals-1, -1, -1): 
+            if i in determinant: bits += '1'
+            else: bits += '0'
+
+        determinantList.append(int(bits,2))
+
+    return determinantList
+```
+we can get the holes (zeros) in excitaion da->db, but first we need to define two service routines
+```python
+#first non-zero trailing bit
+def bitRightZeros(n):
+    #compute the number of rightmost zero bits
+
+    return (n & -n).bit_length() - 1
+
+#clear nth bit
+def bitSetZero(da, n):
+    #set the nth bit to zero 0-based
+
+    return ~(1 << n) & da
+
+h = '0b1111111111111'
+i = bitSetZero(int(h,2), 4)
+print('Bit 4 set to 0', bin(i))
+
+Bit 4 set to 0 0b1111111101111
+```
+we can now find all the holes and particles
+```python
+def occupancy(da, db, type = 'h'):
+    #compute the holes between determinants
+
+    k = 0
+    hole = []
+    if type == 'h': h = (da ^ db) & da
+    else:  h = (da ^ db) & db
+
+    while h != 0:
+        p = bitRightZeros(h)
+        hole.append(p)
+
+        h = bitSetZero(h, p)
+        k += 1
+
+    return hole
+
+da = 7
+db = 42
+h = occupancy(da, db, 'h')
+print('Holes in 111->101010 ', h)
+
+Holes in 111->101010  [0, 2]
+
+p = occupancy(da, db, 'p')
+print('Particles in 111->101010 ', p)
+
+Particles in 111->101010  [3, 5]
+```
+we now need bitstring versions of our Hamiltonian builds. Actually the routine buildFCIhamiltonian can be used unchanged as it is just a 
+conduit for the determinant list though to the hamiltonianElement routine. First the excitations, first how many are there? The degree of excitation is equivalent to the number of holes (zeros) created in first determinant of a pair or to the number of particles (ones) created in the second. The following routine will do this by xor'ing the two determinants and counting the '1''s ie where a 01 or 10 has occurred. Finally we must divide by 2 because we have counted both 01 and 10.
+```python
+def excitations(da, db):
+    #the number of excitation between the two determinants
+
+    return (bin(da ^ db).count('1')) >> 1
+
+#test for '0b111' (7) and '0b101010' (42)
+da = 7
+db = 42
+excitation = excitations(7, 42)
+print('Number of excitations...', excitation)
+
+Number of excitations... 2
+```
+which is correct as we have 2->5, 0->3. Now we need to know what the excitations are, but only if there are there are two or fewer. For **single** excitations...\
+if da and db are the same there is no excitation \
+it is more efficient to recode the holes and particles rather than using the routines we already wrote
+```python
+aorb = da ^ db
+hole     = aorb & da
+particle = aorb & db
+```
+we define an array excite\[2,2] where \[i,.] for i=0 is degree of excitation and i=1 is position of orbital, \[.,i] for i=0 is hole and i=1 is particle.
+```python
+excite[0,0]=1
+excite[1,0]= bitRightZeros(hole)
+excite[0,1]=1
+excite[1,1= bitRightZeros(particle)
+```
+Now we need the phase defined as above
+```python
+low = min(excite[1,0], excite[1,1])
+hi  = max(excite[1,0], excite[1,1])
+
+nPerm = bin(da &  ((1 << low+1) & (1 << hi)-1)).count('1')
+```
+How does the last statement work? (1<<low+1)  makes 1000...000 where the 1 is now 1 bit to the left of the hole. (1<<hi) sets the particle bit to 1 and '-1' sets a mask 111.... where the mask starts 1 bit to the right of the particle bit and'ing the two masks creates a mask 00...01111...1000...000, so all the bits between hole and particle are 1 and all others are 0. Now 'and' with the da and count the 1's for the number of 1's between the hole and particle. \
+The phase is −1<sup>Nperm</sup>. If we 'and' an odd number with 1 we will get 1 or if we 'and' an even number with 1 we will get 0 so the phase can be written as
+```python
+phases = [1, -1]
+phase = phases[nPerm & 1]
+```
+
 
 
 
