@@ -291,7 +291,7 @@ def hamiltonianElement(da, db, eriMOspin, Hp):
     #excitions above 2 do not contribute
     if excites > 2 : return 0.0
 
-    #get pahse and excitations for 2,1 and 0
+    #get phase and excitations for 2,1 and 0
     theta = phase(da,db)
     jump = levels(da, db)
     if excites == 2:
@@ -479,54 +479,50 @@ string to 11101111111000 and add '0b' in front, then we will encode it bit strin
 ```python
 determinant = (3, 4, 5, 6, 7, 8, 9, 11, 12, 13)
 
-bits = '0b'
-for i in range(spinOrbitals-1, -1, -1): 
-    if i in determinant: bits += '1'
-    else: bits += '0'
+def bString(determinant, spinOrbitals):
+    #convert determinat to a bit string integer
 
-print('Bit string...',bits)
+    bits = '0b'
+    for i in range(spinOrbitals-1, -1, -1): 
+        if i in determinant: bits += '1'
+        else: bits += '0'
 
-Bit string...0b11101111111000
+    return int(bits,2)
 
-print('Decimal representation of ',bits, ' is ',int(bits,2))
+print('Bit string representation...',bString(determinant, spinOrbitals))
 
-Decimal representation of 0b11101111111000 is 15352 
+Bit string representation...15352
+
 ```
 Now put it all together to get a list of all combinations
 ```python
-def determinants(spinOrbitals, nElectrons):
+def bCombinationList(spinOrbitals, nElectrons):
     #create list of all combinations of nElectrons in spinOrbital orbitals
 
     determinantList = []
 
     for determinant in combinations(range(spinOrbitals), nElectrons):
 
-        #make bit string representing occupied spin orbitals
-        bits = '0b'
-        for i in range(spinOrbitals-1, -1, -1): 
-            if i in determinant: bits += '1'
-            else: bits += '0'
-
-        determinantList.append(int(bits,2))
+        determinantList.append(bString(determinant, spinOrbitals))
 
     return determinantList
 ```
 we can get the holes (zeros) in excitaion da->db, but first we need to define two service routines
 ```python
 #first non-zero trailing bit
-def bitRightZeros(n):
+def bRightZeros(n):
     #compute the number of rightmost zero bits
 
     return (n & -n).bit_length() - 1
 
 #clear nth bit
-def bitSetZero(da, n):
+def bSetZero(da, n):
     #set the nth bit to zero 0-based
 
     return ~(1 << n) & da
 
 h = '0b1111111111111'
-i = bitSetZero(int(h,2), 4)
+i = bSetZero(int(h,2), 4)
 print('Bit 4 set to 0', bin(i))
 
 Bit 4 set to 0 0b1111111101111
@@ -542,10 +538,10 @@ def occupancy(da, db, type = 'h'):
     else:  h = (da ^ db) & db
 
     while h != 0:
-        p = bitRightZeros(h)
+        p = bRightZeros(h)
         hole.append(p)
 
-        h = bitSetZero(h, p)
+        h = bSetZero(h, p)
         k += 1
 
     return hole
@@ -565,7 +561,7 @@ Particles in 111->101010  [3, 5]
 we now need bitstring versions of our Hamiltonian builds. Actually the routine buildFCIhamiltonian can be used unchanged as it is just a 
 conduit for the determinant list though to the hamiltonianElement routine. First the excitations, first how many are there? The degree of excitation is equivalent to the number of holes (zeros) created in first determinant of a pair or to the number of particles (ones) created in the second. The following routine will do this by xor'ing the two determinants and counting the '1''s ie where a 01 or 10 has occurred. Finally we must divide by 2 because we have counted both 01 and 10.
 ```python
-def excitations(da, db):
+def bExcitations(da, db):
     #the number of excitation between the two determinants
 
     return (bin(da ^ db).count('1')) >> 1
@@ -573,7 +569,7 @@ def excitations(da, db):
 #test for '0b111' (7) and '0b101010' (42)
 da = 7
 db = 42
-excitation = excitations(7, 42)
+excitation = bExcitations(7, 42)
 print('Number of excitations...', excitation)
 
 Number of excitations... 2
@@ -582,35 +578,86 @@ which is correct as we have 2->5, 0->3. Now we need to know what the excitations
 if da and db are the same there is no excitation \
 it is more efficient to recode the holes and particles rather than using the routines we already wrote
 ```python
-aorb = da ^ db
-hole     = aorb & da
-particle = aorb & db
+ab = da ^ db
+hole     = ab & da
+particle = ab & db
 ```
 we define an array excite\[2,2] where \[i,.] for i=0 is degree of excitation and i=1 is position of orbital, \[.,i] for i=0 is hole and i=1 is particle.
 ```python
-excite[0,0]=1
-excite[1,0]= bitRightZeros(hole)
-excite[0,1]=1
-excite[1,1= bitRightZeros(particle)
-```
+excite = np.zeros((2,2), dtype=object)
+
+excite[0,0] = 1
+excite[1,0] = bRightZeros(hole)
+excite[0,1] = 1
+excite[1,1] = bRightZeros(particle)
+ ```
 Now we need the phase defined as above
 ```python
-low = min(excite[1,0], excite[1,1])
+lo = min(excite[1,0], excite[1,1])
 hi  = max(excite[1,0], excite[1,1])
 
-nPerm = bin(da &  ((1 << low+1) & (1 << hi)-1)).count('1')
+nPerm = bin(da &  (~(1 << lo+1)+1  & (1 << hi)-1)).count('1')
 ```
-How does the last statement work? (1<<low+1)  makes 1000...000 where the 1 is now 1 bit to the left of the hole. (1<<hi) sets the particle bit to 1 and '-1' sets a mask 111.... where the mask starts 1 bit to the right of the particle bit and'ing the two masks creates a mask 00...01111...1000...000, so all the bits between hole and particle are 1 and all others are 0. Now 'and' with the da and count the 1's for the number of 1's between the hole and particle. \
+How does the last statement work? (1<<low+1)  makes 000...1**0**00...000 where the hole position is bold, ~ make this 111...0**1**11...111, and +1 makes 111...1**0**00...000 - so this is a mask with all bits greater than the hole are 1 and all bits at and less than the hole are 0. (1<<hi) sets the particle bit to 1 and '-1' sets a mask 111.... where the mask starts 1 bit to the right of the particle bit and'ing the two masks creates a mask 00...01111...1000...000, so all the bits between hole and particle are 1 and all others are 0. Now 'and' with the da and count the 1's for the number of 1's between the hole and particle. \
 The phase is −1<sup>Nperm</sup>. If we 'and' an odd number with 1 we will get 1 or if we 'and' an even number with 1 we will get 0 so the phase can be written as
 ```python
 phases = [1, -1]
 phase = phases[nPerm & 1]
 ```
+Now for the double excitations. Again we get the hole and particle->get their position->increase the number of excitations and store->store the position->clear the current bit->loop back to find a new position until none found.
+```python
+excite = np.zeros((3,2), dtype=object)
 
+ab = da ^ db
+hole     = ab & da
+particle = ab & db
 
+#the holes
+iHole = 0
+while hole != 0:
+    iHole += 1
+    excite[iHole,0] = bRightZeros(hole)
+    excite[0,0] += 1
+    
+    hole = hole & (hole - 1)
 
+#the particles
+iParticle = 0
+while particle != 0:
+    iParticle += 1
+    excite[iParticle,1] = bRightZeros(particle)
+    excite[0,1] += 1
+    
+    particle = particle & (particle - 1)
+    
+#phase
+for excitation in [1,2]:
+    lo = min(excite[excitation,0],excite[excitation,1])
+    hi = max(excite[excitation,0],excite[excitation,1])
 
+    nPerm += bin(da &  (~(1 << lo+1)+1  & (1 << hi)-1)).count('1')
 
+#orbital crossings
+i = min(excite[1,0], excite[1,1])
+a = max(excite[1,0], excite[1,1])
+j = min(excite[2,0], excite[2,1])
+b = max(excite[2,0], excite[2,1])
+if j>i and j<a and b>a : nPerm += 1
+
+phases = [1,-1]
+phase = phases[nPerm & 1]
+```
+Next we will need a routine to find the common indices. Here we 'and' the two determinants which gives us a 1 where there are common elements and 0 elsewhere.\
+We then create masks with a 1 in every possible position and if the 'and' with that mask has a 1 then that is a common element position.
+```python
+common = []
+ab = da & db
+
+for i in range(aandb.bit_length()):
+    idx = ab & (1 << i)
+    if idx: common.append(bRightZeros(1<<i))
+```
+This is all we need to do an fci computation using bits.
 
 
     
