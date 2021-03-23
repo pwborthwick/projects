@@ -589,3 +589,157 @@ f.append( 1/(eocc.reshape(-1,1,1,1) + eocc.reshape(-1,1,1) - evir.reshape(-1,1) 
 mp = pow(1/2, 3) * np.einsum('abrs,rcab,dect,stde,abrs,cs,dest', MO[o,o,v,v],MO[v,o,o,o],MO[o,o,o,v],MO[v,v,o,o], f[0],f[1],f[2])
 ```
 Once the code is generated the python *exec* method can be used to run the code. See the mbpt module in harpy for details. Harpy can do a SCF+mp2+mp3+mp4 calculation in under 10sec.
+
+## Matrix Representation
+From Szabo and Ostund the basic perturbation diagrams are given
+![sanda](https://user-images.githubusercontent.com/73105740/111963899-f3f80f00-8aeb-11eb-8efe-0a2195571b14.png)
+
+I wondered if it was possible to represent these diagrams as (route) matrices. Eg look at the first diagram for n=3.
+
+|  |  |  |
+|----|-----|-----|
+|  0 |  1  | -1  |
+| -1  | 0   | 1  |
+| 1 | -1    | 0  |
+
+This is just a standard route matrix showing the connections between nodes (0 at top). We note  \
+**1** A diagram of order n can be represented by an anti-symmetric matrix containing elements from {0,1,-1}. \
+**2** Each row and column must contain only one 1 and one -1, this implies the sum of elements of each row and column is 0. \
+**3** A route *into* node **i** *from* node **j** is a<sub>ij</sub> = +1 (a<sub>ji</sub> = -1), a route *from* node **i** *to* node **j** is a<sub>ij</sub> = -1. \
+**4** If a<sub>ij</sub> = +1 and j>i then route is a 'particle' and if a<sub>ij</sub> = -1 and j>i then route is a 'hole'. For the upper diagonal entries particle are positive and holes negative.
+
+How many diagrams? We can write some code
+```python
+import numpy as np
+
+n = 3
+def isValid(pm):
+
+    b = True
+
+    #zero diagonal
+    for i in range(pm.shape[0]):
+        if pm[i,i] != 0: return False
+
+    #not more than 1 +1 or -1 per column
+    for j in range(pm.shape[0]):
+        poCount = 0
+        moCount = 0
+
+        for k in range(pm.shape[0]):
+            if pm[k,j] ==  1: poCount += 1
+            if pm[k,j] == -1: moCount += 1
+
+        if poCount > 1: return False
+        if moCount > 1: return False
+
+    return True
+
+#initial matrix
+a = np.zeros((n,n))
+
+#get all row possibilities
+rows = []
+for r in range(a.shape[0]):
+
+    s = [0] * n
+    s[r] = 1
+
+    for i in range(n):
+        if r != i:
+            s[i] = -1
+            rows.append(s.copy())
+            s[i] = 0
+
+#initialize perturbation matrices array
+perturbationMatrices = [a]
+
+currentRow = 0
+while True:
+
+    #valid matrices for this row level
+    validMatrices = []
+
+    #loop over perturbation matrices
+    for a in perturbationMatrices:
+
+        #try each row - must begin will -first row entry
+        for r in rows:
+            if r[0] != -a[0,currentRow]:continue
+            
+            a[currentRow,:] = r
+
+            #if still a valid matrix save
+            if isValid(a):
+                validMatrices.append(a.copy())
+
+    currentRow += 1
+    perturbationMatrices = validMatrices.copy()
+
+    #finished -check final matrices for anti-symmetry
+    if currentRow >= n: 
+        perturbationMatrices = []
+        for a in validMatrices:
+            if (a.T == -a).all(): 
+                perturbationMatrices.append(a)
+
+        break
+
+for i,a in enumerate(perturbationMatrices):
+
+    print(i,a)
+```
+From this we get the number of diagrams for a given order
+
+| 2 | 3 | 4 | 5 | 6 | 7 |
+|---|---|---|---|---|---|
+| 1 | 2 | 6 | 24| 160| 1140 |
+
+for order 4 the program output is
+```
+0 [[ 0.  1. -1.  0.]
+   [-1.  0.  0.  1.]
+   [ 1.  0.  0. -1.]
+   [ 0. -1.  1.  0.]]
+1 [[ 0.  1.  0. -1.]
+   [-1.  0.  1.  0.]
+   [ 0. -1.  0.  1.]
+   [ 1.  0. -1.  0.]]
+2 [[ 0. -1.  1.  0.]
+   [ 1.  0.  0. -1.]
+   [-1.  0.  0.  1.]
+   [ 0.  1. -1.  0.]]
+3 [[ 0.  0.  1. -1.]
+   [ 0.  0. -1.  1.]
+   [-1.  1.  0.  0.]
+   [ 1. -1.  0.  0.]]
+4 [[ 0. -1.  0.  1.]
+   [ 1.  0. -1.  0.]
+   [ 0.  1.  0. -1.]
+   [-1.  0.  1.  0.]]
+5 [[ 0.  0. -1.  1.]
+   [ 0.  0.  1. -1.]
+   [ 1. -1.  0.  0.]
+   [-1.  1.  0.  0.]]
+```
+These correspond with the diagrams in the figure in the order 1, 2, 0, 4, 3, 5. Eg first matrix (0) has, for first row, a<sub>01</sub> is a line into 0 from 1 and a<sub>02</sub> is a line out of 0 to 2 etc, using rule **3**. By rule **4** the line into 0 from 1 (a<sub>01</sub> with j>i) is a particle line.
+
+**Evaluating the diagrams**
+**5** Each +1 in the upper diagonal represents a line 'into' the node represented by that row and is therefore a bra <|, each -1 in the upper diagonal represents a line 'out' of the node represented by that row and is therefore a ket |>.|
+
+The first row of matrix 0 above can be written as <&lambda;<sub>01</sub>|V|&lambda;<sub>02</sub>>, where &lambda;<sub>ij</sub> is the label on line between i nodes i and j. Each row contributes a term so whole matrix contributes a numerator or \
+      
+<&lambda;<sub>01</sub>|V|&lambda;<sub>02</sub>><&lambda;<sub>13</sub>|V|&lambda;<sub>01</sub>><&lambda;<sub>02</sub>|V|&lambda;<sub>23</sub>><&lambda;<sub>23</sub>|V|&lambda;<sub>13</sub>>
+
+**6** The number of non-zero columns in the rows taken in pairs divided by 2 is the number of contiributions to the denominator. 
+
+For example, the fourth order diagram at the far right in the figure has a matrix
+```
+[ 0.  0. -1.  1. ]
+[ 0.  0.  1. -1. ]
+[ 1. -1.  0.  0. ]
+[-1.  1.  0.  0. ]
+```
+So between 0 and 1 there are 2 non-zero columns, so 1 contribution. Between 1 and 2 there are 4 non-zero so 2 contributions and between 2 and 3 again 2 non-zero columns. Each contribution is E<sub>down line</sub> - E<sub>up line</sub>.
+
+
