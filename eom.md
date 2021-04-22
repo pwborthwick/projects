@@ -5,7 +5,7 @@ H<sub>SS</sub> = &Sigma; F<sub>ac</sub> - &Sigma; F<sub>ik</sub> + &Sigma; W<sub
 
 H<sub>SD</sub> = &Sigma; F<sub>ld</sub> + 0.5 &Sigma; W<sub>alcd</sub> - 0.5 &Sigma; W<sub>klid</sub>
 
-H<sub>DS</sub> =*P*(ab) W<sub>kaij</sub> + *P*(ij) W<sub>abej</sub> + *P*(ab) W<sub>bmfe</sub> t<sup>af</sup><sub>ij</sub> - *P*(ij) W<sub>mnje</sub> t<sup>ab</sup><sub>in</sub> 
+H<sub>DS</sub> =*P*(ab) W<sub>kaij</sub> + *P*(ij) W<sub>abcj</sub> + *P*(ab) W<sub>bmfe</sub> t<sup>af</sup><sub>ij</sub> - *P*(ij) W<sub>mnje</sub> t<sup>ab</sup><sub>in</sub> 
 
 - - - -
 #### H<sub>SS</sub>
@@ -65,98 +65,36 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
         + [25] +t<sup>e</sup><sub>**i**</sub>t<sup>f</sup><sub>**j**</sub>g<sub>**ka**ef</sub>&delta;<sub>**ac**</sub>
     + [--] -t<sup>a</sup><sub>m</sub>W<sub>kmij</sub>&delta;<sub>**bc**</sub>
         + W<sub>kmij</sub> =  g<sub>kmij</sub> + *P*(ij) t<sup>e</sup><sub>j</sub>g<sub>kmie</sub> + 0.5&tau;<sup>ef</sup><sub>ij</sub>g<sub>kmef</sub> 
-            + [26] -t<sup>a</sup><sub>m</sub>g<sub>kmij</sub> &delta;<**bc**</sub>
-            + [27] +t<sup>**a**</sup><sub>m</sub> *P*(ij) t<sup>e</sup><sub>**j**</sub>g<sub>**k**me**i**</sub> &delta;<**bc**</sub>
+            + [26] -t<sup>a</sup><sub>m</sub>g<sub>kmij</sub> &delta;<sub>**bc**</sub>
+            + [27] +t<sup>**a**</sup><sub>m</sub> *P*(ij) t<sup>e</sup><sub>**j**</sub>g<sub>**k**me**i**</sub> &delta;<sub>**bc**</sub>
             + [--] -0.5&tau;<sup>**a**</sup><sub>m</sub>t<sup>ef</sup><sub>ij</sub>g<sub>kmef</sub> &delta;<sub>**bc**</sub>
                 + [28] -0.5t<sup>**a**</sup><sub>m</sub>t<sup>ef</sup><sub>ij</sub>g<sub>kmef</sub> &delta;<sub>**bc**</sub>
                 + [29] -t<sup>**a**</sup><sub>m</sub>t<sup>e</sup><sub>**i**</sub>t<sup>f</sup><sub>**j**</sub>g<sub>**k**mef</sub> &delta;<sub>**bc**</sub>
-    + [--] +*P*(ij) t<sup>e</sup><sub>**j**</sub> (g<sub>**ia**e**k**</sub> - t<sup>**a**f</sup><sub>m**k**</sub>g<sub>**i**mef</sub>)&delta;<sub>**bc**</sub>
+    + [--] +*P*(ij) t<sup>e</sup><sub>**i**</sub> (g<sub>**ka**e**j**</sub> - t<sup>**a**f</sup><sub>m**j**</sub>g<sub>**k**mef</sub>)&delta;<sub>**bc**</sub>
         + [30] +*P*(ij) t<sup>e</sup><sub>**i**</sub>g<sub>**ka**e**j**</sub>&delta;<sub>**bc**</sub> 
         + [31] -*P*(ij) t<sup>e</sup><sub>**i**</sub> t<sup>**a**f</sup><sub>m**j**</sub>g<sub>**k**mef</sub>&delta;<sub>**bc**</sub> 
     + [32] +t<sup>ea</sup><sub>ij</sub>F<sub>ke</sub>&delta;<sub>**bc**</sub>
-
-
-
-### H<sub>DS</sub>
-
-From reference [2] table I 
-W<sub>iajk</sub> = g<sub>iajk</sub> + *P*(ij)t<sup>ae</sup><sub>km</sub>g<sub>imje</sub> + 0.5&tau;<sup>ef</sup><sub>jk</sub>g<sub>iaef</sub> + t<sup>a</sup><sub>m</sub>W<sub>imjk</sub>  - *P*(ij) t<sup>e</sup><sub>j</sub> (g<sub>iaek</sub> - t<sup>af</sup><sub>mk</sub>g<sub>imef</sub> ) + t<sup>ae</sup><sub>jk</sub>F<sub>ie</sub>
-
-            
-      
-Again the sign difference between references \[2] and \[3].
-psi4numpy has the code
-```python
-def build_Wmbij():
-    """Eqn 9 from [Gauss:1995:3561], Table III (b)"""
-    Wmbij = ccsd.get_MO('ovoo').copy()
-    
-    Wmbij -= np.einsum('me,ijbe->mbij', Fme, t2)
-    Wmbij -= np.einsum('nb,mnij->mbij', t1, Wmnij)
-   
-    temp_tau = ccsd.build_tau() 
-    Wmbij += 0.5 * np.einsum('mbef,ijef->mbij', ccsd.get_MO('ovvv'),temp_tau)
-   
-    Pij = np.einsum('jnbe,mnie->mbij', t2, ccsd.get_MO('ooov'))
-    Wmbij += Pij
-    Wmbij -= Pij.swapaxes(2, 3)
-
-    temp_mbej = ccsd.get_MO('ovvo').copy()
-    temp_mbej -= np.einsum('njbf,mnef->mbej', t2, ccsd.get_MO('oovv'))
-    Pij = np.einsum('ie,mbej->mbij', t1, temp_mbej)
-    Wmbij += Pij
-    Wmbij -= Pij.swapaxes(2, 3)
-    return Wmbij
-```
-From this we have W<sub>mbij</sub> = g<sub>mbij</sub> **-** t<sup>be</sup><sub>ij</sub>F<sub>me</sub> **-** t<sup>b</sup><sub>n</sub>W<sub>mnij</sub> **+** 0.5&tau;<sup>ef</sup><sub>ij</sub>g<sub>mbef</sub> **+** *P*(ij) t<sup>be</sup><sub>jn</sub>g<sub>mnie</sub> **+** *P*(ij) t<sup>e</sup><sub>i</sub>(g<sub>mbej</sub> **-** t<sup>bf</sup><sub>nj</sub>g<sub>mnef</sub>
-
-Hence the second *P*(ij) term is with a plus sign
-
-The sign on the W<sub>imjk</sub> term is given by psi4numpy and reference [3] as **-**.
-
                                      
-
- From [3] (and psi4numpy) W<sub>mbij</sub> we have -t<sup>be</sup><sub>ij</sub>F<sub>me</sub> so for W<sub>maij</sub> we have -t<sup>ae</sup><sub>ij</sub>F<sub>me</sub>
-re-index as -t<sup>**a**e</sup><sub>**ij**</sub>F<sub>**k**e</sub> and swapping index on t to +t<sup>ea</sup><sub>ij</sub>F<sub>ke</sub>&delta;<sub>**bc**</sub>
-                  
-                      HDS[iajb,kc] += (b==c)*fs[k,e]*td[e,a,i,j] - \
-                                      (a==c)*fs[k,e]*td[e,b,i,j]  # 29
-                                      
- Now for *P*(ij) W<sub>abej</sub>  terms, reference [3] gives W<sub>abei</sub> = g<sub>abei</sub> - *P*(ab) g<sub>mbef</sub>t<sup>af</sup><sub>mi</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub>g<sub>mnei</sub> + t<sup>f</sup><sub>i</sub>W<sub>abef</sub> - *P*(ab) t<sup>a</sup><sub>m</sub>(g<sub>mbei</sub> - t<sup>bf</sup><sub>ni</sub>g<sub>mnef</sub>
++ W<sub>abcj</sub> = g<sub>abcj</sub> - *P*(ab) g<sub>mbcf</sub>t<sup>af</sup><sub>mj</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub>g<sub>mncj</sub> + t<sup>e</sup><sub>j</sub>W<sub>abce</sub> - *P*(ab) t<sup>a</sup><sub>m</sub>(g<sub>mbcj</sub> - t<sup>be</sup><sub>nj</sub>g<sub>mnce</sub>
  
-g<sub>abei</sub> re-index (e->c)   gives g<sub>**abci**</sub>&delta;<sub>**ik**</sub>       
-
-                      HDS[iajb,kc] += (i==k)*ints[a,b,c,j] - \
-                                      (j==k)*ints[a,b,c,i] # 22
-                                      
--*P*(ab) g<sub>mbef</sub>t<sup>af</sup><sub>mi</sub> re-indexing (e->c,f->e) -g<sub>mbce</sub>t<sup>ae</sup><sub>mi</sub> interchanging indices gives
-
-+g<sub>**b**m**c**e</sub>t<sup>**a**e</sup><sub>m**i**</sub>&delta;<sub>**jk**</sub>
-
-                       (j==k)*ints[b,m,c,e]*td[e,a,m,i] # 30
-                     - (j==k)*ints[a,m,c,e]*td[e,b,m,i] 
-
-                       HDS[iajb,kc] += -(i==k)*ints[b,m,c,e]*td[e,a,m,j] + \
-                                        (i==k)*ints[a,m,c,e]*td[e,b,m,j] - \
-                                    
-+0.5&tau;<sup>ab</sup><sub>mn</sub>g<sub>mnei</sub> = 0.5t<sup>ab</sup><sub>mn</sub>g<sub>mnei</sub> + t<sup>a</sup><sub>m</sub>t<sup>b</sup><sub>n</sub>g<sub>mnei</sub>
-
-0.5t<sup>ab</sup><sub>mn</sub>g<sub>mnei</sub> re-index 0.5t<sup>ab</sup><sub>mn</sub>g<sub>mncj</sub>
+    + [33] +g<sub>**abci**</sub>&delta;<sub>**ik**</sub> 
+    + [34] -*P*(ab)g<sub>**b**m**c**e</sub>t<sup>**a**e</sup><sub>m**i**</sub>&delta;<sub>**jk**</sub>     
+    + [--] +0.5&tau;<sup>**ab**</sup><sub>mn</sub>g<sub>mn**cj**</sub>&delta;<sub>**ik**</sub>
+        + [35] +0.5t<sup>**ab**</sup><sub>mn</sub>g<sub>mn**cj**</sub>&delta;<sub>**ik**</sub>
+        + [36] +t<sup>a</sup><sub>m</sub>t<sup>**b**</sup><sub>n</sub>g<sub>mn**cj**</sub>&delta;<sub>**ik**</sub>                             
+    + [--] W<sub>**abc**e</sub> = g<sub>**abc**e</sub> - *P*(ab) t<sup>**b**</sup><sub>m</sub>g<sub>**a**m**c**e</sub> + 0.5&tau;<sup>**ab**</sup><sub>mn</sub>g<sub>mn**c**e</sub>
+        + [37] +t<sup>e</sup><sub>j</sub>g<sub>**abc**e</sub>&delta;<sub>**ik**</sub>
+        + [38] *P*(ab) t<sup>e</sup><sub>**j**</sub>t<sup>**b**</sup><sub>m</sub>g<sub>m**ac**e</sub>&delta;<sub>**ik**</sub>
+        + [--] 0.5&tau;<sup>**ab**</sup><sub>mn</sub>g<sub>mn**c**e</sub> &delta;<sub>**ik**</sub>
+            + [39] 0.5t<sup>e</sup><sub>**j**</sub>t<sup>**ab**</sup><sub>mn</sub>g<sub>mn**c**e</sub> &delta;<sub>**ik**</sub>
+            + [40] t<sup>e</sup><sub>j</sub>t<sup>a</sup><sub>m</sub>t<sup>b</sup><sub>n</sub>g<sub>mnce</sub> &delta;<sub>**ik**</sub>
+    + [41] -*P*(ab) t<sup>**a**</sup><sub>m</sub>g<sub>m**bc**j</sub> &delta;<sub>**ik**</sub>
+    + [42] -*P*(ab) t<sup>**a**</sup><sub>m</sub>t<sup>e**b**</sup><sub>n**j**</sub>g<sub>mn**c**e</sub>
    
-                      HDS[iajb,kc] += 0.5*(i==k)*ints[m,n,c,j]*td[a,b,m,n] - \
-                                      0.5*(j==k)*ints[m,n,c,i]*td[a,b,m,n]  # 33 
+   
++ *P*(ab) W<sub>bmfe</sub> t<sup>af</sup><sub>ij</sub> = t<sup>af</sup><sub>ij</sub>(g<sub>bmfe</sub> - t<sup>b</sup><sub>n</sub>g<sub>nmfe</sub>)
 
-t<sup>a</sup><sub>m</sub>t<sup>b</sup><sub>n</sub>g<sub>mnei</sub> re-index t<sup>a</sup><sub>m</sub>t<sup>b</sup><sub>n</sub>g<sub>mncj</sub>
-  
-                      HDS[iajb,kc] += (i==k)*ts[a,m]*ts[b,n]*ints[m,n,c,j] - \
-                                      (j==k)*ts[a,m]*ts[b,n]*ints[m,n,c,i]  # 37
+    + [43] +t<sup>af</sup><sub>ij</sub>(g<sub>bmfe</sub>
+                            
 
-+t<sup>f</sup><sub>j</sub>W<sub>abef</sub>    from reference \[2] W<sub>abcd</sub> = g<sub>abcd</sub> - *P*(ab) t<sup>b</sup><sub>m</sub>g<sub>amcd</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub>g<sub>mncd</sub>
-
-+t<sup>f</sup><sub>j</sub>g<sub>abef</sub> is then +t<sup>f</sup><sub>j</sub>g<sub>abef</sub> then +t<sup>e</sup><sub>j</sub>g<sub>abce</sub>
-
-                      HDS[iajb,kc] += (i==k)*ints[a,b,c,e]*ts[e,j] - \
-                                      (j==k)*ints[a,b,c,e]*ts[e,i] # 24
-
-                                      
 
