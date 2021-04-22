@@ -47,10 +47,10 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
     + [18] +g<sub>**alcd**</sub>&delta;<sub>**ik**</sub> 
     + [19] -t<sup>**a**</sup><sub>m</sub>g<sub>m**lcd**</sub>&delta;<sub>**ik**</sub>
 
-+ W<sub>klid</sub> = g<sub>**klid**</sub> </sub>&delta;<sub>**ac**</sub> + 0.5 t<sup>e</sup><sub>**i**</sub>g<sub>**kl**e**d**</sub></sub>&delta;<sub>**ac**</sub>
++ W<sub>klid</sub> = g<sub>**klid**</sub> </sub>&delta;<sub>**ac**</sub> + t<sup>e</sup><sub>**i**</sub>g<sub>**kl**e**d**</sub></sub>&delta;<sub>**ac**</sub>
 
     + [20] +g<sub>**klid**</sub> </sub>&delta;<sub>**ac**</sub>
-    + [21] +0.5 t<sup>e</sup><sub>**i**</sub>g<sub>**kl**e**d**</sub></sub>&delta;<sub>**ac**</sub>
+    + [21] +t<sup>e</sup><sub>**i**</sub>g<sub>**kl**e**d**</sub></sub>&delta;<sub>**ac**</sub>
     
 *There is disagreement between reference [2] and [Coupled-cluster calculations of nuclear magnetic resonance chemical shifts](www2.chemia.uj.edu.pl/~migda/Literatura/pdf/JCP03561.pdf) we have taken reference [3] which agrees with coding in psi4numpy/pyscf. Reference [2] has g<sub>likd</sub> + t<sup>d</sup><sub>k</sub>g<sub>lied</sub> and reference [3] g<sub>klid</sub> + t<sup>e</sup><sub>i</sub>g<sub>kled</sub>*
 
