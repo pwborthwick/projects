@@ -5,8 +5,16 @@ H<sub>SS</sub> = &Sigma; F<sub>ac</sub> - &Sigma; F<sub>ik</sub> + &Sigma; W<sub
 
 H<sub>SD</sub> = &Sigma; F<sub>ld</sub> + 0.5 &Sigma; W<sub>alcd</sub> - 0.5 &Sigma; W<sub>klid</sub>
 
-H<sub>DS</sub> =*P*(ab) W<sub>kaij</sub> + *P*(ij) W<sub>abcj</sub> + *P*(ab) W<sub>bmfe</sub> t<sup>af</sup><sub>ij</sub> - *P*(ij) W<sub>mnje</sub> t<sup>ab</sup><sub>in</sub> 
+H<sub>DS</sub> =*P*(ab) W<sub>kaij</sub> + *P*(ij) W<sub>abcj</sub> + *P*(ab) W<sub>bkec</sub> t<sup>ae</sup><sub>ij</sub> - *P*(ij) W<sub>mkjc</sub> t<sup>ab</sup><sub>im</sub> 
 
+- - -
+*Note g<sub>abcd</sub> = <ab||cd> = -<ba||cd> = -<ab||dc> = <ba||dc>
+
+&tau;<sup>ab</sup><sub>ij</sub> = t<sup>ab</sup><sub>ij</sub> - t<sup>a</sup><sub>i</sub><sup>b</sup><sub>j</sub>
+
+&tau;<sup>ab</sup><sub>ij</sub> = -&tau;<sup>ba</sup><sub>ij</sub> = -&tau<sup>ab</sup><sub>ji</sub>
+
+P(ij) = f(ij) - f(ji)
 - - - -
 #### H<sub>SS</sub>
 Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org/10.1063/1.46474698, 7029© 1993 American Institute of Physics.The equation of motion coupled-clustermethod. A systematic biorthogonal approach to molecular excitation energies, transition probabilities, and excited state properties](https://www.theochem.ru.nl/files/local/jcp-98-7029-1993.pdf) 
@@ -73,9 +81,11 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
     + [--] +*P*(ij) t<sup>e</sup><sub>**i**</sub> (g<sub>**ka**e**j**</sub> - t<sup>**a**f</sup><sub>m**j**</sub>g<sub>**k**mef</sub>)&delta;<sub>**bc**</sub>
         + [30] +*P*(ij) t<sup>e</sup><sub>**i**</sub>g<sub>**ka**e**j**</sub>&delta;<sub>**bc**</sub> 
         + [31] -*P*(ij) t<sup>e</sup><sub>**i**</sub> t<sup>**a**f</sup><sub>m**j**</sub>g<sub>**k**mef</sub>&delta;<sub>**bc**</sub> 
-    + [32] +t<sup>ea</sup><sub>ij</sub>F<sub>ke</sub>&delta;<sub>**bc**</sub>
+    + [--] +t<sup>ea</sup><sub>ij</sub>F<sub>ke</sub>&delta;<sub>**bc**</sub> = t<sup>ea</sup><sub>ij</sub>*f*<sub>ke</sub>&delta;<sub>**bc**</sub> + t<sup>ea</sup><sub>ij</sub>t<sup>f</sup><sub>m</sub>g<sub>kmef</sub>&delta;<sub>**bc**</sub>
+        + [32] +t<sup>e**a**</sup><sub>**ij**</sub>*f*<sub>**k**e</sub>&delta;<sub>**bc**</sub>
+        + [48] +t<sup>e**a**</sup><sub>**ij**</sub>t<sup>f</sup><sub>m</sub>g<sub>**k**mef</sub>&delta;<sub>**bc**</sub>
                                      
-+ W<sub>abcj</sub> = g<sub>abcj</sub> - *P*(ab) g<sub>mbcf</sub>t<sup>af</sup><sub>mj</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub>g<sub>mncj</sub> + t<sup>e</sup><sub>j</sub>W<sub>abce</sub> - *P*(ab) t<sup>a</sup><sub>m</sub>(g<sub>mbcj</sub> - t<sup>be</sup><sub>nj</sub>g<sub>mnce</sub>
++ W<sub>abcj</sub> = g<sub>abcj</sub> - *P*(ab) g<sub>mbcf</sub>t<sup>af</sup><sub>mj</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub>g<sub>mncj</sub> + t<sup>e</sup><sub>j</sub>W<sub>abce</sub> - *P*(ab) t<sup>a</sup><sub>m</sub>(g<sub>mbcj</sub> - t<sup>be</sup><sub>nj</sub>g<sub>mnce</sub>) - F<sub>mc</sub>t<sup>ab</sup><sub>mj</sub>
  
     + [33] +g<sub>**abci**</sub>&delta;<sub>**ik**</sub> 
     + [34] -*P*(ab)g<sub>**b**m**c**e</sub>t<sup>**a**e</sup><sub>m**i**</sub>&delta;<sub>**jk**</sub>     
@@ -89,12 +99,18 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
             + [39] 0.5t<sup>e</sup><sub>**j**</sub>t<sup>**ab**</sup><sub>mn</sub>g<sub>mn**c**e</sub> &delta;<sub>**ik**</sub>
             + [40] t<sup>e</sup><sub>j</sub>t<sup>a</sup><sub>m</sub>t<sup>b</sup><sub>n</sub>g<sub>mnce</sub> &delta;<sub>**ik**</sub>
     + [41] -*P*(ab) t<sup>**a**</sup><sub>m</sub>g<sub>m**bc**j</sub> &delta;<sub>**ik**</sub>
-    + [42] -*P*(ab) t<sup>**a**</sup><sub>m</sub>t<sup>e**b**</sup><sub>n**j**</sub>g<sub>mn**c**e</sub>
+    + [42] -*P*(ab) t<sup>**a**</sup><sub>m</sub>t<sup>e**b**</sup><sub>n**j**</sub>g<sub>mn**c**e</sub> &delta;<sub>**ik**</sub>
+    + [--] -F<sub>mc</sub>t<sup>ab</sup><sub>mj</sub> &delta;<sub>**ik**</sub> = -t<sup>ab</sup><sub>mj</sub>*f*<sub>mc</sub>&delta;<sub>**ik**</sub> - t<sup>ab</sup><sub>mj</sub>t<sup>e</sup><sub>n</sub>g<sub>mnce</sub> &delta;<sub>**ik**</sub>
+        + [47] -t<sup>ab</sup><sub>mj</sub>*f*<sub>mc</sub>&delta;<sub>**ik**</sub>
+        + [49] -t<sup>ab</sup><sub>mj</sub>t<sup>e</sup><sub>n</sub>g<sub>mnce</sub> &delta;<sub>**ik**</sub>
    
-   
-+ *P*(ab) W<sub>bmfe</sub> t<sup>af</sup><sub>ij</sub> = t<sup>af</sup><sub>ij</sub>(g<sub>bmfe</sub> - t<sup>b</sup><sub>n</sub>g<sub>nmfe</sub>)
++ *P*(ab) W<sub>bkec</sub> t<sup>ae</sup><sub>ij</sub> = t<sup>ae</sup><sub>ij</sub>(g<sub>bkec</sub> - t<sup>b</sup><sub>m</sub>g<sub>mkec</sub>)
 
-    + [43] +t<sup>af</sup><sub>ij</sub>(g<sub>bmfe</sub>
-                            
+    + [43] +t<sup>**a**e</sup><sub>**ij**</sub>g<sub>**bk**e**c**</sub>
+    + [44] -t<sup>ae</sup><sub>ij</sub>t<sup>b</sup><sub>m</sub>g<sub>mkec</sub>
+    
++ -*P*(ij) W<sub>mkjc</sub> t<sup>ab</sup><sub>im</sub> =  -t<sup>ab</sup><sub>im</sub>(g<sub>mkjc</sub> - t<sup>e</sub><sub>j</sub>g<sub>mkec</sub>
+    + [45] -t<sup>ab</sup><sub>im</sub>(g<sub>mkjc</sub> 
+    + [46] -t<sup>ab</sup><sub>im</sub>t<sup>e</sub><sub>j</sub>g<sub>mkec</sub>                    
 
-
+ 
