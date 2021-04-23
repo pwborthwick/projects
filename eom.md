@@ -1,7 +1,7 @@
 # EOM_CCSD
 The paper [Simplified methods for equation-of-motion coupled-cluster excited state calculations - Steven R. Gwaltney, Marcel Nooijen, Rodney J. Bartlett](https://notendur.hi.is/agust/rannsoknir/papers/cpl248-189-96.pdf) gives the following equations for the partitioning of the EOM-CCSD hamiltonian 
 
-H<sub>SS</sub> = &Sigma; F<sub>ac</sub> - &Sigma; F<sub>ik</sub> + &Sigma; W<sub>akic</sub>
+H<sub>SS</sub> = *P*(ij)&Sigma; F<sub>ac</sub> - *P*(ab)&Sigma; F<sub>ik</sub> + &Sigma; W<sub>akic</sub>
 
 H<sub>SD</sub> = &Sigma; F<sub>ld</sub> + 0.5 &Sigma; W<sub>alcd</sub> - 0.5 &Sigma; W<sub>klid</sub>
 
@@ -14,7 +14,7 @@ H<sub>DS</sub> =*P*(ab) W<sub>kaij</sub> + *P*(ij) W<sub>abcj</sub> + *P*(ab) W<
 
 &tau;<sup>ab</sup><sub>ij</sub> = -&tau;<sup>ba</sup><sub>ij</sub> = -&tau<sup>ab</sup><sub>ji</sub>
 
-P(ij) = f(ij) - f(ji)
+P(ij) = f(ij) - f(ji)*
 - - - -
 #### H<sub>SS</sub>
 Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org/10.1063/1.46474698, 7029© 1993 American Institute of Physics.The equation of motion coupled-clustermethod. A systematic biorthogonal approach to molecular excitation energies, transition probabilities, and excited state properties](https://www.theochem.ru.nl/files/local/jcp-98-7029-1993.pdf) 
@@ -87,7 +87,7 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
                                      
 + W<sub>abcj</sub> = g<sub>abcj</sub> - *P*(ab) g<sub>mbcf</sub>t<sup>af</sup><sub>mj</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub>g<sub>mncj</sub> + t<sup>e</sup><sub>j</sub>W<sub>abce</sub> - *P*(ab) t<sup>a</sup><sub>m</sub>(g<sub>mbcj</sub> - t<sup>be</sup><sub>nj</sub>g<sub>mnce</sub>) - F<sub>mc</sub>t<sup>ab</sup><sub>mj</sub>
  
-    + [33] +g<sub>**abci**</sub>&delta;<sub>**ik**</sub> 
+    + [33] +g<sub>**abcj**</sub>&delta;<sub>**ik**</sub> 
     + [34] -*P*(ab)g<sub>**b**m**c**e</sub>t<sup>**a**e</sup><sub>m**i**</sub>&delta;<sub>**jk**</sub>     
     + [--] +0.5&tau;<sup>**ab**</sup><sub>mn</sub>g<sub>mn**cj**</sub>&delta;<sub>**ik**</sub>
         + [35] +0.5t<sup>**ab**</sup><sub>mn</sub>g<sub>mn**cj**</sub>&delta;<sub>**ik**</sub>
