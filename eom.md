@@ -114,11 +114,11 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
 
 - - -
 ### H<sub>DD</sub>
-+ *P*(ab) F<sub>**ac**</sub> = *f*<sub>**ac**</sub> - *f*<sub>m**c**</sub>t<sup>**a**</sup><sub>m</sub> + t<sup>e</sup><sub>m</sub>g<sub>m**a**e**c**</sub> - &tau;<sup>**a**e</sup><sub>mn</sub>g<sub>mn**c**e</sub> 
++ *P*(ab) F<sub>**ac**</sub> = *f*<sub>**ac**</sub> - *f*<sub>m**c**</sub>t<sup>**a**</sup><sub>m</sub> + t<sup>e</sup><sub>m</sub>g<sub>m**a**e**c**</sub> - 0.5 &tau;<sup>**a**e</sup><sub>mn</sub>g<sub>mn**c**e</sub> 
     + [50] +*f*<sub>**ac**</sub>&delta;<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
-    + [51] -*f*<sub>m**c**</sub>t<sup>**a**</sup><sub>m</sub><sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
-    + [52] t<sup>e</sup><sub>m</sub>g<sub>m**a**e**c**</sub><sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
-    + [53] t<sup>**a**e</sup><sub>mn</sub>g<sub>mn**c**e</sub><sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
-    + [54] t<sup>**a**</sup><sub>m</sub>t<sup>e</sup><sub>n</sub>g<sub>mn**c**e</sub> <sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
+    + [51] -*f*<sub>m**c**</sub>t<sup>**a**</sup><sub>m</sub>&delta;<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
+    + [52] t<sup>e</sup><sub>m</sub>g<sub>m**a**e**c**</sub>&delta;<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
+    + [53] 0.5t<sup>**a**e</sup><sub>mn</sub>g<sub>mn**c**e</sub>&delta;/run/cups/cups.sock<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
+    + [54] 0.5t<sup>**a**</sup><sub>m</sub>t<sup>e</sup><sub>n</sub>g<sub>mn**c**e</sub> <sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
     
 + *P*(ij) F<sub>ki</sub> = *f*<sub>ki</sub> + *f*<sub>ke</sub>t<sup>e</sup><sub>m</sub> + t<sup>e</sup><sub>m</sub>g<sub>kmie</sub> + &tau;<sup>ef</sup><sub>im</sub>g<sub>kmef</sub> 
