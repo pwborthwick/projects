@@ -71,8 +71,8 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
         + [24] +0.5t<sup>ef</sup><sub>**ij**</sub>g<sub>**ka**ef</sub>&delta;<sub>**bc**</sub> 
         + [25] +t<sup>e</sup><sub>**i**</sub>t<sup>f</sup><sub>**j**</sub>g<sub>**ka**ef</sub>&delta;<sub>**ac**</sub>
     + [--] -t<sup>a</sup><sub>m</sub>W<sub>kmij</sub>&delta;<sub>**bc**</sub>
-        + W<sub>kmij</sub> =  g<sub>kmij</sub> + *P*(ij) t<sup>e</sup><sub>j</sub>g<sub>kmie</sub> + 0.5&tau;<sup>ef</sup><sub>ij</sub>g<sub>kmef</sub> 
-            + [26] -t<sup>a</sup><sub>m</sub>g<sub>kmij</sub> &delta;<sub>**bc**</sub>
+        + W<sub>**k**m**ij**</sub> =  g<sub>**k**m**ij**</sub> + *P*(ij) t<sup>e</sup><sub>**j**</sub>g<sub>**k**m**i**e</sub> + 0.5&tau;<sup>ef</sup><sub>**ij**</sub>g<sub>****kmef</sub> 
+            + [26] -t<sup>**a**</sup><sub>m</sub>g<sub>**k**m**ij**</sub> &delta;<sub>**bc**</sub>
             + [27] +t<sup>**a**</sup><sub>m</sub> *P*(ij) t<sup>e</sup><sub>**j**</sub>g<sub>**k**me**i**</sub> &delta;<sub>**bc**</sub>
             + [--] -0.5&tau;<sup>**a**</sup><sub>m</sub>t<sup>ef</sup><sub>ij</sub>g<sub>kmef</sub> &delta;<sub>**bc**</sub>
                 + [28] -0.5t<sup>**a**</sup><sub>m</sub>t<sup>ef</sup><sub>ij</sub>g<sub>kmef</sub> &delta;<sub>**bc**</sub>
@@ -114,11 +114,41 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
 
 - - -
 ### H<sub>DD</sub>
-+ *P*(ab) F<sub>**ac**</sub> = *f*<sub>**ac**</sub> - *f*<sub>m**c**</sub>t<sup>**a**</sup><sub>m</sub> + t<sup>e</sup><sub>m</sub>g<sub>m**a**e**c**</sub> - 0.5 &tau;<sup>**a**e</sup><sub>mn</sub>g<sub>mn**c**e</sub> 
-    + [50] +*f*<sub>**ac**</sub>&delta;<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
-    + [51] -*f*<sub>m**c**</sub>t<sup>**a**</sup><sub>m</sub>&delta;<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
-    + [52] t<sup>e</sup><sub>m</sub>g<sub>m**a**e**c**</sub>&delta;<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
-    + [53] 0.5t<sup>**a**e</sup><sub>mn</sub>g<sub>mn**c**e</sub>&delta;/run/cups/cups.sock<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
-    + [54] 0.5t<sup>**a**</sup><sub>m</sub>t<sup>e</sup><sub>n</sub>g<sub>mn**c**e</sub> <sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
++ +*P*(ab) F<sub>**bc**</sub> = *f*<sub>**bc**</sub> - *f*<sub>m**c**</sub>t<sup>**b**</sup><sub>m</sub> + t<sup>e</sup><sub>m</sub>g<sub>m**a**e**c**</sub> - 0.5 &tau;<sup>e**b**</sup><sub>mn</sub>g<sub>mne**c**</sub> 
+    + [50] +*f*<sub>**bc**</sub>&delta;<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>ad</sub>
+    + [51] -*f*<sub>m**c**</sub>t<sup>**b**</sup><sub>m</sub>&delta;<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>ad</sub>
+    + [52] +t<sup>e</sup><sub>m</sub>g<sub>m**b**e**c**</sub>&delta;<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>ad</sub>
+    + [53] -0.5t<sup>e**b**</sup><sub>mn</sub>g<sub>mne**c**</sub>&delta;<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>ad</sub>
+    + [54] -0.5t<sup>**e**</sup><sub>m</sub>t<sup>a</sup><sub>n</sub>g<sub>mne**c**</sub> <sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>bd</sub>
     
-+ *P*(ij) F<sub>ki</sub> = *f*<sub>ki</sub> + *f*<sub>ke</sub>t<sup>e</sup><sub>m</sub> + t<sup>e</sup><sub>m</sub>g<sub>kmie</sub> + &tau;<sup>ef</sup><sub>im</sub>g<sub>kmef</sub> 
++ -*P*(ij) F<sub>kj</sub> = *f*<sub>kj</sub> + *f*<sub>ke</sub>t<sup>e</sup><sub>j</sub> + t<sup>e</sup><sub>m</sub>g<sub>kmje</sub> + 0.5&tau;<sup>ef</sup><sub>jm</sub>g<sub>kmef</sub> 
+    + [55] +*f*<sub>**kj**</sub></sub>&delta;<sub>ad</sub>&delta;<sub>il</sub>&delta;<sub>bc</sub>
+    + [56] +*f*<sub>**k**e</sub>t<sup>e</sup><sub>j</sub>
+    + [57] +t<sup>e</sup><sub>m</sub>g<sub>kmie</sub> 
+    + [58] +0.5t<sup>ef</sup><sub>im</sub>g<sub>kmef</sub> 
+    + [59] +t<sup>e</sup><sub>i</sub>t<sup>f</sup><sub>m</sub>g<sub>kmef</sub> 
+    
++ +0.5W<sub>abcd</sub> = g<sub>abcd</sub> - *P*(ab) t<sup>b</sup><sub>m</sub>g<sub>amcd</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub>g<sub>mncd</sub>
+    + [60] +0.5g<sub>abcd</sub>
+    + [61] -0.5t<sup>b</sup><sub>m</sub>g<sub>amcd</sub>
+    + [62] +0.5t<sup>ab</sup><sub>mn</sub>g<sub>mncd</sub>
+    + [63] t<sup>a</sup><sub>m</sub>t<sup>b</sup><sub>n</sub>g<sub>mncd</sub>
+    
++ +0.5W<sub>klij</sub> = g<sub>klij</sub> + *P*(ij) t<sup>e</sup><sub>j</sub>g<sub>klie</sub> + 0.5&tau;<sup>ef</sup><sub>ij</sub>g<sub>klef</sub>
+    + [64] +0.5g<sub>klij</sub> 
+    + [65] +t<sup>e</sup><sub>j</sub>g<sub>klie</sub>
+    + [66] +0.5t<sup>ef</sup><sub>ij</sub>g<sub>klef</sub>
+    + [67] +t<sup>e</sup><sub>i</sub>t<sup>f</sup><sub>j</sub>g<sub>klef</sub>
+    
++ +*P*(ij)*P*(ab) W<sub>akic</sub> = g<sub>akic</sub> + t<sup>e</sup><sub>i</sub>g<sub>akec</sub> - t<sup>a</sup><sub>m</sub>g<sub>mkic</sub> - (t<sup>ea</sup><sub>im</sub> + t<sup>e</sup><sub>i</sub>t<sup>a</sup><sub>m</sub>)g<sub>mkec</sub>
+    + [68] +g<sub>akic</sub>
+    + [69] +t<sup>e</sup><sub>i</sub>g<sub>akec</sub>
+    + [70] -t<sup>a</sup><sub>m</sub>g<sub>mkic</sub>
+    + [71] -t<sup>ea</sup><sub>im</sub> g<sub>mkec</sub>
+    + [72] -t<sup>e</sup><sub>i</sub>t<sup>a</sup><sub>m</sub>g<sub>mkec</sub>
+  
++ -0.5W<sub>lkec</sub>t<sup>eb</sup><sub>ij</sub> = -0.5t<sup>eb</sup><sub>ij</sub>g<sub>lkec</sub>
+    + [73] -0.5t<sup>eb</sup><sub>ij</sub>g<sub>lkec</sub>
+
++ +0.5W<sub>mkdc</sub>t<sup>ab</sup><sub>jm</sub> = +0.5W<sub>mkdc</sub>t<sup>ab</sup><sub>jm</sub>
+    + [74] -0.5W<sub>kmcd</sub>t<sup>ab</sup><sub>mj</sub>
