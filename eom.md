@@ -1,19 +1,34 @@
-# EOM_CCSD
+# EOM-CCSD
 The paper [Simplified methods for equation-of-motion coupled-cluster excited state calculations - Steven R. Gwaltney, Marcel Nooijen, Rodney J. Bartlett](https://notendur.hi.is/agust/rannsoknir/papers/cpl248-189-96.pdf) gives the following equations for the partitioning of the EOM-CCSD hamiltonian 
 
-H<sub>SS</sub> = *P*(ij)&Sigma; F<sub>ac</sub> &delta;<sub>ik</sub>- *P*(ab)&Sigma; F<sub>ki</sub> &delta;<sub>ac</sub> + &Sigma; W<sub>akic</sub>
+H<sub>SS</sub><sup>**a**</sup><sub>**i**</sub> = *P*(ij)F<sub>**ac**</sub>r<sup>**c**</sup><sub>i</sub> &delta;<sub>**ik**</sub> - *P*(ab) F<sub>**ki**</sub>r<sup>**k**</sup><sub>**a**</sub> &delta;<sub>ac</sub> + W<sub>akic</sub>r<sup>**ck**</sup>
 
-H<sub>SD</sub> = &Sigma; F<sub>ld</sub>&delta;<sub>ik</sub>&delta;<sub>ac</sub> + 0.5 &Sigma; W<sub>aldc</sub> &delta;<sub>ik</sub> - 0.5 &Sigma; W<sub>lkid</sub>&delta;<sub>ac</sub>
+H<sub>SD</sub><sup>**a**</sup><sub>**i**</sub> = F<sub>ld</sub>r<sup>ld</sup><sub>**ai**</sub>&delta;<sub>**ik**</sub>&delta;<sub>**ac**</sub> + 0.5  W<sub>**a**ld**c**</sub>r<sup>ld**c**</sup><sub>**i**</sub> &delta;<sub>**ik**</sub> - 0.5 W<sub>l**ki**d</sub>r<sup>l**k**d</sup><sub>**a**</sub>&delta;<sub>**ac**</sub>
 
-H<sub>DS</sub> =*P*(ab) W<sub>kaij</sub>&delta;<sub>bc</sub> + *P*(ij) W<sub>abcj</sub>&delta;<sub>ik</sub> + *P*(ab) W<sub>bkec</sub> t<sup>ae</sup><sub>ij</sub> - *P*(ij) W<sub>mkjc</sub> t<sup>ab</sup><sub>im</sub> 
+H<sub>DS</sub><sup>**ab**</sup><sub>**ij**</sub> = *P*(ab) W<sub>**kai**j</sub>r<sup>k</sup><sub>**b**</sub>&delta;<sub>**b**c</sub> + *P*(ij) W<sub>**ab**c**j**</sub>r<sup>**c**</sup><sub>**i**</sub>&delta;<sub>**ik**</sub> + *P*(ab) W<sub>**b**kec</sub> t<sup>**a**e</sup><sub>**ij**</sub>r<sup>ke**c**</sup> - *P*(ij) W<sub>mk**j**c</sub> t<sup>**ab**</sup><sub>**i**m</sub>r<sup>mkc</sup> 
 
-H<sub>DD</sub> = *P*(ab) F<sub>ac</sub>
+H<sub>DD</sub><sup>**ab**</sup><sub>**ij**</sub> = *P*(ab) F<sub>**b**c</sub>&delta;<sub>**j**k</sub>&delta;<sub>**i**l</sub>&delta;<sub>**a**d</sub>r<sup>c</sup><sub>**aij**</sub> - F<sub>k**j**</sub></sub>&delta;<sub>**a**d</sub>&delta;<sub>**i**l</sub>&delta;<sub>**b**c</sub>r<sup>k</sup><sub>**iab**</sub> + 0.5W<sub>**ab**cd</sub>&delta;<sub>**i**k</sub>&delta;<sub>**j**l</sub>r<sup>cd</sup><sub>**ij**</sub> + 0.5W<sub>kl**ij**</sub>&delta;<sub>**a**c</sub>&delta;<sub>**b**d</sub>r<sup>**ij**</sup><sub>**ab**</sub> + *P*(ij)*P*(ab) W<sub>**a**k**i**c</sub>&delta;<sub>**j**l</sub>&delta;<sub>**b**d</sub>r<sup>kc</sup><sub>**bj**</sub> - 0.5W<sub>lke**c**</sub>t<sup>e**b**</sup><sub>**ij**</sub>&delta;<sub>**a**d</sub>r<sup>**i**kc</sup><sub>**a**</sub> + 0.5W<sub>mkd**c**</sub>t<sup>**ab**</sup><sub>**j**m</sub>&delta;<sub>**i**l</sub>r<sup>kd**c**</sup><sub>**i**</sub>
 
+(Einstein summation implied on repeated indices)
 - - -
 Note g<sub>abcd</sub> = <ab||cd> = -<ba||cd> = -<ab||dc> = <ba||dc> \
 &tau;<sup>ab</sup><sub>ij</sub> = t<sup>ab</sup><sub>ij</sub> + t<sup>a</sup><sub>i</sub><sup>b</sup><sub>j</sub> \
 &tau;<sup>ab</sup><sub>ij</sub> = -&tau;<sup>ba</sup><sub>ij</sub> = -&tau;<sup>ab</sup><sub>ji</sub> \
 P(ij) = f(ij) - f(ji)
+- - - -
+#### Intermediates
+F<sub>me</sub> = F<sub>ov</sub> = *f*<sub>me</sub> + t<sup>f</sup><sub>n</sub><mn||ef> \
+F<sub>mi</sub> = F<sub>oo</sub> = *f*<sub>mi</sub> + t<sup>e</sup><sub>i</sub>*f*<sub>me</sub> + t<sup>e</sup><sub>n</sub><mn||ie> + &tau;<sup>ef</sup><sub>in</sub><mn||ef> \
+F<sub>ae</sub> = F<sub>vv</sub> = *f*<sub>ae</sub> - t<sup>e</sup><sub>a</sub>*f*<sub>me</sub> + t<sup>f</sup><sub>m</sub><am||ef> - &tau;<sup>fa</sup><sub>ma</sub><mn||fe> \
+\
+W<sub>mnij</sub> = W<sub>oooo</sub> = <mn||ij> + P(ij) t<sup>e</sup><sub>j</sub><mn||ie> + 0.5&tau;<sup>ef</sup><sub>ij</sub><mn||ef> \
+W<sub>abef</sub> = W<sub>vvvv</sub> = <ab||ef> - P(ab) t<sup>b</sup><sub>m</sub><am||ef> + 0.5&tau;<sup>ab</sup><sub>mn</sub><mn||ef> \
+W<sub>amef</sub> = W<sub>vovv</sub> = <am||ef> - t<sup>a</sup><sub>n</sub><nm||ef> \
+W<sub>mnie</sub> = W<sub>ooov</sub> = <mn||ie> + t<sup>f</sup><sub>i</sub><mn||fe> \
+W<sub>mbej</sub> = W<sub>ovvo</sub> = <mb||ej> + t<sup>f</sup><sub>j</sub><mb||ef> - t<sup>b</sup><sub>n</sub><mn||ej> - (t<sup>fb</sup><sub>jn</sub> + t<sup>f</sup><sub>j</sub>t<sup>b</sup><sub>n</sub>)<nm||fe> \
+W<sub>mbje</sub> = W<sub>ovov</sub> = <mb||je> + t<sup>f</sup><sub>j</sub><bm||ef> - t<sup>b</sup><sub>n</sub><mn||je> - (t<sup>fb</sup><sub>jn</sub> + t<sup>f</sup><sub>j</sub>t<sup>b</sup><sub>n</sub>)<nm||ef> \
+W<sub>abei</sub> = W<sub>vvvo</sub> = <ab||ei> - F<sub>me</sub>t<sup>ab</sup><sub>mi</sub> + t<sup>f</sup><sub>i</sub>W<sub>abef</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub><mn||ei> - P(ab) t<sup>af</sup><sub>mi</sub><mb||ef> - P(ab) t<sup>a</sup><sub>m</sub> {<mb||ei> - t<sup>bf</sup><sub>ni</sub><mn||ef>} \
+W<sub>mbij</sub> = W<sub>ovoo</sub> = <mb||ij> - F<sub>me</sub>t<sup>be</sup><sub>ij</sub> - t<sup>b</sup><sub>n</sub>W<sub>mnij</sub> + 0.5&tau;<sup>ef</sup><sub>ij</sub><mb||ef> + P(ij) t<sup>be</sup><sub>jn</sub><mn||ie> + P(ij) t<sup>e</sup><sub>i</sub> {<mb||ej> - t<sup>bf</sup><sub>nj</sub><mn||ef>} 
 - - - -
 #### H<sub>SS</sub>
 Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org/10.1063/1.46474698, 7029© 1993 American Institute of Physics.The equation of motion coupled-clustermethod. A systematic biorthogonal approach to molecular excitation energies, transition probabilities, and excited state properties](https://www.theochem.ru.nl/files/local/jcp-98-7029-1993.pdf) 
@@ -49,7 +64,7 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
     + [16] +f<sub>**ld**</sub>&delta;<sub>**ik**</sub>&delta;<sub>**ac**</sub>
     + [17] +t<sup>e</sup><sub>m</sub>g<sub>**k**m**c**e</sub>&delta;<sub>**il**</sub>&delta;<sub>**ad**</sub>
     
-+  W<sub>**aldc**</sub> = g<sub>**aldc*</sub>&delta;<sub>**ik**</sub> - t<sup>**a**</sup><sub>m</sub>g<sub>m**ldc**</sub>&delta;<sub>**ik**</sub>
++  W<sub>**aldc**</sub> = g<sub>**aldc**</sub>&delta;<sub>**ik**</sub> - t<sup>**a**</sup><sub>m</sub>g<sub>m**ldc**</sub>&delta;<sub>**ik**</sub>
 
     + [18] +g<sub>**aldc**</sub>&delta;<sub>**ik**</sub> 
     + [19] -t<sup>**a**</sup><sub>m</sub>g<sub>m**ldc**</sub>&delta;<sub>**ik**</sub>
@@ -62,7 +77,7 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
 *There is disagreement between reference [2] and [Coupled-cluster calculations of nuclear magnetic resonance chemical shifts](www2.chemia.uj.edu.pl/~migda/Literatura/pdf/JCP03561.pdf) we have taken reference [3] which agrees with coding in psi4numpy/pyscf. Reference [2] has g<sub>kild</sub> + t<sup>d</sup><sub>l</sub>g<sub>kied</sub> and reference [3] g<sub>lkid</sub> + t<sup>e</sup><sub>i</sub>g<sub>lked</sub>*
 
 - - -
-### H<sub>DS</sub>
+#### H<sub>DS</sub>
 + W<sub>kaij</sub> = g<sub>**kaij**</sub>&delta;<sub>**bc**</sub> + *P*(ij) t<sup>e**a**</sup><sub>m**j**</sub>g<sub>**k**m**i**e</sub>&delta;<sub>**bc**</sub> + 0.5&tau;<sup>ef</sup><sub>**ij**</sub>g<sub>**ka**ef</sub>&delta;<sub>**bc**</sub> - t<sup>**a**</sup><sub>m</sub>W<sub>**k**m**ij**</sub>&delta;<sub>**bc**</sub> + +*P*(ij) t<sup>e</sup><sub>**i**</sub> (g<sub>**ka**e**j**</sub> - t<sup>**a**f</sup><sub>m**j**</sub>g<sub>**k**mef</sub>)&delta;<sub>**bc**</sub> +t<sup>ea</sup><sub>ij</sub>F<sub>ke</sub>&delta;<sub>**bc**</sub>
 
     + [22] +g<sub>**kaij**</sub>&delta;<sub>**bc**</sub>
@@ -113,7 +128,7 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
     + [46] -t<sup>**ab**</sup><sub>**i**m</sub>t<sup>e</sup><sub>**j**</sub>g<sub>m**k**e**c**</sub>                    
 
 - - -
-### H<sub>DD</sub>
+#### H<sub>DD</sub>
 + +*P*(ab) F<sub>**bc**</sub> = *f*<sub>**bc**</sub> - *f*<sub>m**c**</sub>t<sup>**b**</sup><sub>m</sub> + t<sup>e</sup><sub>m</sub>g<sub>m**a**e**c**</sub> - 0.5 &tau;<sup>e**b**</sup><sub>mn</sub>g<sub>mne**c**</sub> 
     + [50] +*f*<sub>**bc**</sub>&delta;<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>ad</sub>
     + [51] -*f*<sub>m**c**</sub>t<sup>**b**</sup><sub>m</sub>&delta;<sub>ik</sub>&delta;<sub>jl</sub>&delta;<sub>ad</sub>
