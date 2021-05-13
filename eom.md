@@ -148,8 +148,8 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
     + [55] -*P*(ij) *f*<sub>**k**j</sub></sub> &delta;<sub>a**d**</sub>&delta;<sub>i**l**</sub>&delta;<sub>bc</sub>  &nbsp;&nbsp;<sup>53</sup>
     + [56] -*P*(ij) *f*<sub>**k**e</sub> t<sup>e</sup><sub>j</sub> &delta;<sub>a**d**</sub>&delta;<sub>i**l**</sub>&delta;<sub>bc</sub>  &nbsp;&nbsp;<sup>57</sup> !
     + [57] -*P*(ij) t<sup>e</sup><sub>m</sub> g<sub>**k**mje</sub>  &delta;<sub>a**d**</sub>&delta;<sub>i**l**</sub>&delta;<sub>bc</sub>  &nbsp;&nbsp;<sup>64</sup> !
-    + [58] -*P*(ij) 0.5t<sup>ef</sup><sub>jm</sub> g<sub>**k**mef</sub> &delta;<sub>a**d**</sub>&delta;<sub>i**l**</sub>&delta;<sub>bc</sub>  &nbsp;&nbsp;<sup>69</sup> !
-    + [59] -*P*(ij) t<sup>e</sup><sub>j</sub> t<sup>f</sup><sub>m</sub> g<sub>**k**mef</sub> &delta;<sub>a**d**</sub>&delta;<sub>i**l**</sub>&delta;<sub>bc</sub>  &nbsp;&nbsp;<sup>75</sup> !
+    + [58] +*P*(ij) 0.5t<sup>fe</sup><sub>jm</sub> g<sub>**k**mef</sub> &delta;<sub>a**d**</sub>&delta;<sub>i**l**</sub>&delta;<sub>bc</sub>  &nbsp;&nbsp;<sup>69</sup> !
+    + [59] +*P*(ij) t<sup>f</sup><sub>j</sub> t<sup>e</sup><sub>m</sub> g<sub>**k**mef</sub> &delta;<sub>a**d**</sub>&delta;<sub>i**l**</sub>&delta;<sub>bc</sub>  &nbsp;&nbsp;<sup>75</sup> !
     
 + +0.5W<sub>ab**cd**</sub> = 0.5 (g<sub>ab**cd**</sub> - *P*(ab) t<sup>b</sup><sub>m</sub> g<sub>am**cd**</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub> g<sub>mn**cd**</sub>) &delta;<sub>i**k**</sub>&delta;<sub>j**l**</sub>
     + [60] +0.5g<sub>ab**cd**</sub> &delta;<sub>i**k**</sub>&delta;<sub>j**l**</sub>  &nbsp;&nbsp;<sup>54</sup>
