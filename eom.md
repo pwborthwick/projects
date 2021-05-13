@@ -161,7 +161,7 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
     + [64] +0.5g<sub>**kl**ij</sub> &delta;<sub>a**c**</sub>&delta;<sub>b**d**</sub>  &nbsp;&nbsp;<sup>55</sup>
     + [65] +0.5t<sup>e</sup><sub>j</sub> g<sub>**kl**ie</sub> &delta;<sub>a**c**</sub>&delta;<sub>b**d**</sub>  &nbsp;&nbsp;<sup>62</sup>
     + [66] +0.25t<sup>ef</sup><sub>ij</sub> g<sub>**kl**ef</sub> &delta;<sub>a**c**</sub>&delta;<sub>b**d**</sub>  &nbsp;&nbsp;<sup>66</sup>
-    + [67] +t<sup>e</sup><sub>i</sub> t<sup>f</sup><sub>j</sub> g<sub>**kl**ef</sub> &delta;<sub>a**c**</sub>&delta;<sub>b**d**</sub>  &nbsp;&nbsp;<sup>72</sup>
+    + [67] +0.5t<sup>e</sup><sub>i</sub> t<sup>f</sup><sub>j</sub> g<sub>**kl**ef</sub> &delta;<sub>a**c**</sub>&delta;<sub>b**d**</sub>  &nbsp;&nbsp;<sup>72</sup>
     
 + +*P*(ij)*P*(ab) W<sub>a**k**i**c**</sub> = *P*(ij)*P*(ab) {(g<sub>a**k**i**c**</sub> + t<sup>e</sup><sub>i</sub> g<sub>a**k**e**c**</sub> - t<sup>a</sup><sub>m</sub> g<sub>m**k**i**c**</sub> - (t<sup>ea</sup><sub>im</sub> + t<sup>e</sup><sub>i</sub> t<sup>a</sup><sub>m</sub>) g<sub>m**k**e**c**</sub>) &delta;<sub>j**l**</sub>&delta;<sub>**d**b</sub>}
     + [68] +*P*(ij)*P*(ab) g<sub>a**k**i**c**</sub>  &delta;<sub>j**l**</sub>&delta;<sub>**d**b</sub>   &nbsp;&nbsp;<sup>56</sup>
