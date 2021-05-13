@@ -142,7 +142,7 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
     + [51] -*P*(ab) *f*<sub>m**c**</sub> t<sup>b</sup><sub>m</sub> &delta;<sub>i**k**</sub>&delta;<sub>j**l**</sub>&delta;<sub>a**d**</sub>  &nbsp;&nbsp;<sup>58</sup> !
     + [52] +*P*(ab) t<sup>e</sup><sub>m</sub>g<sub>mbe**c**</sub> &delta;<sub>i**k**</sub>&delta;<sub>j**l**</sub>&delta;<sub>a**d**</sub>  &nbsp;&nbsp;<sup>63</sup> !
     + [53] -*P*(ab) 0.5t<sup>eb</sup><sub>mn</sub> g<sub>mne**c**</sub>&delta;<sub>i**k**</sub>&delta;<sub>j**l**</sub>&delta;<sub>a**d**</sub>  &nbsp;&nbsp;<sup>71</sup> !
-    + [54] -*P*(ab) 0.5t<sup>e</sup><sub>m</sub> t<sup>a</sup><sub>n</sub> g<sub>mne**c**</sub> &delta;<sub>i**k**</sub>&delta;<sub>j**l**</sub>&delta;<sub>a**d**</sub>  &nbsp;&nbsp;<sup>76</sup>
+    + [54] -*P*(ab) t<sup>e</sup><sub>m</sub> t<sup>a</sup><sub>n</sub> g<sub>mne**c**</sub> &delta;<sub>i**k**</sub>&delta;<sub>j**l**</sub>&delta;<sub>a**d**</sub>  &nbsp;&nbsp;<sup>76</sup>
     
 + -*P*(ij) F<sub>**k**j</sub> = *P*(ij) {(*f*<sub>**k**j</sub> + *f*<sub>**k**e</sub> t<sup>e</sup><sub>j</sub> + t<sup>e</sup><sub>m</sub> g<sub>**k**mje</sub> + 0.5&tau;<sup>ef</sup><sub>jm</sub> g<sub>**k**mef</sub> ) &delta;<sub>a**d**</sub>&delta;<sub>i**l**</sub>&delta;<sub>bc</sub>}
     + [55] -*P*(ij) *f*<sub>**k**j</sub></sub> &delta;<sub>a**d**</sub>&delta;<sub>i**l**</sub>&delta;<sub>bc</sub>  &nbsp;&nbsp;<sup>53</sup>
