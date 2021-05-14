@@ -61,22 +61,22 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
  
 - - -
 #### H<sub>SD</sub>
-\[F<sub>ld</sub> &delta;<sub>**i**k</sub>&delta;<sub>**a**c</sub> + 0.5  W<sub>**a**ldc</sub> &delta;<sub>**i**k</sub> - 0.5 W<sub>lk**i**d</sub> &delta;<sub>**a**c</sub>] r<sup>lkcd</sup> \
+\[F<sub>kc</sub> &delta;<sub>**i**l</sub>&delta;<sub>**a**d</sub> + 0.5  W<sub>**a**kcd</sub> &delta;<sub>**i**l</sub> - 0.5 W<sub>kl**i**c</sub> &delta;<sub>**a**d</sub>] r<sup>lkcd</sup>\
 
-+ +F<sub>**ld**</sub> = f<sub>**ld**</sub> &delta;<sub>i**k**</sub>&delta;<sub>**c**</sub> + t<sup>e</sup><sub>m</sub> g<sub>**k**m**c**e</sub> &delta;<sub>i**l**</sub>&delta;<sub>a**d**</sub>
++ +F<sub>**kc**</sub> = f<sub>**kc**</sub> &delta;<sub>il</sub>&delta;<sub>d</sub> + t<sup>e</sup><sub>m</sub> g<sub>**k**mde</sub> &delta;<sub>i**k**</sub>&delta;<sub>a**c**</sub>
 
-    + [16] +f<sub>**ld**</sub> &delta;<sub>i**k**</sub>&delta;<sub>a**c**</sub>  &nbsp;&nbsp;<sup>16</sup> 
-    + [17] +t<sup>e</sup><sub>m</sub> g<sub>**l**m**d**e</sub> &delta;<sub>i**k**</sub>&delta;<sub>a**c**</sub>  &nbsp;&nbsp;<sup>21</sup> !
+    + [16] +f<sub>**kc**</sub> &delta;<sub>il</sub>&delta;<sub>ad</sub>  &nbsp;&nbsp;<sup>16</sup> 
+    + [17] +t<sup>e</sup><sub>m</sub> g<sub>**k**m**c**e</sub> &delta;<sub>il</sub>&delta;<sub>ad</sub>  &nbsp;&nbsp;<sup>21</sup> !
     
-+  +0.5 W<sub>a**ldc**</sub> = 0.5 g<sub>a**ldc**</sub>  &delta;<sub>i**k**</sub> - 0.5 t<sup>a</sup><sub>m</sub>g<sub>m**ldc**</sub> &delta;<sub>i**k**</sub>
++  +0.5 W<sub>a**kc**d</sub> = 0.5 g<sub>a**kc**d</sub>  &delta;<sub>il</sub> - 0.5 t<sup>a</sup><sub>m</sub>g<sub>m**kc**d</sub> &delta;<sub>il</sub>
 
-    + [18] +0.5 g<sub>a**ldc**</sub> &delta;<sub>i**k**</sub> &nbsp;&nbsp;<sup>17</sup> !
-    + [19] -0.5 t<sup>a</sup><sub>m</sub> g<sub>m**ldc**</sub> &delta;<sub>i**k**</sub> &nbsp;&nbsp;<sup>20</sup> !
+    + [18] +0.5 g<sub>a**kc**d</sub> &delta;<sub>il</sub> &nbsp;&nbsp;<sup>17</sup> !
+    + [19] -0.5 t<sup>a</sup><sub>m</sub> g<sub>m**kc**d</sub> &delta;<sub>il</sub> &nbsp;&nbsp;<sup>20</sup> !
 
-+ -0.5 W<sub>**lk**i**d**</sub> = -0.5 [g<sub>**lk**i**d**</sub> </sub>&delta;<sub>a**c**</sub> + t<sup>e</sup><sub>i</sub> g<sub>**lk**e**d**</sub></sub> &delta;<sub>a**c**</sub>]
++ -0.5 W<sub>**k**il**c**</sub> = -0.5 [g<sub>**k**li**c**</sub> </sub>&delta;<sub>ad</sub> + t<sup>e</sup><sub>i</sub> g<sub>**k**le**c**</sub></sub> &delta;<sub>ad</sub>]
 
-    + [20] -0.5 g<sub>**lk**i**d**</sub> </sub>&delta;<sub>a**c**</sub> &nbsp;&nbsp;<sup>18</sup> !
-    + [21] -0.5 t<sup>e</sup><sub>i</sub> g<sub>**lk**e**d**</sub></sub> &delta;<sub>a**c**</sub> &nbsp;&nbsp;<sup>19</sup> !
+    + [20] -0.5 g<sub>**k**li**c**</sub> </sub>&delta;<sub>ad</sub> &nbsp;&nbsp;<sup>18</sup> !
+    + [21] -0.5 t<sup>e</sup><sub>i</sub> g<sub>**k**le**dc*</sub></sub> &delta;<sub>ad</sub> &nbsp;&nbsp;<sup>19</sup> !
     
 *There is disagreement between reference [2] and [Coupled-cluster calculations of nuclear magnetic resonance chemical shifts](www2.chemia.uj.edu.pl/~migda/Literatura/pdf/JCP03561.pdf) we have taken reference [3] which agrees with coding in psi4numpy/pyscf. Reference [2] has g<sub>kild</sub> + t<sup>d</sup><sub>l</sub>g<sub>kied</sub> and reference [3] g<sub>lkid</sub> + t<sup>e</sup><sub>i</sub>g<sub>lked</sub>*
 
