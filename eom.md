@@ -137,12 +137,12 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
 #### H<sub>DD</sub>
  \[*P*(ab) F<sub>**b**c</sub> &delta;<sub>**j**k</sub> &delta;<sub>**i**l</sub> &delta;<sub>**a**d</sub> - F<sub>k**j**</sub></sub> &delta;<sub>**a**d</sub> &delta;<sub>**i**l</sub> &delta;<sub>**b**c</sub> + 0.5W<sub>**ab**cd</sub> &delta;<sub>**i**k</sub> &delta;<sub>**j**l</sub> + 0.5W<sub>kl**ij**</sub> &delta;<sub>**a**c</sub > &delta;<sub>**b**d</sub> + *P*(ij)*P*(ab) W<sub>**a**k**i**c</sub> &delta;<sub>**j**l</sub> &delta;<sub>**b**d</sub> - 0.5W<sub>lkec</sub>t<sup>e**b**</sup><sub>**ij**</sub> &delta;<sub>**a**d</sub> + 0.5W<sub>mkdc</sub>t<sup>**ab**</sup><sub>**j**m</sub> &delta;<sub>**i**l</sub>] r<sup>lkcd</sup>
 
-+ +*P*(ab) F<sub>**b**c</sub> = *P*(ab) {(*f*<sub>**b**c</sub> - *f*<sub>mc</sub> t<sup>**b**</sup><sub>m</sub> + t<sup>e</sup><sub>m</sub> g<sub>m**a**ec</sub> - 0.5 &tau;<sup>e**b**</sup><sub>mn</sub>g<sub>mnec</sub>) &delta;<sub>**i**k</sub>&delta;<sub>**j**l</sub>&delta;<sub>**a**d</sub>}
++ +*P*(ab) F<sub>**b**c</sub> = *P*(ab) {(*f*<sub>**b**c</sub> - *f*<sub>mc</sub> t<sup>**b**</sup><sub>m</sub> + t<sup>e</sup><sub>m</sub> g<sub>m**b**ec</sub> - 0.5 &tau;<sup>**b**e</sup><sub>mn</sub>g<sub>mnce</sub>) &delta;<sub>**i**k</sub>&delta;<sub>**j**l</sub>&delta;<sub>**a**d</sub>}
     + [50] +*P*(ab) *f*<sub>**b**c</sub> &delta;<sub>**i**k</sub>&delta;<sub>**j**l</sub>&delta;<sub>**a**d</sub>  &nbsp;&nbsp;<sup>52</sup>  
     + [51] -*P*(ab) *f*<sub>mc</sub> t<sup>**b**</sup><sub>m</sub> &delta;<sub>**i**k</sub>&delta;<sub>**j**l</sub>&delta;<sub>**a**d</sub>  &nbsp;&nbsp;<sup>58</sup> !
     + [52] +*P*(ab) t<sup>e</sup><sub>m</sub>g<sub>m**b**ec</sub> &delta;<sub>**i**k</sub>&delta;<sub>**j**l</sub>&delta;<sub>**a**d</sub>  &nbsp;&nbsp;<sup>63</sup> !
     + [53] -*P*(ab) 0.5t<sup>e**b**</sup><sub>mn</sub> g<sub>mnec</sub>&delta;<sub>**i**k</sub>&delta;<sub>**j**l</sub>&delta;<sub>**a**d</sub>  &nbsp;&nbsp;<sup>71</sup> !
-    + [54] -*P*(ab) t<sup>e</sup><sub>m</sub> t<sup>**a**</sup><sub>n</sub> g<sub>mnec</sub> &delta;<sub>**i**k</sub>&delta;<sub>**j**l</sub>&delta;<sub>**a**d</sub>  &nbsp;&nbsp;<sup>76</sup>
+    + [54] -*P*(ab) t<sup>e</sup><sub>m</sub> t<sup>**b**</sup><sub>n</sub> g<sub>mnec</sub> &delta;<sub>**i**k</sub>&delta;<sub>**j**l</sub>&delta;<sub>**a**d</sub>  &nbsp;&nbsp;<sup>76</sup>
     
 + -*P*(ij) F<sub>k**j**</sub> = *P*(ij) {(*f*<sub>k**j**</sub> + *f*<sub>ke</sub> t<sup>e</sup><sub>**j**</sub> + t<sup>e</sup><sub>m</sub> g<sub>km**j**e</sub> + 0.5&tau;<sup>ef</sup><sub>**j**m</sub> g<sub>kmef</sub> ) &delta;<sub>**a**d</sub>&delta;<sub>**i**l</sub>&delta;<sub>**b**c</sub>}
     + [55] -*P*(ij) *f*<sub>k**j**</sub></sub> &delta;<sub>**a**d</sub>&delta;<sub>**i**l</sub>&delta;<sub>**b**c</sub>  &nbsp;&nbsp;<sup>53</sup>
@@ -164,11 +164,11 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
     + [67] +0.5t<sup>e</sup><sub>**i**</sub> t<sup>f</sup><sub>**j**</sub> g<sub>klef</sub> &delta;<sub>**a**c</sub>&delta;<sub>**b**d</sub>  &nbsp;&nbsp;<sup>72</sup>
     
 + +*P*(ij)*P*(ab) W<sub>**a**k**i**c</sub> = *P*(ij)*P*(ab) {(g<sub>**a**k**i**c</sub> + t<sup>e</sup><sub>**i**</sub> g<sub>**a**kec</sub> - t<sup>**a**</sup><sub>m</sub> g<sub>mk**i**c</sub> - (t<sup>e**a**</sup><sub>**i**m</sub> + t<sup>e</sup><sub>**i**</sub> t<sup>**a**</sup><sub>m</sub>) g<sub>mkec</sub>) &delta;<sub>**j**l</sub>&delta;<sub>d**b<**/sub>}
-    + [68] +*P*(ij)*P*(ab) g<sub>**a**k**i**c</sub>  &delta;<sub>**j**l</sub>&delta;<sub>d**b<**/sub>   &nbsp;&nbsp;<sup>56</sup>
-    + [69] +*P*(ij)*P*(ab) t<sup>e</sup><sub>**i**</sub> g<sub>**a**kec</sub> &delta;<sub>**j**l</sub>&delta;<sub>d**b<**/sub>  &nbsp;&nbsp;<sup>59</sup>  
-    + [70] -*P*(ij)*P*(ab) t<sup>**a**</sup><sub>m</sub>g<sub>mk**i**c</sub> &delta;<sub>**j**l</sub>&delta;<sub>d**b<**/sub>  &nbsp;&nbsp;<sup>60</sup>
-    + [71] -*P*(ij)*P*(ab) t<sup>e**a**</sup><sub>im</sub> g<sub>mkec</sub>&delta;<sub>**j**l</sub>&delta;<sub>d**b<**/sub>} &nbsp;&nbsp;<sup>67</sup>
-    + [72] -*P*(ij)*P*(ab) t<sup>e</sup><sub>**i**</sub> t<sup>**a**</sup><sub>m</sub> g<sub>mkec</sub> &delta;<sub>**j**l</sub>&delta;<sub>d**b<**/sub> &nbsp;&nbsp;<sup>74</sup>
+    + [68] +*P*(ij)*P*(ab) g<sub>**a**k**i**c</sub>  &delta;<sub>**j**l</sub>&delta;<sub>d**b**</sub>   &nbsp;&nbsp;<sup>56</sup>
+    + [69] +*P*(ij)*P*(ab) t<sup>e</sup><sub>**i**</sub> g<sub>**a**kec</sub> &delta;<sub>**j**l</sub>&delta;<sub>d**b**</sub>  &nbsp;&nbsp;<sup>59</sup>  
+    + [70] -*P*(ij)*P*(ab) t<sup>**a**</sup><sub>m</sub>g<sub>mk**i**c</sub> &delta;<sub>**j**l</sub>&delta;<sub>d**b**</sub>  &nbsp;&nbsp;<sup>60</sup>
+    + [71] -*P*(ij)*P*(ab) t<sup>e**a**</sup><sub>im</sub> g<sub>mkec</sub> &delta;<sub>**j**l</sub>&delta;<sub>d**b**</sub> &nbsp;&nbsp;<sup>67</sup>
+    + [72] -*P*(ij)*P*(ab) t<sup>e</sup><sub>**i**</sub> t<sup>**a**</sup><sub>m</sub> g<sub>mkec</sub> &delta;<sub>**j**l</sub>&delta;<sub>d**b**</sub> &nbsp;&nbsp;<sup>74</sup>
   
 + -0.5W<sub>lkec</sub> t<sup>e**b**</sup><sub>**ij**</sub> = -0.5t<sup>e**b**</sup><sub>**ij**</sub> g<sub>lkec</sub> &delta;<sub>**a**d</sub>
     + [73] -0.5t<sup>e**b**</sup><sub>**ij**</sub>g<sub>lkec</sub> &delta;<sub>**a**d</sub>  &nbsp;&nbsp;<sup>70</sup>
