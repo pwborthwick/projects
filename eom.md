@@ -1,6 +1,6 @@
 # EOM-CCSD
 The motivation for this is Josh Goings program *pyqchem* on Github. The following draws from that program and documents Josh kindly supplied.
-The paper [Simplified methods for equation-of-motion coupled-cluster excited state calculations - Steven R. Gwaltney, Marcel Nooijen, Rodney J. Bartlett](https://notendur.hi.is/agust/rannsoknir/papers/cpl248-189-96.pdf) gives the following equations for the partitioning of the EOM-CCSD hamiltonian 
+The paper [Simplified methods for equation-of-motion coupled-cluster excited state calculations - Steven R. Gwaltney, Marcel Nooijen, Rodney J. Bartlett](https://notendur.hi.is/agust/rannsoknir/papers/cpl248-189-96.pdf) gives the following equations for the partitioning of the EOM-CCSD hamiltonian. The Hamiltonian is not Hermitian and these are equations for right hand eigenvectors.
 
 **H<sub>SS</sub>**\
 F<sub>ae</sub>C<sup>e</sup><sub>i</sub> - F<sub>mi</sub>C<sup>a</sup><sub>m</sub> + W<sub>amie</sub>C<sup>e</sup><sub>m</sub> , *which re-indexed {e->c,m->k} is*\
@@ -287,3 +287,12 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
 
 + +0.5W<sub>mkdc</sub> t<sup>**ab**</sup><sub>**j**m</sub> = +0.5W<sub>mkdc</sub >t<sup>**ab**</sup><sub>**j**m</sub> &delta;<sub>**i**l</sub>
     + [74] -0.5W<sub>kmcd</sub> t<sup>**ab**</sup><sub>m**j**</sub> &delta;<sub>**i**l</sub>  &nbsp;&nbsp;<sup>68</sup>
+
+ - - -
+ P-EOM
+ 
+ In the partitioned scheme the H<sub>DD</sub>(2) block is replaced with H<sub>DD</sub>(0). That is 
+ #### H<sub>DD</sub>
+ \[*P*(ab) F<sub>**b**c</sub> &delta;<sub>**j**k</sub> &delta;<sub>**i**l</sub> &delta;<sub>**a**d</sub> - F<sub>k**j**</sub></sub> &delta;<sub>**a**d</sub> &delta;<sub>**i**l</sub> &delta;<sub>**b**c</sub>]\
+     + [50] +*P*(ab) *f*<sub>**b**c</sub> &delta;<sub>**j**k</sub>&delta;<sub>**i**l</sub>&delta;<sub>**a**d</sub>  &nbsp;&nbsp;<sup>52</sup>  
+     + [55] -*P*(ij) *f*<sub>k**j**</sub></sub> &delta;<sub>**a**d</sub>&delta;<sub>**i**l</sub>&delta;<sub>**b**c</sub>  &nbsp;&nbsp;<sup>53</sup>
