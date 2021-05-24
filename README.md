@@ -11,3 +11,5 @@ transitionDipoles - note on implementing TDHF properties. Implemented.
 
 perturbationDiagrams - code to generate Hugenholtz diagram. HTML of MPn expressions and automatic code generation to compute MPn. Implemented.
 
+eom - eom-ccsd and eom-mbpt2 equations
+
