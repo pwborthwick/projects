@@ -1,4 +1,5 @@
 ## CCSD Lambda Equations
+These equations are taken from [Gauss and Stanton J. Chem. Phys., Vol. 103, No. 9, 1 September 1995](http://www2.chemia.uj.edu.pl/~migda/Literatura/pdf/JCP03561.pdf)\
 **Lambda intermediates**
 + F<sup>&Lambda;</sup><sub>ae</sub> = F<sub>ae</sub> - 0.5t<sup>a</sup><sub>m</sub>F<sub>me</sub>
 + F<sup>&Lambda;</sup><sub>mi</sub> = F<sub>mi</sub> + 0.5t<sup>e</sup><sub>i</sub>F<sub>me</sub>
@@ -31,8 +32,9 @@
 + G<sub>mi</sub> = 0.5t<sup>ef</sup><sub>mn</sub>&lambda;<sup>ef</sup><sub>in</sub>
 
 **Lambda Equations**\
-**&Lambda;<sub>1</sub>** = F<sub>ia</sub> + &lambda;<sup>e</sup><sub>i</sub>F<sub>ea</sub> - &lambda;<sup>a</sup><sub>m</sub>F<sub>im</sub> + &lambda;<sup>e</sup><sub>m</sub>W<sub>ieam</sub> + 0.5&lambda;<sup>ef</sup><sub>im</sub>W<sub>efam</sub> - 0.5&lambda;<sup>ae</sup><sub>mn</sub>W<sub>iemn</sub> - G<sub>ef</sub>W<sub>eifa</sub> - G<sub>mn</sub>W<sub>mina</sub>\
-**&Lambda;<sub>2</sub>** = g<sub>ijab</sub>  - P(ij)&lambda;<sup>ab</sup><sub>im</sub>F<sub>jm</sub> + 0.5&lambda;<sup>ab</sup><sub>mn</sub>W<sub>ijmn</sub> + 0.5&lambda;<sup>ef</sup><sub>ij</sub>W<sub>efab</sub> + P(ij)&lambda;<sup>e</sup><sub>i</sub>W<sub>ejab</sub> - P(ab)&lambda;<sup>a</sup><sub>m</sub>W<sub>ijmb</sub> + P(ij)P(ab)&lambda;<sup>ae</sup><sub>im</sub>W<sub>jebm</sub> + P(ij)P(ab)&lambda;<sup>a</sup><sub>i</sub>F<sub>jb</sub> + P(ab)g<sub>ijae</sub>G<sub>be</sub> - + P(ij)g<sub>imab</sub>G<sub>mj</sub> 
+**&Lambda;<sub>1</sub>** (&lambda;<sup>a</sup><sub>i</sub>) = F<sup>&Lambda;</sup><sub>ia</sub> + &lambda;<sup>e</sup><sub>i</sub>F<sup>&Lambda;</sup><sub>ea</sub> - &lambda;<sup>a</sup><sub>m</sub>F<sup>&Lambda;</sup><sub>im</sub> + &lambda;<sup>e</sup><sub>m</sub>W<sup>&Lambda;</sup><sub>ieam</sub> + 0.5&lambda;<sup>ef</sup><sub>im</sub>W<sup>&Lambda;</sup><sub>efam</sub> - 0.5&lambda;<sup>ae</sup><sub>mn</sub>W<sup>&Lambda;</sup><sub>iemn</sub> - G<sub>ef</sub>W<sup>&Lambda;</sup><sub>eifa</sub> - G<sub>mn</sub>W<sub>mina</sub>\
+**&Lambda;<sub>2</sub>** (&lambda;<sup>ab</sup><sub>ij</sub>) = g<sub>ijab</sub>  - P(ij)&lambda;<sup>ab</sup><sub>im</sub>F<sup>&Lambda;</sup><sub>jm</sub> + 0.5&lambda;<sup>ab</sup><sub>mn</sub>W<sup>&Lambda;</sup><sub>ijmn</sub> + 0.5&lambda;<sup>ef</sup><sub>ij</sub>W<sup>&Lambda;</sup><sub>efab</sub> + P(ij)&lambda;<sup>e</sup><sub>i</sub>W<sup>&Lambda;</sup><sub>ejab</sub> - P(ab)&lambda;<sup>a</sup><sub>m</sub>W<sup>&Lambda;</sup><sub>ijmb</sub> + P(ij)P(ab)&lambda;<sup>ae</sup><sub>im</sub>W<sup>&Lambda;</sup><sub>jebm</sub> + P(ij)P(ab)&lambda;<sup>a</sup><sub>i</sub>F<sup>&Lambda;</sup><sub>jb</sub> + P(ab)g<sub>ijae</sub>G<sub>be</sub> - + P(ij)g<sub>imab</sub>G<sub>mj</sub> 
 
-
+**&Lambda;-CCSD Pseudoenergy**\
+E<sub>&Lambda;</sub> = &lambda;<sup>a</sup><sub>i</sub>f<sub>ai</sub> + 0.25&lambda;<sup>ab</sup><sub>ij</sub>g<sub>abij</sub>
 
