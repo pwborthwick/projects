@@ -26,6 +26,13 @@
 + + W<sub>mbij</sub> = g<sub>mbij</sub> - F<sub>me</sub>t<sup>be</sup><sub>ij</sub> - t<sup>b</sup><sub>n</sub>W<sub>mnij</sub> + 0.5&tau;<sup>ef</sup><sub>ij</sub> g<sub>mbef</sub> + P(ij) t<sup>be</sup><sub>jn</sub> g<sub>mnie</sub> + P(ij) t<sup>e</sup><sub>i</sub> {g<sub>mbej</sub> - t<sup>bf</sup><sub>nj</sub> g<sub>mnef</sub>} 
 + + W<sub>abei</sub> = g<sub>abei</sub> - F<sub>me</sub>t<sup>ab</sup><sub>mi</sub> + t<sup>f</sup><sub>i</sub>W<sub>abef</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub> g<sub>mnei</sub> - P(ab) t<sup>af</sup><sub>mi</sub> g<sub>mbef</sub> - P(ab) t<sup>a</sup><sub>m</sub> {g<sub>mbei</sub> - t<sup>bf</sup><sub>ni</sub> g<sub>mnef</sub>} 
 
-**Lambda Equations**
-**&Lambda;<sub>1</sub>** = F<sub>ia</sub> + &lambda;<sup>e</sup><sub>i</sub>F<sub>ea</sub> - &lambda;<sup>a</sup><sub>m</sub>F<sub>im</sub> + &lambda;<sup>e</sup><sub>m</sub>W<sub>ieam</sub> + 0.5&lambda;<sup>ef</sup><sub>im</sub>W<sub>efam</sub> - 0.5&lambda;<sup>ae</sup><sub>mn</sub>W<sub>iemn</sub> - G<sub>ef</sub>W<sub>eifa</sub> - G<sub>mn</sub>W<sub>mina</sub>
+**Three-body Terms**
++ G<sub>ae</sub> = -0.5t<sup>ef</sup><sub>mn</sub>&lambda;<sup>af</sup><sub>mn</sub>
++ G<sub>mi</sub> = 0.5t<sup>ef</sup><sub>mn</sub>&lambda;<sup>ef</sup><sub>in</sub>
+
+**Lambda Equations**\
+**&Lambda;<sub>1</sub>** = F<sub>ia</sub> + &lambda;<sup>e</sup><sub>i</sub>F<sub>ea</sub> - &lambda;<sup>a</sup><sub>m</sub>F<sub>im</sub> + &lambda;<sup>e</sup><sub>m</sub>W<sub>ieam</sub> + 0.5&lambda;<sup>ef</sup><sub>im</sub>W<sub>efam</sub> - 0.5&lambda;<sup>ae</sup><sub>mn</sub>W<sub>iemn</sub> - G<sub>ef</sub>W<sub>eifa</sub> - G<sub>mn</sub>W<sub>mina</sub>\
+**&Lambda;<sub>2</sub>** = g<sub>ijab</sub>  - P(ij)&lambda;<sup>ab</sup><sub>im</sub>F<sub>jm</sub> + 0.5&lambda;<sup>ab</sup><sub>mn</sub>W<sub>ijmn</sub> + 0.5&lambda;<sup>ef</sup><sub>ij</sub>W<sub>efab</sub> + P(ij)&lambda;<sup>e</sup><sub>i</sub>W<sub>ejab</sub> - P(ab)&lambda;<sup>a</sup><sub>m</sub>W<sub>ijmb</sub> + P(ij)P(ab)&lambda;<sup>ae</sup><sub>im</sub>W<sub>jebm</sub> + P(ij)P(ab)&lambda;<sup>a</sup><sub>i</sub>F<sub>jb</sub> + P(ab)g<sub>ijae</sub>G<sub>be</sub> - + P(ij)g<sub>imab</sub>G<sub>mj</sub> 
+
+
 
