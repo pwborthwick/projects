@@ -38,3 +38,53 @@ These equations are taken from [Gauss and Stanton J. Chem. Phys., Vol. 103, No. 
 **&Lambda;-CCSD Pseudoenergy**\
 E<sub>&Lambda;</sub> = &lambda;<sup>a</sup><sub>i</sub>f<sub>ai</sub> + 0.25&lambda;<sup>ab</sup><sub>ij</sub>g<sub>abij</sub>
 
+- - -
+## CCSD -> CC2
+CC2 is an approximate scheme to CCSD. The T<sub>1</sub> amplitudes are the same as CCSD, however the T<sub>2</sub> amplitudes are given by <&psi;<sup>ab</sup><sub>ij</sub>| **H<sub>N</sub>** e<sup>T<sub>1</sub></sup> + **F<sub>N</sub>** T<sub>2</sub>|0> = 0\
+where **H<sub>N</sub>** and **F<sub>N</sub>** are the normal-ordered Hamiltonian and Fock matrices. **\[]** are the coupled-cluster diagram designations. Equations for T-amplitudes taken from reference above Table I(a) & (b) and (tilde) intermediates taken from Table III.
+
+T<sub>1</sub> = f<sub>ai</sub> + *F*<sub>ae</sub>t<sup>e</sup><sub>i</sub> - *F*<sub>mi</sub>t<sup>a</sup><sub>m</sub> + *F*<sub>me</sub>t<sup>ae</sup><sub>im</sub> +
+t<sup>e</sup><sub>m</sub>g<sub>amie</sub> - 0.5t<sup>ae</sup><sub>mn</sub>g<sub>mnie</sub> + 0.5t<sup>ef</sup><sub>im</sub>g<sub>amef</sub>
++ f<sub>ai</sub> **\[S<sub>1</sub>]**
++ *F*<sub>ae</sub>t<sup>e</sup><sub>i</sub>
++ + t<sup>e</sup><sub>i</sub>f<sub>ae</sub> **\[S<sub>3<sub>a</sub></sub>]**
++ + -0.5t<sup>e</sup><sub>i</sub>t<sup>a</sup><sub>m</sub>f<sub>me</sub> **\[S<sub>5<sub>a</sub></sub>]**
++ + t<sup>e</sup><sub>i</sub>t<sup>f</sup><sub>m</sub>g<sub>amef</sub> **\[S<sub>5<sub>b</sub></sub>]**
++ + -t<sup>e</sup><sub>i</sub> &tau;<sup>af</sup><sub>mn</sub>g<sub>mnef</sub>
++ + + -0.5t<sup>e</sup><sub>i</sub> t<sup>af</sup><sub>mn</sub>g<sub>mnef</sub> **\[S<sub>4<sub>a</sub></sub>]**
++ + + -0.5t<sup>e</sup><sub>i</sub> t<sup>a</sup><sub>m</sub>t<sup>f</sup><sub>n</sub>g<sub>mnef</sub> **\[S<sub>6</sub>]**
++ *F*<sub>mi</sub>t<sup>a</sup><sub>m</sub>
++ + -t<sup>a</sup><sub>m</sub>f<sub>mi</sub> **\[S<sub>3<sub>b</sub></sub>]**
++ + -0.5t<sup>a</sup><sub>m</sub>t<sup>e</sup><sub>i</sub>f<sub>me</sub> **\[S<sub>5<sub>a</sub></sub>]**
++ + -t<sup>a</sup><sub>m</sub>t<sup>e</sup><sub>n</sub>g<sub>mnie</sub> **\[S<sub>5<sub>c</sub></sub>]**
++ + -t<sup>a</sup><sub>m</sub> &tau;<sup>ef</sup><sub>in</sub>g<sub>mnef</sub>
++ + + -0.5t<sup>a</sup><sub>m</sub> t<sup>ef</sup><sub>in</sub>g<sub>mnef</sub> **\[S<sub>4<sub>b</sub></sub>]**
++ + + -0.5t<sup>a</sup><sub>m</sub> t<sup>e</sup><sub>i</sub>t<sup>f</sup><sub>n</sub>g<sub>mnef</sub> **\[S<sub>6</sub>]**
++ *F*<sub>me</sub>t<sup>ae</sup><sub>im</sub>
++ + t<sup>ae</sup><sub>im</sub>f<sub>me</sub> **\[S<sub>2<sub>a</sub></sub>]**
++ + t<sup>ae</sup><sub>im</sub>t<sup>f</sup><sub>n</sub>g<sub>mnef</sub> **\[S<sub>4<sub>c</sub></sub>]**
++ t<sup>e</sup><sub>m</sub>g<sub>amie</sub> **\[S<sub>3<sub>c</sub></sub>]**
++ -0.5t<sup>ae</sup><sub>mn</sub>g<sub>mnie</sub> **\[S<sub>2<sub>c</sub></sub>]**
++ 0.5t<sup>ef</sup><sub>im</sub>g<sub>amef</sub> **\[S<sub>2<sub>b</sub></sub>]**
+
+T<sub>2</sub> = g<sub>abij</sub> + P(ij)(t<sup>ae</sup><sub>ij</sub>{*F*<sub>be</sub> - 0.5t<sup>b</sup><sub>n</sub>*F*<sub>me</sub>}) - P(ab)(t<sup>ab</sup><sub>im</sub>{*F*<sub>mj</sub> + 0.5t<sup>e</sup><sub>j</sub>*F*<sub>me</sub>}) + 0.5&tau;<sup>ab</sup><sub>mn</sub>*W*<sub>mnij</sub> + 0.5&tau;<sup>ef</sup><sub>ij</sub>*W*<sub>abef</sub> + P(ab)P(ij){t<sup>ae</sup><sub>im</sub>*W*<sub>mbej</sub> - t<sup>e</sup><sub>i</sub>t<sup>a</sup><sub>m</sub>g<sub>mbej</sub>} + P(ij)t<sup>e</sup><sub>i</sub>g<sub>abej</sub> - P(ab)t<sup>a</sup><sub>m</sub>g<sub>mbij</sub>
+
+Since only T<sub>1</sub> operates on **H<sub>N</sub>** we can reduce the above equation to\
+T<sub>2</sub> = g<sub>abij</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub>*W*<sub>mnij</sub> + 0.5&tau;<sup>ef</sup><sub>ij</sub>*W*<sub>abef</sub> - P(ab)P(ij)t<sup>e</sup><sub>i</sub>t<sup>a</sup><sub>m</sub>g<sub>mbej</sub> + P(ij)t<sup>e</sup><sub>i</sub>g<sub>abej</sub> - P(ab)t<sup>a</sup><sub>m</sub>g<sub>mbij</sub>
++ g<sub>abij</sub> **\[D<sub>1</sub>]**
++ 0.5&tau;<sup>ab</sup><sub>mn</sub>*W*<sub>mnij</sub> = t<sup>a</sup><sub>m</sub>t<sup>b</sup><sub>n</sub>*W*<sub>mnij</sub> 
++ + t<sup>a</sup><sub>m</sub>t<sup>b</sup><sub>n</sub>g<sub>mnij</sub> **\[D<sub>6<sub>b</sub></sub>]**
++ + t<sup>a</sup><sub>m</sub>t<sup>b</sup><sub>n</sub>P(ij){t<sup>e</sup><sub>j</sub>g<sub>mnie</sub>} **\[D<sub>8<sub>b</sub></sub>]**
++ + 0.5t<sup>a</sup><sub>m</sub>t<sup>b</sup><sub>n</sub>t<sup>e</sup><sub>i</sub>t<sup>f</sup><sub>j</sub>g<sub>mnef</sub> **\[D<sub>9</sub>]**
++ 0.5&tau;<sup>ef</sup><sub>ij</sub>*W*<sub>abef</sub>
++ + t<sup>e</sup><sub>i</sub>t<sup>f</sup><sub>j</sub>g<sub>abef</sub> **\[D<sub>6<sub>a</sub></sub>]**
++ + -t<sup>e</sup><sub>i</sub>t<sup>f</sup><sub>j</sub>P(ab){t<sup>b</sup><sub>m</sub>g<sub>amef</sub>} **\[D<sub>8<sub>a</sub></sub>]**
++ + 0.5t<sup>e</sup><sub>i</sub>t<sup>f</sup><sub>j</sub>t<sup>a</sup><sub>m</sub>t<sup>b</sup><sub>n</sub>g<sub>mnef</sub> **\[D<sub>9</sub>]**
++ P(ab)P(ij)t<sup>e</sup><sub>i</sub>t<sup>a</sup><sub>m</sub>g<sub>mbej</sub> **\[D<sub>6<sub>c</sub></sub>]**
++ P(ij)t<sup>e</sup><sub>i</sub>g<sub>abej</sub> **\[D<sub>4<sub>a</sub></sub>]**
++ -P(ab)t<sup>a</sup><sub>m</sub>g<sub>mbij</sub> **\[D<sub>4<sub>b</sub></sub>]**
+
+Need to add in the T<sub>2</sub> operating on **F<sub>N</sub>**
++ P(ij)t<sup>ae</sup><sub>ij</sub>*F*<sub>be</sub> **\[D<sub>2<sub>a</sub></sub>]**
++ -P(ab)t<sup>ab</sup><sub>im</sub>*F*<sub>mj</sub> **\[D<sub>2<sub>b</sub></sub>]**
+
