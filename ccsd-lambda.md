@@ -85,6 +85,6 @@ T<sub>2</sub> = g<sub>abij</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub>*W*<sub>mni
 + -P(ab)t<sup>a</sup><sub>m</sub>g<sub>mbij</sub> **\[D<sub>4<sub>b</sub></sub>]**
 
 Need to add in the T<sub>2</sub> operating on **F<sub>N</sub>**
-+ P(ij)t<sup>ae</sup><sub>ij</sub>*F*<sub>be</sub> **\[D<sub>2<sub>a</sub></sub>]**
-+ -P(ab)t<sup>ab</sup><sub>im</sub>*F*<sub>mj</sub> **\[D<sub>2<sub>b</sub></sub>]**
++ t<sup>ae</sup><sub>ij</sub>f<sub>be</sub> **\[D<sub>2<sub>a</sub></sub>]**
++ -t<sup>ab</sup><sub>im</sub>f<sub>mj</sub> **\[D<sub>2<sub>b</sub></sub>]**
 
