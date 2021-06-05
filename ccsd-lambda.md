@@ -15,7 +15,7 @@ These equations are taken from [Gauss and Stanton J. Chem. Phys., Vol. 103, No. 
 
 + + W<sub>mnij</sub> = g<sub>mnij</sub> + P(ij) t<sup>e</sup><sub>j</sub> g<sub>mnie</sub> + 0.5&tau;<sup>ef</sup><sub>ij</sub> g<sub>mnef</sub> 
 + + W<sub>abef</sub> = g<sub>abef</sub> - P(ab) t<sup>b</sup><sub>m</sub> g<sub>amef</sub> + 0.5&tau;<sup>ab</sup><sub>mn</sub> g<sub>mnef</sub> 
-+ + W<sub>mbej</sub> = W<sub>(ovvo)</sub> = g<sub>mbej</sub> + t<sup>f</sup><sub>j</sub> g<sub>mbef</sub> - t<sup>b</sup><sub>n</sub> g<sub>mnej</sub> - (t<sup>fb</sup><sub>jn</sub> + t<sup>f</sup><sub>j</sub>t<sup>b</sup><sub>n</sub>) g<sub>nmfe</sub> \
++ + W<sub>mbej</sub> = W<sub>(ovvo)</sub> = g<sub>mbej</sub> + t<sup>f</sup><sub>j</sub> g<sub>mbef</sub> - t<sup>b</sup><sub>n</sub> g<sub>mnej</sub> - (t<sup>fb</sup><sub>jn</sub> + t<sup>f</sup><sub>j</sub>t<sup>b</sup><sub>n</sub>) g<sub>nmfe</sub> 
 
 + W<sup>&Lambda;</sup><sub>mnie</sub> = W<sub>mnie</sub>
 + W<sup>&Lambda;</sup><sub>amef</sub> = W<sub>amef</sub>
@@ -89,7 +89,7 @@ Need to add in the T<sub>2</sub> operating on **F<sub>N</sub>**
 + -t<sup>ab</sup><sub>im</sub>f<sub>mj</sub> **\[D<sub>2<sub>b</sub></sub>]**
 
 - - -
-## CCD and LCCD
+## CCD, LCCD and LCCSD
 The linear coupled-cluster doubles are a subset of the CCD equations. Hence there are no T<sub>1</sub> amplitudes and the T<sub>2</sub> amplitude are
 + g<sub>abij</sub> **\[D1]**
 + P(ab)*f*<sub>bc</sub>t<sup>ae</sup><sub>ij</sub> **\[D2a]**
@@ -103,3 +103,5 @@ The linear coupled-cluster doubles are a subset of the CCD equations. Hence ther
 + -0.5P(ab)g<sub>mnef</sub>t<sup>ae</sup><sub>nm</sub>t<sup>fb</sup><sub>ij</sub> **\[D3d]**
 
 For the Linear CCD we use **\[D1], \[D2a], \[D2b], \[D2c], \[D2d] and \[D2e]**
+
+For LCCSD we add in **\[S1], \[S2a], \[S2b], \[S2c], \[S3a], \[S3b] and \[S3c]**
