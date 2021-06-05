@@ -88,3 +88,18 @@ Need to add in the T<sub>2</sub> operating on **F<sub>N</sub>**
 + t<sup>ae</sup><sub>ij</sub>f<sub>be</sub> **\[D<sub>2<sub>a</sub></sub>]**
 + -t<sup>ab</sup><sub>im</sub>f<sub>mj</sub> **\[D<sub>2<sub>b</sub></sub>]**
 
+- - -
+## CCD and LCCD
+The linear coupled-cluster doubles are a subset of the CCD equations. Hence there are no T<sub>1</sub> amplitudes and the T<sub>2</sub> amplitude are
++ g<sub>abij</sub> **\[D1]**
++ P(ab)*f*<sub>bc</sub>t<sup>ae</sup><sub>ij</sub> **\[D2a]**
++ -P(ij)*f*<sub>mj</sub>t<sup>ab</sup><sub>im</sub> **\[D2b]**
++ 0.5g<sub>abef</sub>t<sup>ef</sup><sub>ij</sub> **\[D2c]**
++ 0.5g<sub>mnij</sub>t<sup>ab</sup><sub>mn</sub> **\[D2d]**
++ P(ab)P(ij)g<sub>mbej</sub>t<sup>ae</sup><sub>im</sub> **\[D2e]**
++ 0.25g<sub>mnef</sub>t<sup>ef</sup><sub>ij</sub>t<sup>ab</sup><sub>mn</sub>  **\[D3a]**
++ P(ij)g<sub>mnef</sub>t<sup>ae</sup><sub>im</sub>t<sup>bf</sup><sub>jn</sub> **\[D3b]**
++ -0.5P(ij)g<sub>mnef</sub>t<sup>fe</sup><sub>im</sub>t<sup>ab</sup><sub>nj</sub> **\[D3c]**
++ -0.5P(ab)g<sub>mnef</sub>t<sup>ae</sup><sub>nm</sub>t<sup>fb</sup><sub>ij</sub> **\[D3d]**
+
+For the Linear CCD we use **\[D1], \[D2a], \[D2b], \[D2c], \[D2d] and \[D2e]**
