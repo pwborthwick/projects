@@ -90,7 +90,7 @@ Need to add in the T<sub>2</sub> operating on **F<sub>N</sub>**
 
 - - -
 ## CCD, LCCD and LCCSD
-The linear coupled-cluster doubles are a subset of the CCD equations. Hence there are no T<sub>1</sub> amplitudes and the T<sub>2</sub> amplitude are
+The linear coupled-cluster doubles are a subset of the CCD equations. Hence there are no T<sub>1</sub> amplitudes and the T<sub>2</sub> amplitudes are
 + g<sub>abij</sub> **\[D1]**
 + P(ab)*f*<sub>bc</sub>t<sup>ae</sup><sub>ij</sub> **\[D2a]**
 + -P(ij)*f*<sub>mj</sub>t<sup>ab</sup><sub>im</sub> **\[D2b]**
@@ -104,4 +104,4 @@ The linear coupled-cluster doubles are a subset of the CCD equations. Hence ther
 
 For the Linear CCD we use **\[D1], \[D2a], \[D2b], \[D2c], \[D2d] and \[D2e]**
 
-For LCCSD we add in **\[S1], \[S2a], \[S2b], \[S2c], \[S3a], \[S3b] and \[S3c]**
+For LCCSD we add in **\[S1], \[S2a], \[S2b], \[S2c], \[S3a], \[S3b] and \[S3c]** single and **\[D4a]** and **\[D4b]**,
