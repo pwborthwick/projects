@@ -296,3 +296,16 @@ Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org
  \[*P*(ab) F<sub>**b**c</sub> &delta;<sub>**j**k</sub> &delta;<sub>**i**l</sub> &delta;<sub>**a**d</sub> - F<sub>k**j**</sub></sub> &delta;<sub>**a**d</sub> &delta;<sub>**i**l</sub> &delta;<sub>**b**c</sub>]\
      + [50] +*P*(ab) *f*<sub>**b**c</sub> &delta;<sub>**j**k</sub>&delta;<sub>**i**l</sub>&delta;<sub>**a**d</sub>  &nbsp;&nbsp;<sup>52</sup>  
      + [55] -*P*(ij) *f*<sub>k**j**</sub></sub> &delta;<sub>**a**d</sub>&delta;<sub>**i**l</sub>&delta;<sub>**b**c</sub>  &nbsp;&nbsp;<sup>53</sup>
+ 
+ - - -
+ ## CIS(D)
+ The CIS(D) scheme is a second-order perturbative approximation to CCSD, based on CIS, and can be considered an excited state analogue to MP2 (M.Head-Gordon,R.J.Rico,M.Oumi,T.J.Lee,Chem.Phys.Lett.219(1994)21).\
+The CIS wavefunction is given by &phi;<sub>cis</sub> = c<sup>a</sup><sub>i</sub>&phi;<sup>a</sup><sub>i</sub> (einstein summation)\
+The excitation energies(&omega;) and expansion coefficients (c<sup>a</sup><sub>i</sub>) are obtained from solving **Hc** = &omega;**c** where H<sub>ia,jb</sub> = <&phi;<sup>a</sup><sub>i</sub>|H|&phi;<sup>b</sup><sub>j</sub>> = *f*<sub>ab</sub>&delta;<sub>ij</sub> - *f*<sub>ij</sub>&delta;<sub>ab</sub> + <aj||ib>\
+The &omega;<sub>cis(D)</sub> = -0.25 (&Gamma;<sup>ab</sup><sub>ij</sub>)<sup>2</sup>\[&Delta;<sup>ab</sup><sub>ij</sub> - &omega;]<sup>-1</sup> + c<sup>a</sup><sub>i</sub>&Lambda;<sup>a</sup><sub>i</sub> where,
++ &Delta;<sup>ab</sup><sub>ij</sub> = &epsilon;<sub>a</sub> + &epsilon;<sub>b</sub> - &epsilon;<sub>i</sub> - &epsilon;<sub>j</sub>
++ &Gamma;<sup>ab</sup><sub>ij</sub> = P(ij)<ac||bj>c<sup>c</sup><sub>i</sub> + P(ab)<ki||aj>c<sup>b</sup><sub>k</sub>
++ &Lambda;<sup>a</sup><sub>i</sub> = -0.5<jb||kc>(c<sup>a</sup><sub>i</sub>A<sup>ca</sup><sub>jk</sub> + c<sup>a</sup><sub>j</sub>A<sup>cb</sup><sub>ik</sub> + 2c<sup>a</sup><sub>k</sub>A<sup>ac</sup><sub>ik</sub>] where A<sup>ab</sup><sub>ij</sub> = <ia||jb>/&Delta;<sup>ab</sup><sub>ij</sub> 
+
+
+
