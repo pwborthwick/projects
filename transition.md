@@ -52,7 +52,7 @@ and from harpy
 so we're OK here.
 
 ### alpha and beta eigenvectors
-To get these we need to do a TDHF calculation. To avoid the left and right eigenvector problem for the moment we'll use the Hermitian form of the equations \
+To get these we need to do a TDHF calculation. For the moment we'll use the Hermitian form of the equations \
 The basic form of the equations \
 **A** = &#948;<sub>𝑖𝑗</sub>**𝑓**<sub>𝑎𝑏</sub> − &#948;<sub>𝑎𝑏</sub>**𝑓**<sub>𝑖𝑗</sub> + <bi||𝑗a> \
 **B** = <bi||ja> 
@@ -67,7 +67,7 @@ There is a corresponding Hermitian form developed from \
 (**A** + **B**)(**A** - **B**) |**X**<sub>n</sub> - **Y**<sub>n</sub>> =  	&#969;<sup>2</sup> |**X**<sub>n</sub> - **Y**<sub>n</sub>> (iv) \
 (**A** + **B**)<sup>&#189;</sup>**.**(**A** - **B**)**.**(**A** + **B**)<sup>&#189;</sup> **S**<sub>n</sub> = &#969;<sup>2</sup> **S**<sub>n</sub> (v) \
 which gives |**X**<sub>n</sub> - **Y**<sub>n</sub>>  =  ((**A** + **B**)<sup>&#189;</sup> **S**<sub>n</sub>) (vi) \
-Again |**X**<sub>n</sub> - **Y**<sub>n</sub>> and |**X**<sub>n</sub> + **Y**<sub>n</sub>> should be biorthonormal.
+The left and right eigenvectors of *each* Hermitian form are the same but we require |**X**<sub>n</sub> - **Y**<sub>n</sub>> and |**X**<sub>n</sub> + **Y**<sub>n</sub>> to be matually biorthonormal, and we shall see that they're not.
 
 It is not necessary to separately solve for |**X**<sub>n</sub> - **Y**<sub>n</sub>> if you have |**X**<sub>n</sub> + **Y**<sub>n</sub>> as they are connected through \
 (**A**+**B**)|**X**<sub>n</sub> + **Y**<sub>n</sub>> = &#969; |**X**<sub>n</sub> - **Y**<sub>n</sub>> or \
@@ -86,7 +86,7 @@ from psi4
 ```
 This for first 3 singlets - OK so far.
 
-The eigenvectors from psi4 for alpha eigenvectors right for the first and second singles singlets - alpha and beta are the same. (It is clear the eigenvalues are not themselves normalised.)
+The eigenvectors from psi4 for alpha eigenvectors right for the first and second singles singlets - alpha and beta are the same. (It is clear the eigenvalues are not themselves normalised.) The left and right eigenvectors from psi4 **do** however form an orthonormal pair.
 ```
 [[ 1.24887231e-16  5.76788541e-19]
  [-1.08892241e-15 -6.05807431e-17]
@@ -190,7 +190,38 @@ This gives us
  [ 1.39987328e-16 -6.09804647e-14]
  [ 5.20446267e-14 -4.42170995e-01]]
 ```
-These are not right.
+These are not right as they do not form an orthonormal pair. Is there a way to make them orthonormal to each other? Unfortunately any operation you might try to make them orthonormal will destroy their eigensolution nature. The only way is to use an iterative procedure which enforces biorthogonality at each iteration. You can, however, use the Tamm-Dancoff Approximation which is a Hermitian problem where left and right eigenvectors are the same as we shall see later. The following illustrates the problem
+```python
+#define a non-symmetric matrix
+import numpy as np
+A = np.array([2.4, -1.4, 0.5],
+             [-4.6, 2.2, 3.6],
+             [1.8,-0.08, 1.0])
+#eigensolve
+from scipy.linalg import eig
+v, R, L = eig(A, left=True, right=True)
+#check
+Cr = np.dot(A, R)
+Vr = np.dot(R, np.diag(v,0)
+assert(np.allclose(Cr, Vr))
+#this passes, now make solution eigenvectors biorthonormal
+
+from scipy.linalg import lu
+M = np.inner(L, R)              #orthogonal product 
+l, u = lu(M, True)              #LU decomposition
+
+#make mutually orthonormal versions of L and R
+Lp = np.dot(np.linalg.inv(l), L)
+Rp = np.dot(np.linalg.inv(u.T), R)
+assert(np.allclose(np.inner(Lp, Rp), np.eye(3))
+#this passes showing Lp and Rp are an orthonormal pair
+
+Cr = np.dot(A, Rp)
+Vr = np.dot(Rp, np.diag(v,0)
+assert(np.allclose(Cr, Vr))
+#this fails because bi-orthonormalization has destroyed the eigensolution
+```
+- - -
 ### Calculation of properties
 For the time being I'll work with the psi4 values to verify the procedure for calculating properties \
 To calculate the transition dipole we evaluate (2)<sup>1/2</sup>**&#956;.**|**X**<sub>n</sub>+**Y**<sub>n</sub>>
@@ -225,7 +256,7 @@ Going back to the equation (i) \
 The matrix (**A** - **B**)(**A** + **B**) is non-Hermitian, giving rise to left and right eigenvectors the right eigenvectors as above are |**X**<sub>n</sub> + **Y**<sub>n</sub>> and the left-eigenvectors are <**X**<sub>n</sub> - **Y**<sub>n</sub>|. \
 We can get in left-eigenvectors from the right ones by the relation [given here](http://link.aip.org/link/doi/10.1063/1.477483?ver=pdfcov), which is \
 (**A** + **B**) |**X**<sub>n</sub> + **Y**<sub>n</sub>> = &#969; |**X**<sub>n</sub> - **Y**<sub>n</sub>> \
-This allows us to calculate velocity gauge properties. We can calculate left eigenvectors eg
+This allows us to calculate velocity gauge properties. We can calculate left eigenvectors (remember this is only OK if our solution is biorthonormal) eg
 ```python
 leftEigenvector = np.dot(A+B, rightEigenvector).dot(np.diag(1.0, np.sqrt(w)))
 ```
@@ -290,7 +321,7 @@ for circular dichroism also need conversion au-> JT<sup>-1</sup> (Joules inverse
 
 **note** \
 The Hermitian treatment means you can use symmetric solvers for the eigen problem. However, for the |**X**+**Y**> equation (iii) there is another Hermitian one for |**X**-**Y**> and once you've solved for these quantities you still need to biorthonormalise them to be correct eigenvectors to the problem? I now think that there is no analytic way of generating a biorthonormal set of eigenvectors from a general pair of eigenvectors and it must be done by an iterative process.
-
+- - -
 ## Tamm-Dancoff Approximation
 Set **B** = 0. For water eigenvalues
 ```
