@@ -433,34 +433,25 @@ def initialVectors(e):
 
     l = min(nsubspace, len(deltaSort))
 
-    vec= np.zeros((nrot, l))
+    vecs = []
     for i in range(l):
 
-        v = np.zeros(nrot)
+        v = np.zeros((ndocc, nbf-ndocc))
 
         oidx = deltaSort[i][1]
         vidx = deltaSort[i][2]
-        v[oidx*2*nvirt + vidx*2] = 1.0
-        v[oidx*2*nvirt + 2*nvirt + vidx*2 + 1] = 1.0
+        v[oidx, vidx] = 1.0
     
-        vec[:,i]= v
+        vecs.append(v)
     
-    return l, vec
+    return l, vecs
     
-print(vec) #for H2 in 3-21g basis ndocc=1, nvirt=3
+print(vec) #for H2O in sto-3g basis ndocc=5, nvirt=2
 ---------------------
-[[1. 0. 0.]
- [0. 0. 0.]
- [0. 1. 0.]
- [0. 0. 0.]
- [0. 0. 1.]
- [0. 0. 0.]
- [0. 0. 0.]
- [1. 0. 0.]
- [0. 0. 0.]
- [0. 1. 0.]
- [0. 0. 0.]
- [0. 0. 1.]]
+[[0. 0. ]
+ [0. 0. ]
+ [1. 0. ]
+ [0. 0. ]]
 ---------------------
 ```
 
