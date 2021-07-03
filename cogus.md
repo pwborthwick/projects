@@ -170,8 +170,9 @@ We'll see if we can use the above to get the CCD energy and amplitude expression
 + AntiSymmetricTensor(t, (a, b), (_k, _l))*AntiSymmetricTensor(v, (_k, _l), (i, j))/2 
 + AntiSymmetricTensor(v, (a, b), (i, j))
 ```
+- - -
 + **Parsing the output**\
-As you see the energy and amplitudes are returned as a single string. The main tool we have is **args**, td.args returns a tuple of each term in the string. Each element in the tuple could be a term with multiple tensors (eg *+ AntiSymmetricTensor(t, (\_c,\_d), (i, j)) \* AntiSymmetricTensor(v, (a, b), (\_c, \_d))/2*) or a single tensor (eg *+ AntiSymmetricTensor(v, (a, b), (i, j))*). (It could in some situations be a constant). You can tell which it is using **isinstance**,eg isinstance(e, Mul), isinstance(e, AntiSymmetricTensor) or isinstance(e, Number).
+As you see the energy and amplitudes are returned as a single string. The main tool we have is **args**, td.args returns a tuple of each term in the string. Each element in the tuple could be a term with multiple tensors (eg *+ AntiSymmetricTensor(t, (\_c,\_d), (i, j)) \* AntiSymmetricTensor(v, (a, b), (\_c, \_d))/2*) or a single tensor (eg *+ AntiSymmetricTensor(v, (a, b), (i, j))*). (It could in some situations be a constant). You can tell which sort it is using **isinstance**,eg isinstance(e, Mul), isinstance(e, AntiSymmetricTensor) or isinstance(e, Number).
 ```python
 e = AntiSymmetricTensor(v, (a, b), (i, j))
 isinstance(e, AntiSymmetricTensor)
@@ -179,7 +180,7 @@ isinstance(e, AntiSymmetricTensor)
 type(e)
 >>>AntiSymmetricTensor
 ```
-If we have a 'Mul' type, that is an expression with multiple elements we can do another args on it. Then say we do td.args\[0].args
+If we have a 'Mul' type, that is an expression with multiple elements, we can do another args on it. So say we do td.args\[0].args
 ```python
 td.args[0]
 >>>AntiSymmetricTensor(t, (a, b), (_k, _l))*AntiSymmetricTensor(v, (_k, _l), (i, j))/2
@@ -198,10 +199,43 @@ td.args[0].args[1].upper
 td.args[0].args[1].lower
 >>>(_k, _l)
 ```
-So we do a .args on the initial string, then do another args on all 'Mul' types. We now have either 'AntiSymmetricTensor', 'Number' or 'PermutationOperator' types. We have seen how to parse the AntiSymmetricTensor types, now 'PermutationOperator' types.
+So we do an .args on the initial string, then do another args on all 'Mul' types. We now have either 'AntiSymmetricTensor', 'Number' or 'PermutationOperator' types. We have seen how to parse the AntiSymmetricTensor types, now 'PermutationOperator' types.
 ```
 isinstance(td.args[4].args[4], PermutationOperator)
 >>>True
 td.args[4].args[4].args
 >>>(i, j)
 ```
+This is code to reduce the compound string to atoms (it might already be a 'Mul' in the case of energy)
+```python
+if isinstance(td, Mul):
+    compound = [td]
+else:
+    compound = td.args
+    
+atoms = []
+for element in compound:
+    if isinstance(element, Mul):
+        sub_atom = []
+        for atom in element.args:
+            sub_atom.append(atom)   
+        atoms.append(sub_atom)
+        
+    elif isinstance(element, AntiSymmetricTensor):
+        atoms.append([element])
+        
+    else:
+        print('no current handler for this type: ',type(element))
+        
+```
+- - -
++ Tests
+The output for CCD is, with Shavitt & Bartlett for comparison
+
+ ![image](https://user-images.githubusercontent.com/73105740/124356517-51811900-dc0e-11eb-9bf9-6bdce09de87e.png)
+![image](https://user-images.githubusercontent.com/73105740/124350850-ea07a100-dbee-11eb-82f1-b25d07f4d1ad.png)
+ ![image](https://user-images.githubusercontent.com/73105740/124350750-6ea5ef80-dbee-11eb-9902-b8fa2ac7ff17.png)
+
+These are the same allowing for permutation differences.
+
+            
