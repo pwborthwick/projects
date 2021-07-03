@@ -230,12 +230,25 @@ for element in compound:
 ```
 - - -
 + Tests
-The output for CCD is, with Shavitt & Bartlett for comparison
+  The output for CCD is, with Shavitt & Bartlett for comparison
 
  ![image](https://user-images.githubusercontent.com/73105740/124356517-51811900-dc0e-11eb-9bf9-6bdce09de87e.png)
 ![image](https://user-images.githubusercontent.com/73105740/124350850-ea07a100-dbee-11eb-82f1-b25d07f4d1ad.png)
  ![image](https://user-images.githubusercontent.com/73105740/124350750-6ea5ef80-dbee-11eb-9902-b8fa2ac7ff17.png)
 
 These are the same allowing for permutation differences.
+
+  The output for CCSD
+
+ ![image](https://user-images.githubusercontent.com/73105740/124358259-6b732980-dc17-11eb-9064-c97d9dda0083.png)![image](https://user-images.githubusercontent.com/73105740/124358285-834aad80-dc17-11eb-89a0-97b71884cce7.png)
+ 
+ Shavitt & Bartlett singles for comparison...
+ 
+ ![image](https://user-images.githubusercontent.com/73105740/124358406-07049a00-dc18-11eb-84f9-36543c757ae9.png)
+ 
+ Lets just check the last term in SB + v<sup>kl</sup><sub>cd</sub> t<sup>c</sup><sub>i</sub> t<sup>d</sup><sub>j</sub> t<sup>a</sup><sub>k</sub> t<sup>b</sup><sub>l</sub> matches our equation 22. First SB P(ij) v<sup>ab</sup><sub>cj</sub> t<sup>c</sup><sub>i</sub> is compared to our equation 8 which is -P(ij) v<sup>ab</sup><sub>jc</sub> t<sup>c</sup><sub>i</sub> or +P(ij) v<sup>ab</sup><sub>cj</sub> t<sup>c</sup><sub>i</sub> .
+
+
+
 
             
