@@ -248,7 +248,43 @@ These are the same allowing for permutation differences.
  
  Lets just check the last term in SB + v<sup>kl</sup><sub>cd</sub> t<sup>c</sup><sub>i</sub> t<sup>d</sup><sub>j</sub> t<sup>a</sup><sub>k</sub> t<sup>b</sup><sub>l</sub> matches our equation 22. First SB P(ij) v<sup>ab</sup><sub>cj</sub> t<sup>c</sup><sub>i</sub> is compared to our equation 8 which is -P(ij) v<sup>ab</sup><sub>jc</sub> t<sup>c</sup><sub>i</sub> or +P(ij) v<sup>ab</sup><sub>cj</sub> t<sup>c</sup><sub>i</sub> .
 
+For CCSDT, the energy is the same. For singles we have an extra term 1/4 t<sup>**a**bc</sup><sub>**i**jk</sub> <jk||bc> compared to Shavitt & Bartlett 10.32 1/4 t<sup>**a**ef</sup><sub>**i**mn</sub> <mn||ef> where jkbc and mnef are repeated dummy indices.\
+For the doubles there are 6 extra terms according to Shavitt & Bartlett 10.33, these are with our terms in {}, 
++ f<sub>me</sub> t<sup>abe</sup><sub>ijm</sub>&nbsp; &nbsp;{f<sub>kc</sub> t<sup>abc</sup><sub>ijk</sub> e<>c, m<>k}
++ 1/2P(ab) t<sup>aef</sup><sub>ijm</sub> <bm||ef>&nbsp; &nbsp;{1/2P(ab) t<sup>acd</sup><sub>ijk</sub> <bk||cd> e<>c. f<>d, m<>k}
++ -1/2P(ij) t<sup>abe</sup><sub>imn</sub> <mn||je>&nbsp; &nbsp;{-1/2P(ij) t<sup>abc</sup><sub>ikl</sub> <kl||jc> e<>c. m<>k, n<>l}
++ t<sup>e</sup><sub>m</sub> t<sup>fab</sup><sub>nij</sub> <mn||ef>&nbsp; &nbsp;{t<sup>c</sup><sub>k</sub> t<sup>abd</sup><sub>ijl</sub> <kl||cd> e<>c, m<>k, f<>d, n<>l}
++ -P(ab) t<sup>a</sup><sub>m</sub> t<sup>efb</sup><sub>inj</sub> <mn||ef>&nbsp; &nbsp; {1/2 P(ab) t<sup>a</sup><sub>k</sub> t<sup>bcd</sup><sub>ijl</sub> <kl||cd>  m<>k, n<>l, c<>e, d<>f}
++ -P(ij) t<sup>e</sup><sub>i</sub> t<sup>afb</sup><sub>mnj</sub> <mn||ef>&nbsp; &nbsp; {1/2 P(ij) t<sup>c</sup><sub>i</sub> t<sup>abd</sup><sub>jkl</sub> <kl||cd> m<>k, n<>l, c<>e, d<>f}
 
+\*note symmetry of triples operator abc = -bac. The last 2 equations disagree by a factor 1/2 with Shavitt & Bartlett 10.33, but a check with [pdaggerq](https://github.com/edeprince3/pdaggerq/blob/master/examples/full_cc_codes/ccsdt.py) gives
 
++  1.0000 f(k,c)\*t3(c,a,b,i,j,k)
++	 0.5000 P(i,j)<l,k||c,j>\*t3(c,a,b,i,l,k)
++  0.5000 P(a,b)<k,a||c,d>\*t3(c,d,b,i,j,k)
++ -1.0000 <l,k||c,d>\*t1(c,k)\*t3(d,a,b,i,j,l)
++	-0.5000 P(i,j)<l,k||c,d>\*t1(c,j)\*t3(d,a,b,i,l,k) 
++	-0.5000 P(a,b)<l,k||c,d>\*t1(a,k)\*t3(c,d,b,i,j,l)
 
+We can see see that the eg the last equation is equivalent to ours as\
+-0.5000 P(a,b)<l,k||c,d>\*t1(a,k)\*t3(c,d,b,i,j,l)&nbsp; &nbsp;  -> &nbsp; &nbsp; 0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(c,d,b,i,j,l) by interchanging <lk||--> index\
+0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(c,d,b,i,j,l) &nbsp; &nbsp; ->&nbsp; &nbsp;  -0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(c,b,d,i,j,l) by swapping t3(cdb->cbd)\
+-0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(c,b,d,i,j,l) &nbsp; &nbsp; -> &nbsp; &nbsp; +0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(b,c,d,i,j,l) by swapping t3(cbd->bcd) which matches our equation 1/2 P(ab) t<sup>a</sup><sub>k</sub> t<sup>bcd</sup><sub>ijl</sub> <kl||cd>.
             
+Since dpaggerq examples are beautifully commented I decided to extract those comments and optionally print them alongside the results from this program as a check. We now have eg
+
+![image](https://user-images.githubusercontent.com/73105740/124387176-61176500-dcd5-11eb-85bb-66ea02c178fe.png)
+
+\* I found that pdaggerq's simplify() function could be improved eg for CCSD doubles you get 2 terms\
+	 -0.5000 <j,i||a,b>\*t2(a,e,j,i)\*t2(b,f,m,n)\
+	 -0.5000 <j,i||a,b>\*t2(a,e,m,n)\*t2(b,f,j,i)\
+term 2 can be re-written as\
+	 -0.5000 <j,i||a,b>\*t2(a,f,m,n)\*t2(b,e,j,i)\
+since e and f are are arbitary indices, now swapping order of terms\
+	 -0.5000 <j,i||a,b>*t2(b,e,j,i)*t2(a,f,m,n)\
+now changing order in <--||a,b>\
+we have -0.5000 <j,i||a,b>\*t2(a,e,j,i)\*t2(b,f,m,n) + 0.5000 <j,i||b,a>\*t2(b,e,j,i)\*t2(a,f,m,n)\
+or -P(ab) 0.5000 <j,i||a,b>\*t2(a,e,j,i)\*t2(b,f,m,n)
+
+
+
