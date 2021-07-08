@@ -2,7 +2,7 @@
 
 Sympy has a module called secondquant and I want to use this to automatically generate some cluster operators.
 + Generate some symbols\
-  Quantum chemistry is pretty heavy on labels, we have lots of tensors, so how do using sympy we define some labels to use with our tensors. Unlike in Python where we just just use the variables we want without declaration, in sympy we must declare our variables/labels
+  Quantum chemistry is pretty heavy on labels, we have lots of tensors, so how using sympy do we define some labels to use with our tensors. Unlike in Python where we just just use the variables we want without declaration, in sympy we must declare our variables/labels
   
 ```python
   i, j = symbols('i, j', cls=Dummy)
@@ -20,7 +20,7 @@ CreateFermion(p)*AnnihilateFermion(q)
 or
 Fd(p)*F(q)
 ```
-+ An important concept of these operator is **normal order** (Shavitt & Bartlett 3.89), the normal order of these operators is one in which all the creation operators come to the left of the annihilation operators. We can achieve this by progressively swapping adjacent operators making a change of sign of the overall expression each time. Sympy has an operator to do this
++ An important concept for these operator is **normal order** (Shavitt & Bartlett 3.89), the normal order of these operators is one in which all the creation operators come to the left of the annihilation operators. We can achieve this by progressively swapping adjacent operators making a change of sign of the overall expression each time. Sympy has an operator to do this
 ```python
 NO(AnnihilateFermion(p)*CreateFermion(q))
 >>>-CreateFermion(q)*AnnihilateFermion(p)
@@ -59,7 +59,7 @@ The time-independent form of Wick’s theorem states: *A product of a string of 
 ```python
 wicks(Fd(p)*F(q))
 ```
-+ Simplifying expreesions\
++ **Simplifying expressions**\
 There are some useful functions which rationalise expressions. **evaluate_deltas(exp)**  does just that obeying Einstein summation convention. **substitute_dummies(exp)** this routine simplifys Add expressions containing terms which differ only due to dummy variables.
 
 + **Cluster Operators**\
@@ -271,10 +271,6 @@ We can see see that the eg the last equation is equivalent to ours as\
 0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(c,d,b,i,j,l) &nbsp; &nbsp; ->&nbsp; &nbsp;  -0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(c,b,d,i,j,l) by swapping t3(cdb->cbd)\
 -0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(c,b,d,i,j,l) &nbsp; &nbsp; -> &nbsp; &nbsp; +0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(b,c,d,i,j,l) by swapping t3(cbd->bcd) which matches our equation 1/2 P(ab) t<sup>a</sup><sub>k</sub> t<sup>bcd</sup><sub>ijl</sub> <kl||cd>.
             
-Since dpaggerq examples are beautifully commented I decided to extract those comments and optionally print them alongside the results from this program as a check. We now have eg
-
-![image](https://user-images.githubusercontent.com/73105740/124387176-61176500-dcd5-11eb-85bb-66ea02c178fe.png)
-
 \* I found that pdaggerq's simplify() function could be improved eg for CCSD doubles you get 2 terms\
 	 -0.5000 <j,i||a,b>\*t2(a,e,j,i)\*t2(b,f,m,n)\
 	 -0.5000 <j,i||a,b>\*t2(a,e,m,n)\*t2(b,f,j,i)\
@@ -286,5 +282,52 @@ now changing order in <--||a,b>\
 we have -0.5000 <j,i||a,b>\*t2(a,e,j,i)\*t2(b,f,m,n) + 0.5000 <j,i||b,a>\*t2(b,e,j,i)\*t2(a,f,m,n)\
 or -P(ab) 0.5000 <j,i||a,b>\*t2(a,e,j,i)\*t2(b,f,m,n)
 
+## code generation
+As we've already parsed the expressions returned from sympy we could quite easily convert them into Python code. Here's a section from CCSDT triples...
+```python
+    #  1.0000 * P(a,b) f(c,k) t1(k,a) t2(i,j,b,c) 
+    t = 1.0000 * einsum('ck,ka,ijbc->ijab' ,f[v,o] ,t1 ,t2, optimize=True)
+    T += t - t.swapaxes(3, 2)
+
+    #  1.0000 * P(i,j) f(c,k) t1(i,c) t2(j,k,a,b) 
+    t = 1.0000 * einsum('ck,ic,jkab->ijab' ,f[v,o] ,t1 ,t2, optimize=True)
+    T += t - t.swapaxes(1, 0)
+
+    #  1.0000 * P(a,b)P(i,j) <i,c||a,k> t2(j,k,b,c) 
+    t = 1.0000 * einsum('icak,jkbc->ijab' ,g[o,v,v,o] ,t2, optimize=True)
+    T += t - t.swapaxes(3, 2) - t.swapaxes(1, 0) + t.swapaxes(3, 2).swapaxes(1, 0)
+```
+pdaggerq uses einsum to do the permutations, its neat and shows whats happening clearly but I wonder if it's as efficient as swapaxes (or indeed transpose).
+The code generator also writes a subroutine header and return statement.
+```python
+def cogusDouble(f, g, o, v, t1=None, t2=None, t3=None):
+
+    '''
+        COGUS generated level [SDT] on 07/08/21   
+    '''
+    from numpy import einsum, swapaxes
+```
+which is the same for all routines, just the fock and 2-electron repulsion integrals followed by occupied and virtual slices, then the amplitudes if they exist.
+
+## test routine
+I've written a routine to test the generated cluster amplitude. This
++ takes a level- C (for cluster), type- D/SD/SDT, molecule- h2o/ch4/acetaldehyde and basis- sto-3g/6-31g/dz as command line arguments. Valid combinations are
+
+|  level | molecule  | basis |
+|--------|-----------|-------|
+|   D    |   h2o     | sto-3g|
+| SD     | h2o       | sto-3g/6-31g/dz |
+| SD     | acetaldehyde/ch4 | sto-3g |
+| SDT    |  h2o   | sto-3g  |
+
+Tested against pdaggerq code where available ie SD and SDT. 
++ checks molecule and basis against those defined in the harpy project file (first entry)
++ reads mints file for molecule and basis, reads .cdf file of python code for cluster level (eg cogus_C_SD.cdf)
++ concatenates cluster data read in, with internal code to run loop over amplitude generation.
++ exec's code
++ compares energy correction with reference values.
+
+So no cluster code is contained within the test program as it gets it from an external file previously generated by cogus.
+If cogus was fast (as I suspect pdaggerq is) then the cluster code could be generated on-the-fly rather than being read in from file. Anyway the cogus generated code for D, SD and SDT amplitudes agree's with reference values to better than 1e-8.
 
 
