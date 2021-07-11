@@ -40,7 +40,7 @@ E<sub>&Lambda;</sub> = &lambda;<sup>a</sup><sub>i</sub>f<sub>ai</sub> + 0.25&lam
 
 - - -
 ## CCSD -> CC2
-CC2 is an approximate scheme to CCSD. The T<sub>1</sub> amplitudes are the same as CCSD, however the T<sub>2</sub> amplitudes are given by <&psi;<sup>ab</sup><sub>ij</sub>| **H<sub>N</sub>** e<sup>T<sub>1</sub></sup> + **F<sub>N</sub>** T<sub>2</sub>|0> = 0\
+CC2 is an approximate scheme to CCSD. The T<sub>1</sub> amplitudes are the same as CCSD, however the T<sub>2</sub> amplitudes are given by <&psi;<sup>ab</sup><sub>ij</sub>| **H<sub>N</sub>** e<sup>T<sub>1</sub></sup> + **F<sub>N</sub>** e<sup>T<sub>2</sub></sup>|0> = 0\
 where **H<sub>N</sub>** and **F<sub>N</sub>** are the normal-ordered Hamiltonian and Fock matrices. **\[]** are the coupled-cluster diagram designations. Equations for T-amplitudes taken from reference above Table I(a) & (b) and (tilde) intermediates taken from Table III.
 
 T<sub>1</sub> = f<sub>ai</sub> + *F*<sub>ae</sub>t<sup>e</sup><sub>i</sub> - *F*<sub>mi</sub>t<sup>a</sup><sub>m</sub> + *F*<sub>me</sub>t<sup>ae</sup><sub>im</sub> +
