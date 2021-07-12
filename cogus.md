@@ -98,7 +98,7 @@ The commutator bracket is defined \[A,B] = AB - BA and in sympy
 c = Commutator
 ```
 + **Permutations**
-Simpy has a permutation operator 
+Sympy has a permutation operator 
 ```python
 PermutationOperator(i,j)
 ```
@@ -148,7 +148,7 @@ We'll see if we can use the above to get the CCD energy and amplitude expression
   symbol_rules = {'below':'klmno', 'above': 'cdef', 'general':'pqrstu'}
   td = substitute_dummies(expression, new_indices=True, pretty_indices=symbol_rules)
   p = [PermutationOperator(i,j), PermutationOperator(a,b)]
-   = simplify_index_permutations(td, p)
+  doubles = simplify_index_permutations(td, p)
   ```
 + The output\
   If we run the above code we get for
@@ -331,7 +331,21 @@ So no cluster code is contained within the test program as it gets it from an ex
 If cogus was fast (as I suspect pdaggerq is) then the cluster code could be generated on-the-fly rather than being read in from file. Anyway the cogus generated code for D, SD and SDT amplitudes agree's with reference values to better than 1e-8.
 
 ## Linear Coupled Cluster
-It is easy to implement LCCD and LCCSD by simply truncting the Baker-Campbell-Hausdorff expansion after 2 terms (ie only allowing linear contributions). To allow for this I've defined a new type 'L' to go along with 'C'. Python linear coupled-cluster code files should be named 'cogus_L_SD.cdf' for example. cogusValidate has been updated to check LCCD abd LCCSD on H<sub>2</sub>O in STO-3G basis.
+It is easy to implement LCCD and LCCSD by simply truncting the Baker-Campbell-Hausdorff expansion after 2 terms (ie only allowing linear contributions). To allow for this I've defined a new type 'L' to go along with 'C'. Python linear coupled-cluster code files should be named 'cogus_L_SD.cdf' for example. cogusValidate has been updated to check LCCD abd LCCSD on H<sub>2</sub>O in STO-3G basis. To implement this 'type' has been added to the arguments of bakerCampbellHausdorff then a dictionary {'C':4,'L':1} is used to determine the number of loops (terms) of the expansion to include.
+
+## CC2
+This has now been implemented as type 'A' with level '2', called as *cogusGenerate.py A 2 E+S+D True*. CC2 has identical E and S code to CCSD however the doubles is defined as T1 acting on h but T2 only acts on f. Alternatively f is same as CCSD (ie T1+T2) but v is only acted on by T1. To implement this an extra option is returned by the cluster routine 'if level == 'S':   return T1'. The doubles evaluation now become
+```python
+            #Cluster doubles amplitude
+            if type in ['A']: cc = bakerCampbellHausdorff(f, type, 'D') + bakerCampbellHausdorff(v, type, 'S')
+            w = wicks(Fd(i)*Fd(j)*F(b)*F(a)*cc, simplify_kronecker_deltas=True, keep_only_fully_contracted=True)
+            symbolRules = {'below':'klmno', 'above': 'cdef', 'general':'pqrstu'}
+            td = substitute_dummies(w, new_indices=True, pretty_indices=symbolRules)
+            p = [PermutationOperator(i,j), PermutationOperator(a,b)]
+
+            doubles = simplify_index_permutations(td, p)
+```
+cogusValidate now has options 'A 2 h2o sto-3g' and 'A 2 h2o dz' with validation against Psi4.
 
 
 
