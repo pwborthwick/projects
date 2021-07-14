@@ -172,7 +172,7 @@ We'll see if we can use the above to get the CCD energy and amplitude expression
 ```
 - - -
 + **Parsing the output**\
-As you see the energy and amplitudes are returned as a single string. The main tool we have is **args**, td.args returns a tuple of each term in the string. Each element in the tuple could be a term with multiple tensors (eg *+ AntiSymmetricTensor(t, (\_c,\_d), (i, j)) \* AntiSymmetricTensor(v, (a, b), (\_c, \_d))/2*) or a single tensor (eg *+ AntiSymmetricTensor(v, (a, b), (i, j))*). (It could in some situations be a constant). You can tell which sort it is using **isinstance**,eg isinstance(e, Mul), isinstance(e, AntiSymmetricTensor) or isinstance(e, Number).
+As you see the energy and amplitudes are each returned as a single string. The main tool we have is **args**, td.args returns a tuple of each term in the string. Each element in the tuple could be a term with multiple tensors (eg *+ AntiSymmetricTensor(t, (\_c,\_d), (i, j)) \* AntiSymmetricTensor(v, (a, b), (\_c, \_d))/2*) or a single tensor (eg *+ AntiSymmetricTensor(v, (a, b), (i, j))*). (It could in some situations be a constant). You can tell which sort it is using **isinstance**,eg isinstance(e, Mul), isinstance(e, AntiSymmetricTensor) or isinstance(e, Number).
 ```python
 e = AntiSymmetricTensor(v, (a, b), (i, j))
 isinstance(e, AntiSymmetricTensor)
@@ -266,22 +266,6 @@ For the doubles there are 6 extra terms according to Shavitt & Bartlett 10.33, t
 +	-0.5000 P(i,j)<l,k||c,d>\*t1(c,j)\*t3(d,a,b,i,l,k) 
 +	-0.5000 P(a,b)<l,k||c,d>\*t1(a,k)\*t3(c,d,b,i,j,l)
 
-We can see see that the eg the last equation is equivalent to ours as\
--0.5000 P(a,b)<l,k||c,d>\*t1(a,k)\*t3(c,d,b,i,j,l)&nbsp; &nbsp;  -> &nbsp; &nbsp; 0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(c,d,b,i,j,l) by interchanging <lk||--> index\
-0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(c,d,b,i,j,l) &nbsp; &nbsp; ->&nbsp; &nbsp;  -0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(c,b,d,i,j,l) by swapping t3(cdb->cbd)\
--0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(c,b,d,i,j,l) &nbsp; &nbsp; -> &nbsp; &nbsp; +0.5000 P(a,b)<k,l||c,d>\*t1(a,k)\*t3(b,c,d,i,j,l) by swapping t3(cbd->bcd) which matches our equation 1/2 P(ab) t<sup>a</sup><sub>k</sub> t<sup>bcd</sup><sub>ijl</sub> <kl||cd>.
-            
-\* I found that pdaggerq's simplify() function could be improved eg for CCSD doubles you get 2 terms\
-	 -0.5000 <j,i||a,b>\*t2(a,e,j,i)\*t2(b,f,m,n)\
-	 -0.5000 <j,i||a,b>\*t2(a,e,m,n)\*t2(b,f,j,i)\
-term 2 can be re-written as\
-	 -0.5000 <j,i||a,b>\*t2(a,f,m,n)\*t2(b,e,j,i)\
-since e and f are are arbitary indices, now swapping order of terms\
-	 -0.5000 <j,i||a,b>*t2(b,e,j,i)*t2(a,f,m,n)\
-now changing order in <--||a,b>\
-we have -0.5000 <j,i||a,b>\*t2(a,e,j,i)\*t2(b,f,m,n) + 0.5000 <j,i||b,a>\*t2(b,e,j,i)\*t2(a,f,m,n)\
-or -P(ab) 0.5000 <j,i||a,b>\*t2(a,e,j,i)\*t2(b,f,m,n)
-
 ## code generation
 As we've already parsed the expressions returned from sympy we could quite easily convert them into Python code. Here's a section from CCSDT triples...\
 **note I define f<sup>a</sup><sub>i</sub> as f(i,a) - the subscript indices come first
@@ -336,7 +320,7 @@ If cogus was fast (as I suspect pdaggerq is) then the cluster code could be gene
 It is easy to implement LCCD and LCCSD by simply truncting the Baker-Campbell-Hausdorff expansion after 2 terms (ie only allowing linear contributions). To allow for this I've defined a new type 'L' to go along with 'C'. Python linear coupled-cluster code files should be named 'cogus_L_SD.cdf' for example. cogusValidate has been updated to check LCCD abd LCCSD on H<sub>2</sub>O in STO-3G basis. To implement this 'type' has been added to the arguments of bakerCampbellHausdorff then a dictionary {'C':4,'L':1} is used to determine the number of loops (terms) of the expansion to include.
 
 ## CC2
-This has now been implemented as type 'A' with level '2', called as *cogusGenerate.py A 2 E+S+D True*. CC2 has identical E and S code to CCSD however the doubles is defined as T1 acting on h but T2 only acts on f. Alternatively f is same as CCSD (ie t1+t2) but v is only acted on by t1. To implement this an extra option is returned by the cluster routine 'if level == 'S':   return T1'. The doubles evaluation now become
+This has now been implemented as type 'A' with level '2', called as *cogusGenerate.py A 2 E+S+D True*. CC2 has identical E and S code to CCSD however the doubles is defined as t1 acting on similarly transformed h but t2 only acts on similarly transformed f. Alternatively f is same as CCSD (ie t1+t2) but v is only acted on by t1. To implement this an extra option is returned by the cluster routine 'if level == 'S':   return T1'. The doubles evaluation now become
 ```python
             #Cluster doubles amplitude
             if type in ['A']: cc = bakerCampbellHausdorff(f, type, 'D') + bakerCampbellHausdorff(v, type, 'S')
@@ -364,7 +348,10 @@ cogusValidate now has options 'A 3 h2o sto-3g' and 'A 2 h2o dz' with validation 
 ## CCSD(T) 
 This has been implemented as type 'C' with level 'SDt'. The S and D amplitudes are the same as CCSD but the triples amplitudes
 are given by similarly transformed f acted on by t3 + [v, t2]. This is added non-iteratively. The perturbation energy correction is then 
-(l1+l2) operating on [v, t3] where l1 and l2 are the Lagrange multiplier operators (transpose of t amplitudes). 
+(l1+l2) operating on [v, t3] where l1 and l2 are the Lagrange multiplier operators (transpose of t amplitudes). This is implemented for triples and energy as... 
+```python
 
+```
+cogusValidate now has options 'C SDt h2o sto-3g', 'h2o 6-31g', 'ch4 sto-3g'
 
 
