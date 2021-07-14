@@ -347,5 +347,18 @@ This has now been implemented as type 'A' with level '2', called as *cogusGenera
 ```
 cogusValidate now has options 'A 2 h2o sto-3g' and 'A 2 h2o dz' with validation against Psi4.
 
+## CC3
+This has now been implemented as type 'A' with level '3', called as *cogusGenerate.py A 3 E+S+D+T True*. CC3 has identical E, S and D code to CCSDT however the triples is defined as similarly transformed f acted on by singles, doubles and triples amplitudes + similarly transformed v acted on by singles + \[v, t2] + \[\[v, t1], t2] + (1/2)\[\[\[v, t1], t1], t2] + (1/6)\[\[\[\[v, t1], t1], t1], t2]. This is implemented in triples as
+```python
+if (type == 'A') and (level == 'SDT'):
+   cc = bakerCampbellHausdorff(f, 'C', 'SDT') + bakerCampbellHausdorff(v, 'C', 'S') + v +  \
+        Commutator(v, clusterOperators('D')) + Commutator(Commutator(v,clusterOperators('S')),\
+        clusterOperators('D')) + Rational(1,2)*Commutator(Commutator(Commutator(v, clusterOperators('S')),\
+	clusterOperators('S')),clusterOperators('D')) + Rational(1,6)*Commutator(Commutator(Commutator(Commutator(v, \
+	clusterOperators('S')), clusterOperators('S')),clusterOperators('S')),clusterOperators('D'))
+```
+cogusValidate now has options 'A 3 h2o sto-3g' and 'A 2 h2o dz' with validation against Psi4.
+
+
 
 
