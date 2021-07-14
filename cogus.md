@@ -283,7 +283,9 @@ we have -0.5000 <j,i||a,b>\*t2(a,e,j,i)\*t2(b,f,m,n) + 0.5000 <j,i||b,a>\*t2(b,e
 or -P(ab) 0.5000 <j,i||a,b>\*t2(a,e,j,i)\*t2(b,f,m,n)
 
 ## code generation
-As we've already parsed the expressions returned from sympy we could quite easily convert them into Python code. Here's a section from CCSDT triples...
+As we've already parsed the expressions returned from sympy we could quite easily convert them into Python code. Here's a section from CCSDT triples...\
+**note I define f<sup>a</sup><sub>i</sub> as f(i,a) - the subscript indices come first
+and the superscript after so g<sup>ab</sup><sub>ij</sub> is f(i,j,a,b) this may be different from other sources.**
 ```python
     #  1.0000 * P(a,b) f(c,k) t1(k,a) t2(i,j,b,c) 
     t = 1.0000 * einsum('ck,ka,ijbc->ijab' ,f[v,o] ,t1 ,t2, optimize=True)
@@ -334,7 +336,7 @@ If cogus was fast (as I suspect pdaggerq is) then the cluster code could be gene
 It is easy to implement LCCD and LCCSD by simply truncting the Baker-Campbell-Hausdorff expansion after 2 terms (ie only allowing linear contributions). To allow for this I've defined a new type 'L' to go along with 'C'. Python linear coupled-cluster code files should be named 'cogus_L_SD.cdf' for example. cogusValidate has been updated to check LCCD abd LCCSD on H<sub>2</sub>O in STO-3G basis. To implement this 'type' has been added to the arguments of bakerCampbellHausdorff then a dictionary {'C':4,'L':1} is used to determine the number of loops (terms) of the expansion to include.
 
 ## CC2
-This has now been implemented as type 'A' with level '2', called as *cogusGenerate.py A 2 E+S+D True*. CC2 has identical E and S code to CCSD however the doubles is defined as T1 acting on h but T2 only acts on f. Alternatively f is same as CCSD (ie T1+T2) but v is only acted on by T1. To implement this an extra option is returned by the cluster routine 'if level == 'S':   return T1'. The doubles evaluation now become
+This has now been implemented as type 'A' with level '2', called as *cogusGenerate.py A 2 E+S+D True*. CC2 has identical E and S code to CCSD however the doubles is defined as T1 acting on h but T2 only acts on f. Alternatively f is same as CCSD (ie t1+t2) but v is only acted on by t1. To implement this an extra option is returned by the cluster routine 'if level == 'S':   return T1'. The doubles evaluation now become
 ```python
             #Cluster doubles amplitude
             if type in ['A']: cc = bakerCampbellHausdorff(f, type, 'D') + bakerCampbellHausdorff(v, type, 'S')
@@ -348,7 +350,7 @@ This has now been implemented as type 'A' with level '2', called as *cogusGenera
 cogusValidate now has options 'A 2 h2o sto-3g' and 'A 2 h2o dz' with validation against Psi4.
 
 ## CC3
-This has now been implemented as type 'A' with level '3', called as *cogusGenerate.py A 3 E+S+D+T True*. CC3 has identical E, S and D code to CCSDT however the triples is defined as similarly transformed f acted on by singles, doubles and triples amplitudes + similarly transformed v acted on by singles + \[v, t2] + \[\[v, t1], t2] + (1/2)\[\[\[v, t1], t1], t2] + (1/6)\[\[\[\[v, t1], t1], t1], t2]. This is implemented in triples as
+This has now been implemented as type 'A' with level '3', called as *cogusGenerate.py A 3 E+S+D+T True*. CC3 has identical E, S and D code to CCSDT however the triples is defined as similarly transformed f acted on by t1+t2+t3 amplitudes + similarly transformed v acted on by singles + \[v, t2] + \[\[v, t1], t2] + (1/2)\[\[\[v, t1], t1], t2] + (1/6)\[\[\[\[v, t1], t1], t1], t2]. This is implemented in triples as
 ```python
 if (type == 'A') and (level == 'SDT'):
    cc = bakerCampbellHausdorff(f, 'C', 'SDT') + bakerCampbellHausdorff(v, 'C', 'S') + v +  \
@@ -359,6 +361,10 @@ if (type == 'A') and (level == 'SDT'):
 ```
 cogusValidate now has options 'A 3 h2o sto-3g' and 'A 2 h2o dz' with validation against Psi4.
 
+## CCSD(T) 
+This has been implemented as type 'C' with level 'SDt'. The S and D amplitudes are the same as CCSD but the triples amplitudes
+are given by similarly transformed f acted on by t3 + [v, t2]. This is added non-iteratively. The perturbation energy correction is then 
+(l1+l2) operating on [v, t3] where l1 and l2 are the Lagrange multiplier operators (transpose of t amplitudes). 
 
 
 
