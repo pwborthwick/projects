@@ -320,7 +320,7 @@ If cogus was fast (as I suspect pdaggerq is) then the cluster code could be gene
 It is easy to implement LCCD and LCCSD by simply truncting the Baker-Campbell-Hausdorff expansion after 2 terms (ie only allowing linear contributions). To allow for this I've defined a new type 'L' to go along with 'C'. Python linear coupled-cluster code files should be named 'cogus_L_SD.cdf' for example. cogusValidate has been updated to check LCCD abd LCCSD on H<sub>2</sub>O in STO-3G basis. To implement this 'type' has been added to the arguments of bakerCampbellHausdorff then a dictionary {'C':4,'L':1} is used to determine the number of loops (terms) of the expansion to include.
 
 ## CC2
-This has now been implemented as type 'A' with level '2', called as *cogusGenerate.py A 2 E+S+D True*. CC2 has identical E and S code to CCSD however the doubles is defined as t1 acting on similarly transformed h but t2 only acts on similarly transformed f. Alternatively f is same as CCSD (ie t1+t2) but v is only acted on by t1. To implement this an extra option is returned by the cluster routine 'if level == 'S':   return T1'. The doubles evaluation now become
+This has now been implemented as type 'A' with level '2', called as *cogusGenerate.py A 2 E+S+D True*. CC2 has identical E and S code to CCSD however the doubles is defined as <0| i<sup>+</sup>j<sup>+</sup>ab (e<sup>-t1-t2</sup>**f**e<sup>t1+t2</sup> + e<sup>-t1</sup>**v**e<sup>t1</sup>) |0> . To implement this an extra option is returned by the cluster routine 'if level == 'S':   return T1'. The doubles evaluation now become
 ```python
             #Cluster doubles amplitude
             if type in ['A']: cc = bakerCampbellHausdorff(f, type, 'D') + bakerCampbellHausdorff(v, type, 'S')
@@ -334,7 +334,7 @@ This has now been implemented as type 'A' with level '2', called as *cogusGenera
 cogusValidate now has options 'A 2 h2o sto-3g' and 'A 2 h2o dz' with validation against Psi4.
 
 ## CC3
-This has now been implemented as type 'A' with level '3', called as *cogusGenerate.py A 3 E+S+D+T True*. CC3 has identical E, S and D code to CCSDT however the triples is defined as similarly transformed f acted on by t1+t2+t3 amplitudes + similarly transformed v acted on by singles + \[v, t2] + \[\[v, t1], t2] + (1/2)\[\[\[v, t1], t1], t2] + (1/6)\[\[\[\[v, t1], t1], t1], t2]. This is implemented in triples as
+This has now been implemented as type 'A' with level '3', called as *cogusGenerate.py A 3 E+S+D+T True*. CC3 has identical E, S and D code to CCSDT however the triples is defined as <0| i<sup>+</sup>j<sup>+</sup>k<sup>+</sup>abc (e<sup>-t1-t2-t3</sup>**f**e<sup>t1+t2+t3</sup> + i<sup>+</sup>a e<sup>-t1</sup>**v**e<sup>t1</sup> + \[v, t2] + \[\[v, t1], t2] + (1/2)\[\[\[v, t1], t1], t2] + (1/6)\[\[\[\[v, t1], t1], t1], t2]) |0> . This is implemented in triples as
 ```python
 if (type == 'A') and (level == 'SDT'):
    cc = bakerCampbellHausdorff(f, 'C', 'SDT') + bakerCampbellHausdorff(v, 'C', 'S') + v +  \
@@ -347,9 +347,37 @@ cogusValidate now has options 'A 3 h2o sto-3g' and 'A 2 h2o dz' with validation 
 
 ## CCSD(T) 
 This has been implemented as type 'C' with level 'SDt'. The S and D amplitudes are the same as CCSD but the triples amplitudes
-are given by similarly transformed f acted on by t3 + [v, t2]. This is added non-iteratively. The perturbation energy correction is then 
-(l1+l2) operating on [v, t3] where l1 and l2 are the Lagrange multiplier operators (transpose of t amplitudes). This is implemented for triples and energy as... 
+are given by <0| i<sup>+</sup>j<sup>+</sup>k<sup>+</sup>abc (e<sup>-t3</sup>**f**e<sup>t3</sup> + \[v, t2]) |0> this is added non-iteratively. The perturbation energy correction is then 
+(l1+l2) operating on \[v, t3] where l1 and l2 are the Lagrange multiplier operators (transpose of t amplitudes). This is implemented for triples and energy as... 
 ```python
+         cc = bakerCampbellHausdorff(f, 'C', 'T') + Commutator(v, clusterOperators('D'))
+         cc = wicks(Fd(i)*Fd(j)*Fd(k)*F(c)*F(b)*F(a)*cc ,keep_only_fully_contracted=True, simplify_kronecker_deltas=True)
+         symbolRules = {'below':'lmno', 'above': 'def', 'general':'pqrstu'}
+
+         cc = substitute_dummies(cce, new_indices=True, pretty_indices=symbolRules)
+         p = [PermutationOperator(i,j), PermutationOperator(a,b),PermutationOperator(j,k), PermutationOperator(b,c)]  
+         mixture['T'] = simplify_index_permutations(cc, p)
+
+        #singles 
+         i = symbols('i', below_fermi=True, cls=Dummy)
+         a = symbols('a', above_fermi=True, cls=Dummy)
+         ls = AntiSymmetricTensor('l1', (i,), (a,))
+         ai = NO(Fd(i)*F(a))
+         l1 = ls * ai
+	 
+         #doubles
+         i, j = symbols('i,j', below_fermi=True, cls=Dummy)
+         a, b = symbols('a,b', above_fermi=True, cls=Dummy)
+         ld = AntiSymmetricTensor('l2', (i, j), (a, b))
+         aibj = NO(Fd(i)*F(a)*Fd(j)*F(b))
+         l2 = Rational(1, 4)*ld*aibj
+
+         cc =   Commutator(v, clusterOperators('T'))
+         lop = l1 + l2
+         w = wicks(lop*cc, simplify_kronecker_deltas=True, keep_only_fully_contracted=True)
+         symbolRules = {'below':'ijklmno', 'above': 'abcdef', 'general':'pqrstu'}
+
+         mixture['E'] = substitute_dummies(w, new_indices=True, pretty_indices=symbolRules)
 
 ```
 cogusValidate now has options 'C SDt h2o sto-3g', 'h2o 6-31g', 'ch4 sto-3g'
