@@ -394,7 +394,7 @@ We can generalise the density matrix equation to include EOM cases
 |    EA     |                0         | &lambda;<sub>a</sub> a | (1/2)&lambda;<sup>i</sup><sub>bc</sub> i<sup>+</sup>cb |
 
 The basic EE form has i<sup>+</sup>a. if we go to IP we lose the hole ie i<sup>+</sup> or if we go to electron affinity we lose the particle a. There are also double IP (DIP) and double EA (DEA).\
-In EOM the density matrices are given by <0| L<sub>k</sub> e<sup>-T</sup> {p<sup>+</sup>q} e<sup>T</sup> R<sub>l</sub> |0> Shavitt and Bartlett 13.30. Here L and R are the left and right eigenvectors Shavitt & Bartlett 13.14 and 13.9, they represent de-excitations and excitations, respectively. They form of bi-orthonormal set Shavitt & Bartlett 13.16 - more of EOM later.
+In EOM the density matrices are given by <0| L<sub>k</sub> e<sup>-T</sup> {p<sup>+</sup>q} e<sup>T</sup> R<sub>k</sub> |0> Shavitt and Bartlett 13.28. Here L and R are the left and right eigenvectors Shavitt & Bartlett 13.14 and 13.9, they represent de-excitations and excitations, respectively. They form of bi-orthonormal set Shavitt & Bartlett 13.16 - more of EOM later.
 
 We can implement as 
 ```python
