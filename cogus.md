@@ -382,4 +382,61 @@ are given by <0| i<sup>+</sup>j<sup>+</sup>k<sup>+</sup>abc (e<sup>-t3</sup>**f*
 ```
 cogusValidate now has options 'C SDt h2o sto-3g', 'h2o 6-31g', 'ch4 sto-3g'
 
+## CCSD Response Density Matrices
+Shavitt & Bartlett 11.88 defines the response density matrix as (&gamma;)<sub>qp</sub> = <0| (1 + &Lambda;)e<sup>-T</sup>{p<sup>+</sup>q}e<sup>T</sup> |0>\
+here &Lambda; are de-excitation operators defined in a similar way to T ie &Lambda;<sub>n</sub>=1/(n!)<sup>2</sup> &Sigma;&lambda;<sup>i..n</sup><sub>a..f</sub> (i<sup>+</sup>a..n<sup>+</sup>f}.\
+We can generalise the density matrix equation to include EOM cases
+|   method  |   &Lambda;<sub>0</sub>   |  &Lambda;<sub>1</sub> |  &Lambda;<sub>2</sub> |
+|-----------|--------------------------|-----------------------|-----------------------|
+|    CC     |                1         | &lambda;<sup>i</sup><sub>a</sub> i<sup>+</sup>a | (1/4)&lambda;<sup>jk</sup><sub>bc</sub> j<sup>+</sup>k<sup>+</sup>cb |
+|    EE     |                0         | &lambda;<sup>i</sup><sub>a</sub> i<sup>+</sup>a | (1/4)&lambda;<sup>jk</sup><sub>bc</sub> j<sup>+</sup>k<sup>+</sup>cb |
+|    IP     |                0         | &lambda;<sup>i</sup> i<sup>+</sup> | (1/2)&lambda;<sup>jk</sup><sub>a</sub> j<sup>+</sup>k<sup>+</sup>a |
+|    EA     |                0         | &lambda;<sub>a</sub> a | (1/2)&lambda;<sup>i</sup><sub>bc</sub> i<sup>+</sup>cb |
 
+The basic EE form has i<sup>+</sup>a. if we go to IP we lose the hole ie i<sup>+</sup> or if we go to electron affinity we lose the particle a. There are also double IP (DIP) and double EA (DEA).\
+In EOM the density matrices are given by <0| L<sub>k</sub> e<sup>-T</sup> {p<sup>+</sup>q} e<sup>T</sup> R<sub>l</sub> |0> Shavitt and Bartlett 13.30. Here L and R are the left and right eigenvectors Shavitt & Bartlett 13.14 and 13.9, they represent de-excitations and excitations, respectively. They form of bi-orthonormal set Shavitt & Bartlett 13.16 - more of EOM later.
+
+We can implement as 
+```python
+method = 'CC'
+
+def de_excitations(method):
+
+   i, j, k = symbols('i:k' ,below_fermi=True, cls=Dummy)
+   a ,b, c = symbols('a:c' ,above_fermi=True, cls=Dummy)   
+
+   if method == 'IP':
+       return [0, AntiSymmetricTensor('l',(i,),())*Fd(i), Rational(1, 2)* \
+                  AntiSymmetricTensor('l',(j,k),(a,))*Fd(j)*Fd(k)*F(a)]  
+   elif method == 'EA':
+       return [0, AntiSymmetricTensor('l',(),(a,))*F(a), Rational(1, 2)* \
+                  AntiSymmetricTensor('l',(i,),(b,c))*Fd(i)*F(c)*F(b)]
+   elif method == 'EE':
+       return [0, AntiSymmetricTensor('l',(i,),(a,))*Fd(i)*F(a), Rational(1, 4)* \
+                  AntiSymmetricTensor('l',(j,k),(b,c))*Fd(j)*Fd(k)*F(c)*F(b)]
+   elif method == 'CC':
+       return [1, AntiSymmetricTensor('l',(i,),(a,))*Fd(i)*F(a), Rational(1, 4)* \
+                  AntiSymmetricTensor('l',(j,k),(b,c))*Fd(j)*Fd(k)*F(c)*F(b)]
+  
+L = sum(de_excitations(method))
+
+#as example D(oo)
+cc = bakerCampbellHausdoff(Fd(i)*F(j),'C','SD')
+evaluate_deltas(wicks(L*cc, keep_only_fully_contracted = True))
+cc = substitute_dummies(cc, new_indices=True, pretty_indices = {'below':  'klmno','above':  'abcde'})
+
+#and D(vv)
+cc = bakerCampbellHausdoff(Fd(a)*F(b),'C','SD')
+evaluate_deltas(wicks(L*cc, keep_only_fully_contracted = True))
+cc = substitute_dummies(cc, new_indices=True, pretty_indices = {'below':  'ijklmn','above':  'cdefg'})
+```
+This results in
+```
+oo=  KroneckerDelta(i, j) - AntiSymmetricTensor(l, (j,), (_a,))*AntiSymmetricTensor(t, (_a,), (i,)) \
+   - AntiSymmetricTensor(l, (j, _k), (_a, _b))*AntiSymmetricTensor(t, (_a, _b), (i, _k))/2
+
+vv=  AntiSymmetricTensor(l, (_i,), (a,))*AntiSymmetricTensor(t, (b,), (_i,)) + \
+     AntiSymmetricTensor(l, (_i, _j), (a, _c))*AntiSymmetricTensor(t, (b, _c), (_i, _j))/2
+```
+or &delta;<sub>ij</sub> - l<sup>j</sup><sub>a</sub> t<sup>a</sup><sub>i</sub> - 0.5 l<sup>jk</sup><sub>ab</sub> t<sup>ab</sup><sub>ik</sub>\
+and l<sup>i</sup><sub>a</sub> t<sup>b</sup><sub>i</sub> + 0.5 l<sup>ij</sup><sub>ac</sub> t<sup>bc</sup><sub>ij</sup>
