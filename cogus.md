@@ -439,4 +439,8 @@ vv=  AntiSymmetricTensor(l, (_i,), (a,))*AntiSymmetricTensor(t, (b,), (_i,)) + \
      AntiSymmetricTensor(l, (_i, _j), (a, _c))*AntiSymmetricTensor(t, (b, _c), (_i, _j))/2
 ```
 or &delta;<sub>ij</sub> - l<sup>j</sup><sub>a</sub> t<sup>a</sup><sub>i</sub> - 0.5 l<sup>jk</sup><sub>ab</sub> t<sup>ab</sup><sub>ik</sub>\
-and l<sup>i</sup><sub>a</sub> t<sup>b</sup><sub>i</sub> + 0.5 l<sup>ij</sup><sub>ac</sub> t<sup>bc</sup><sub>ij</sup>
+and l<sup>i</sup><sub>a</sub> t<sup>b</sup><sub>i</sub> + 0.5 l<sup>ij</sup><sub>ac</sub> t<sup>bc</sup><sub>ij</sub>\
+After adding this to cogus the output is
+
+![image](https://user-images.githubusercontent.com/73105740/126036474-df897c03-b935-4a02-9908-5d16000c9a21.png)
+
