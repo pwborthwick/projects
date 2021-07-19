@@ -206,10 +206,12 @@ isinstance(td.args[4].args[4], PermutationOperator)
 td.args[4].args[4].args
 >>>(i, j)
 ```
-This is code to reduce the compound string to atoms (it might already be a 'Mul' in the case of energy)
+This is code to reduce the compound string to atoms (it might already be a 'Mul' in the case of energy, or already a tensor)
 ```python
 if isinstance(td, Mul):
     compound = [td]
+elif isinstance(td, AntiSymmetricTensor):
+    compound = [td] 
 else:
     compound = td.args
     
@@ -229,7 +231,8 @@ for element in compound:
         
 ```
 - - -
-+ Tests
++ **Tests**
+
   The output for CCD is, with Shavitt & Bartlett for comparison
 
  ![image](https://user-images.githubusercontent.com/73105740/124356517-51811900-dc0e-11eb-9bf9-6bdce09de87e.png)
@@ -244,32 +247,10 @@ These are the same allowing for permutation differences.
  
  Shavitt & Bartlett singles for comparison...
  
- ![image](https://user-images.githubusercontent.com/73105740/124358406-07049a00-dc18-11eb-84f9-36543c757ae9.png)
- 
- Lets just check the last term in SB + v<sup>kl</sup><sub>cd</sub> t<sup>c</sup><sub>i</sub> t<sup>d</sup><sub>j</sub> t<sup>a</sup><sub>k</sub> t<sup>b</sup><sub>l</sub> matches our equation 22. First SB P(ij) v<sup>ab</sup><sub>cj</sub> t<sup>c</sup><sub>i</sub> is compared to our equation 8 which is -P(ij) v<sup>ab</sup><sub>jc</sub> t<sup>c</sup><sub>i</sub> or +P(ij) v<sup>ab</sup><sub>cj</sub> t<sup>c</sup><sub>i</sub> .
-
-For CCSDT, the energy is the same. For singles we have an extra term 1/4 t<sup>**a**bc</sup><sub>**i**jk</sub> <jk||bc> compared to Shavitt & Bartlett 10.32 1/4 t<sup>**a**ef</sup><sub>**i**mn</sub> <mn||ef> where jkbc and mnef are repeated dummy indices.\
-For the doubles there are 6 extra terms according to Shavitt & Bartlett 10.33, these are with our terms in {}, 
-+ f<sub>me</sub> t<sup>abe</sup><sub>ijm</sub>&nbsp; &nbsp;{f<sub>kc</sub> t<sup>abc</sup><sub>ijk</sub> e<>c, m<>k}
-+ 1/2P(ab) t<sup>aef</sup><sub>ijm</sub> <bm||ef>&nbsp; &nbsp;{1/2P(ab) t<sup>acd</sup><sub>ijk</sub> <bk||cd> e<>c. f<>d, m<>k}
-+ -1/2P(ij) t<sup>abe</sup><sub>imn</sub> <mn||je>&nbsp; &nbsp;{-1/2P(ij) t<sup>abc</sup><sub>ikl</sub> <kl||jc> e<>c. m<>k, n<>l}
-+ t<sup>e</sup><sub>m</sub> t<sup>fab</sup><sub>nij</sub> <mn||ef>&nbsp; &nbsp;{t<sup>c</sup><sub>k</sub> t<sup>abd</sup><sub>ijl</sub> <kl||cd> e<>c, m<>k, f<>d, n<>l}
-+ -P(ab) t<sup>a</sup><sub>m</sub> t<sup>efb</sup><sub>inj</sub> <mn||ef>&nbsp; &nbsp; {1/2 P(ab) t<sup>a</sup><sub>k</sub> t<sup>bcd</sup><sub>ijl</sub> <kl||cd>  m<>k, n<>l, c<>e, d<>f}
-+ -P(ij) t<sup>e</sup><sub>i</sub> t<sup>afb</sup><sub>mnj</sub> <mn||ef>&nbsp; &nbsp; {1/2 P(ij) t<sup>c</sup><sub>i</sub> t<sup>abd</sup><sub>jkl</sub> <kl||cd> m<>k, n<>l, c<>e, d<>f}
-
-\*note symmetry of triples operator abc = -bac. The last 2 equations disagree by a factor 1/2 with Shavitt & Bartlett 10.33, but a check with [pdaggerq](https://github.com/edeprince3/pdaggerq/blob/master/examples/full_cc_codes/ccsdt.py) gives
-
-+  1.0000 f(k,c)\*t3(c,a,b,i,j,k)
-+	 0.5000 P(i,j)<l,k||c,j>\*t3(c,a,b,i,l,k)
-+  0.5000 P(a,b)<k,a||c,d>\*t3(c,d,b,i,j,k)
-+ -1.0000 <l,k||c,d>\*t1(c,k)\*t3(d,a,b,i,j,l)
-+	-0.5000 P(i,j)<l,k||c,d>\*t1(c,j)\*t3(d,a,b,i,l,k) 
-+	-0.5000 P(a,b)<l,k||c,d>\*t1(a,k)\*t3(c,d,b,i,j,l)
+ ![image](https://user-images.githubusercontent.com/73105740/124358406-07049a00-dc18-11eb-84f9-36543c757ae9.png) 
 
 ## code generation
 As we've already parsed the expressions returned from sympy we could quite easily convert them into Python code. Here's a section from CCSDT triples...\
-**note I define f<sup>a</sup><sub>i</sub> as f(i,a) - the subscript indices come first
-and the superscript after so g<sup>ab</sup><sub>ij</sub> is f(i,j,a,b) this may be different from other sources.**
 ```python
     #  1.0000 * P(a,b) f(c,k) t1(k,a) t2(i,j,b,c) 
     t = 1.0000 * einsum('ck,ka,ijbc->ijab' ,f[v,o] ,t1 ,t2, optimize=True)
