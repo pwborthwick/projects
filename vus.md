@@ -54,13 +54,14 @@ Now we can compute the outer product
  
  ![image](https://user-images.githubusercontent.com/73105740/126640071-1753aef0-2ffe-4aeb-8a46-d940d83dbbd7.png)
 
+Below the (1) arguments are the number of qubits the gate operates on, here single qubits
 ```python
 >>>print('Hadamard Gate ', H.get_target_matrix(H))
 >>>print('Identity Gate ', IdentityGate.get_target_matrix(1))
->>>print('Pauly X ',XGate.get_target_matrix(XGate))
->>>print('Pauli Y', YGate.get_target_matrix(YGate))
->>>print('Pauli Z ',ZGate.get_target_matrix(ZGate))
->>>print('Phase Gate ',S.get_target_matrix(S))
+>>>print('Pauli X ',XGate.get_target_matrix(1))
+>>>print('Pauli Y', YGate.get_target_matrix(1))
+>>>print('Pauli Z ',ZGate.get_target_matrix(1))
+>>>print('Phase Gate ',S.get_target_matrix(1))
 
 Hadamard Gate  Matrix([[1/sqrt(2), 1/sqrt(2)], [1/sqrt(2), -sqrt(2)/2]])
 Identity Gate  Matrix([[1, 0], [0, 1]])
@@ -111,6 +112,78 @@ We can do the kronecker product way
 >>>print(qubit_to_matrix(TensorProduct(Qubit('0'),Qubit('0'))))
 Matrix([[1], [0], [0], [0]])
 ```
++ **More Gates**
+ Josh now introduces the CNOT and SWAP gates. CNOT<sub>01</sub>, the first subscript is the 'control' qubit and the second is the 'target' qubit. Depending on the value of the control qubit the target qubit is changed. Consider the action of CNOT<sub>01</sub> on each of <00|, <01|, <10| and <11|
+ ```python
+>>>print('00',qapply(CNotGate(1,0)*Qubit('00')))
+>>>print('01',qapply(CNotGate(1,0)*Qubit('01')))
+>>>print('10',qapply(CNotGate(1,0)*Qubit('10')))
+>>>print('11',qapply(CNotGate(1,0)*Qubit('11')))
+
+00 |00>
+01 |01>
+10 |11>
+11 |10>
+```
+So if the first (control) qubit is 0 nothing happens to the second (target) qubit, but if the first qubit is 1 the second qubit is changes. There is also CNOT<sub>10</sub>. Swap is defined
+```python
+>>>print('Swap ',SwapGate.get_target_matrix(SwapGate))
+
+Swap  Matrix([[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1]])
+```
+This takes |00> -> |00>, |01> -> |10>, |10> -> |10> and |11> -> |11>\
+There is an example given
+
+![image](https://user-images.githubusercontent.com/73105740/126678933-fec5109c-c755-4f26-8766-2acf8d0900b3.png)
+
+We can check this
+```python
+>>>print(TensorProduct(XGate.get_target_matrix(2),YGate.get_target_matrix(2)))
+
+Matrix([[0, 0, 0, -I], [0, 0, I, 0], [0, -I, 0, 0], [I, 0, 0, 0]])
+```
++ **Classical Result**
+ The Hamiltonian given is (see Josh's blog for details)
+ 
+ ![image](https://user-images.githubusercontent.com/73105740/126679742-980c3e8c-db48-417b-95eb-050ad1774f41.png)
+
+This is implemented as
+```python
+>>>g0, g1, g2, g3, g4, g5 = [-0.4804, +0.3435, -0.4347, +0.5716, +0.0910, +0.0910]
+
+>>>ti = IdentityGate.get_target_matrix(2)
+>>>t0 = TensorProduct(ti,ti)
+>>>tz = ZGate.get_target_matrix(2)
+>>>t1 = TensorProduct(ti, tz)
+>>>t2 = TensorProduct(tz, ti)
+>>>t3 = TensorProduct(tz, tz)
+>>>ty = YGate.get_target_matrix(2)
+>>>t4 = TensorProduct(ty, ty)
+>>>tx = XGate.get_target_matrix(2)
+>>>t5 = TensorProduct(tx, tx)
+>>>H = g0*t0 + g1*t1 + g2*t2 + g3*t3 + g4*t4 + g5*t5
+>>>print(H)
+
+>>>nuclear_repulsion = 0.7055696146
+
+>>>electronic_energy = H.eigenvals()
+>>>vals = list(electronic_energy.keys())
+>>>vals.sort()
+
+>>>print("Classical diagonalization: {:+2.8} Eh".format(vals[0] + nuclear_repulsion))
+>>>print("Exact (from G16):          {:+2.8} Eh".format(-1.1457416808))
+
+[1.11022302462516e-16, 0,                  0,                 0                ], 
+[0,                   -1.83020000000000,   0.182000000000000, 0                ], 
+[0,                    0.182000000000000, -0.273800000000000, 0                ], 
+[0,                    0,                  0,                 0.182400000000000]])
+Classical diagonalization: -1.1456295 Eh
+Exact (from G16):          -1.1457417 Eh
+```
+This is the same as Josh's value (not surprisingly as we've used the same values) but this so far is not using qubits on a quantum circuit.
+
++ **Initial Basis**
++ 
 
 
 
