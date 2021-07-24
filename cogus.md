@@ -440,3 +440,9 @@ These are implemented as eg
    mixture['oooo'] = oooo   
 ```
 We can save some calculation by employing the symmetry of the response density &Gamma;<sub>rspq</sub>= -&Gamma;<sub>rsqp</sub>= -&Gamma;<sub>srpq</sub> = &Gamma;<sub>srqp</sub> Shavitt & Bartlett 11.92
+
+## CCSD_&Lambda;
+The CCSD lagrangian is given by ***L***= <0| (1+&Lambda;) e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0>, here T = T<sub>1</sub>+T<sub>2</sub>\
+The derivative of the lagrangian with respect to T<sub>1</sub> (= t<sub>1</sub>{i<sup>+</sup>a}) is
+<0| (-{i<sup>+</sup>a}e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> + <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> {i<sup>+</sup>a}|0> + <0|L (-e<sup>-T</sup>{i<sup>+</sup>a}H<sub>N</sub>e<sup>T</sup> |0> + <0| L e<sup>-T</sup>H<sub>N</sub>{i<sup>+</sup>a}e<sup>T</sup> |0>\
+which is <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |&psi;<sup>a</sup><sub>i</sub>> + <0| L e<sup>-T</sup> \[H<sub>N</sub>,{i<sup>+</sup>a}] e<sup>T</sup> |0> and these are the expressions for the &Lambda; singles amplitudes.
