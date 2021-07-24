@@ -182,11 +182,51 @@ Exact (from G16):          -1.1457417 Eh
 ```
 This is the same as Josh's value (not surprisingly as we've used the same values) but this so far is not using qubits on a quantum circuit.
 
-+ **Initial Basis**
-+ 
++ **Initial State**
+ The initial state in this problem with just 2 electrons is |01>. We can generate this directly as Qubit('01') but Josh derives this from <00| by 1) Defining a zero 4-vector, 2) setting position 1 to 1. 3) acting on that vector with tensor product of identity and S<sub>x</sub>.
+ ```python
+>>>print('Initial State ', Qubit('01'))
+>>>print(TensorProduct(ti,tx)*Matrix([1,0,0,0]))
+Initial State  |01>
+Matrix([[0], [1], [0], [0]])
+```
++ **Ansatz**
+ This problem is tackled using the Unitary Coupled Cluster (UCC) ansatz, viz. (in this example U(&theta;) = exp(-i&theta;X<sub>0</sub>Y<sub>1</sub>) where X<sub>0</sub> is X-gate acting on the 0 (top) qubit. The parameterized H<sub>2</sub> wave function is then |&psi;(&theta;)> = exp(-i&theta;X<sub>0</sub>Y<sub>1</sub>) |01>\
+ ```python
+ ansatz = lambda theta: exp(-I* theta*TensorProduct(ty,tx))
+```
+ The expected value of the Hamiltonian is then <&psi;|H|&psi;> or **&psi;**<sup>T</sup>**H&psi;**
+```python
+def expected(theta,ansatz,Hmol,psi0):
+    circuit = ansatz(theta[0])
+    psi = circuit*psi0
+    return (psi.transpose().conjugate() * (H*psi))[0,0]
+```
+The whole of Josh's 'lazy VQE' in Sympy
+```python
+>>>def expected(theta,ansatz,Hmol,psi0):
+>>>    circuit = ansatz(theta[0])
+>>>    psi = circuit*psi0
+>>>    return (psi.transpose().conjugate() * (H*psi))[0,0]
 
+>>>ansatz = lambda theta: exp(-I* theta*TensorProduct(ty,tx))
+>>>from scipy.optimize import minimize
 
+>>># initial guess for theta
+>>>theta  = [0.0]
+>>>result = minimize(expected,theta,args=(ansatz,H,psi0))
+>>>theta  = result.x[0]
+>>>val    = result.fun
 
+>>>print("Lazy VQE: ")
+>>>print("  [+] theta:  {:+2.8} deg".format(theta))
+>>>print("  [+] energy: {:+2.8} Eh".format(val + nuclear_repulsion))
+Lazy VQE: 
+  [+] theta:  -0.11487186 deg
+  [+] energy: -1.1456295 Eh
+```
++ **Quantum Ansatz**
+ 
 
 
  
