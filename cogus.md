@@ -425,3 +425,18 @@ After adding this to cogus the output is
 
 ![image](https://user-images.githubusercontent.com/73105740/126036474-df897c03-b935-4a02-9908-5d16000c9a21.png)
 
+The 2-particle response density is given by &Gamma;<sub>pqrs</sub> = <0|(1+&Lambda;)e<sup>-T</sup> {p<sup>+</sup>q<sup>+</sup>sr} e<sup>T</sup>|0> Shavitt & Bartlett 11.89\
+These are implemented as eg
+```python
+
+   i,j,k,l = symbols('i:l' , below_fermi=True)
+   a,b,c,d = symbols('a:d' , above_fermi=True)
+   p = [PermutationOperator(i,j), PermutationOperator(a,b)]
+
+   cc = bakerCampbellHausdorff(Fd(i)*Fd(j)*F(l)*F(k), 'C', 'SD')
+   oooo = wicks(L*cc*R , keep_only_fully_contracted=True, simplify_kronecker_deltas = True)
+   oooo = simplify_index_permutations(oooo, [PermutationOperator(i,j), PermutationOperator(k,l)])
+   oooo = substitute_dummies(oooo,new_indices=True, pretty_indices={'below':  'mnop','above':  'abcde'})
+   mixture['oooo'] = oooo   
+```
+We can save some calculation by employing the symmetry of the response density &Gamma;<sub>rspq</sub>= -&Gamma;<sub>rsqp</sub>= -&Gamma;<sub>srpq</sub> = &Gamma;<sub>srqp</sub> Shavitt & Bartlett 11.92
