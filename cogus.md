@@ -441,8 +441,27 @@ These are implemented as eg
 ```
 We can save some calculation by employing the symmetry of the response density &Gamma;<sub>rspq</sub>= -&Gamma;<sub>rsqp</sub>= -&Gamma;<sub>srpq</sub> = &Gamma;<sub>srqp</sub> Shavitt & Bartlett 11.92
 
-## CCSD_&Lambda;
+## CCSD-&Lambda;
 The CCSD lagrangian is given by ***L***= <0| (1+&Lambda;) e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0>, here T = T<sub>1</sub>+T<sub>2</sub>\
-The derivative of the lagrangian with respect to T<sub>1</sub> (= t<sub>1</sub>{i<sup>+</sup>a}) is
-<0| (-{i<sup>+</sup>a}e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> + <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> {i<sup>+</sup>a}|0> + <0|L (-e<sup>-T</sup>{i<sup>+</sup>a}H<sub>N</sub>e<sup>T</sup> |0> + <0| L e<sup>-T</sup>H<sub>N</sub>{i<sup>+</sup>a}e<sup>T</sup> |0>\
-which is <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |&psi;<sup>a</sup><sub>i</sub>> + <0| L e<sup>-T</sup> \[H<sub>N</sub>,{i<sup>+</sup>a}] e<sup>T</sup> |0> and these are the expressions for the &Lambda; singles amplitudes.
+The derivative of the lagrangian with respect to T<sub>1</sub> (= t<sub>1</sub>{a<sup>+</sup>i}) is
+<0| (-{a<sup>+</sup>i}e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> + <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> {a<sup>+</sup>i}|0> + <0|L (-e<sup>-T</sup>{a<sup>+</sup>i}H<sub>N</sub>e<sup>T</sup> |0> + <0| L e<sup>-T</sup>H<sub>N</sub>{a<sup>+</sup>i}e<sup>T</sup> |0>\
+which is <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |&psi;<sup>a</sup><sub>i</sub>> + <0| L e<sup>-T</sup> \[H<sub>N</sub>,{a<sup>+</sup>i}] e<sup>T</sup> |0> and these are the expressions for the &Lambda; singles amplitudes.
+
+I've already used type 'L' for Linear CC so I've gone for the 'G' for the &Lambda; equations (G for Greek?). Add an entry in the dictionary in the BCH routine so 'G' uses full expansion. Then implement as eg
+```python
+    if 'S' in show:
+        #Lambda singles amplitude
+        cc = bakerCampbellHausdorff(h*Fd(a)*F(i), type, level)
+        w = wicks(cc, simplify_kronecker_deltas=True, keep_only_fully_contracted=True)
+
+        cc = bakerCampbellHausdorff(Commutator(h,Fd(a)*F(i)), type, level)
+        leftOperators = lagrangeOperators('S') + lagrangeOperators('D')
+        w += wicks(leftOperators*cc, simplify_kronecker_deltas=True, keep_only_fully_contracted=True)
+
+        mixture['S'] = substitute_dummies(w, new_indices=True, pretty_indices= {'below':'jklmno', 'above': 'bcdef', 'general':'pqrstu'})
+```
+The derivative of the lagrangian with respect to T<sub>2</sub> (= t<sub>2</sub>{a<sup>+</sup>b<sup>+</sup>ij}) is
+<0| (-{a<sup>+</sup>b<sup>+</sup>ij}e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> + <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> {a<sup>+</sup>b<sup>+</sup>ij}|0> + <0|L (-e<sup>-T</sup>{a<sup>+</sup>b<sup>+</sup>ij}H<sub>N</sub>e<sup>T</sup> |0> + <0| L e<sup>-T</sup>H<sub>N</sub>{a<sup>+</sup>b<sup>+</sup>ij}e<sup>T</sup> |0>\
+which is <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |&psi;<sup>ab</sup><sub>ij</sub>> + <0| L e<sup>-T</sup> \[H<sub>N</sub>,{a<sup>+</sup>b<sup>+</sup>ij}] e<sup>T</sup> |0> and these are the expressions for the &Lambda; doubles amplitudes.
+
+
