@@ -1,14 +1,14 @@
 ## Cluster Operator Generation Using Sympy
 
-Sympy has a module called secondquant and I want to use this to automatically generate some cluster operators.
+Sympy has a module called secondquant and I want to use this to automatically generate some cluster operators. This was prompted by the repo [pdaggerq](https://github.com/edeprince3/pdaggerq) which I was told about by [Josh Goings](https://github.com/jjgoings) (whose blog and github site you should certainly look at).
 + Generate some symbols\
-  Quantum chemistry is pretty heavy on labels, we have lots of tensors, so how using sympy do we define some labels to use with our tensors. Unlike in Python where we just just use the variables we want without declaration, in sympy we must declare our variables/labels
+  Quantum chemistry is pretty heavy on labels, we have lots of tensors, so how using sympy do we define some labels to use with our tensors. Unlike in Python where we just just use the variables we want without declaration, in sympy we must declare our variables/labels (assume we have from sympy import \*)
   
 ```python
   i, j = symbols('i, j', cls=Dummy)
   a, b, c = symbols('a:c', cls=Dummy)
 ```
-But our labels usually mean something eg i,j will usually be occupied orbitals and a,b will be virtual orbitals. In the **particle-hole formalism (PHF)** we say occupied levels (particles) are below the Fermi surface and virtual ones (holes) above. We can impose these conditions on our labels by
+But our labels usually mean something eg i,j will usually be occupied orbitals and a,b will be virtual orbitals. In the **particle-hole formalism (PHF)** ,Shavitt & Bartlett 3.4) we say occupied levels (particles) are below the Fermi surface and virtual ones (holes) above. We can impose these conditions on our labels by
 ```python
   i, j = symbols('i, j', below_fermi=True)
   a, b = symbols('a, b', above_fermi=True)
@@ -60,7 +60,7 @@ The time-independent form of Wick’s theorem states: *A product of a string of 
 wicks(Fd(p)*F(q))
 ```
 + **Simplifying expressions**\
-There are some useful functions which rationalise expressions. **evaluate_deltas(exp)**  does just that obeying Einstein summation convention. **substitute_dummies(exp)** this routine simplifys Add expressions containing terms which differ only due to dummy variables.
+There are some useful functions which rationalise expressions. **evaluate_deltas(exp)**  does just that obeying Einstein summation convention. **substitute_dummies(exp)** this routine simplifys *Add* expressions containing terms which differ only due to dummy variables.
 
 + **Cluster Operators**\
 The cluster operators are defined as T<sub>1</sub> = &Sigma; t<sup>a</sup><sub>i</sub> n\[a<sup>&#8224;</sup>i], T<sub>2</sub> = 0.25 &Sigma; t<sup>ab</sup><sub>ij</sub> n\[a<sup>&#8224;</sup>ib<sup>&#8224;</sup>j] etc (Shavitt & Bartlett 9.26-9.28, 9.29). In sympy we can do this as 
@@ -98,7 +98,7 @@ The commutator bracket is defined \[A,B] = AB - BA and in sympy
 c = Commutator
 ```
 + **Permutations**
-Sympy has a permutation operator 
+Sympy has a permutation operator, P(a,b) = f(a,b) - f(b,a) 
 ```python
 PermutationOperator(i,j)
 ```
@@ -106,7 +106,7 @@ PermutationOperator(i,j)
  The Baker-Campbell-Hausdorff expansion (BCH) gives an expansion of e<sup>-B</sup>Ae<sup>B</sup> (Shavitt & Bartlett 10.4) and applied to **H**<sub>N</sub> (Shavitt & Bartlett 10.5). A sympy implementation looks like
  ```python
  
-    prettySymbols = {'above': 'defg','below': 'lmno', 'general': 'pqrst' }
+    symbols = {'above': 'defg','below': 'lmno', 'general': 'pqrst' }
 
     #commutator bracket
     c = Commutator
@@ -126,7 +126,7 @@ PermutationOperator(i,j)
     BCH = BCH.expand()
     BCH = evaluate_deltas(BCH)
     BCH = substitute_dummies(BCH, new_indices=True,
-                                  pretty_indices=prettySymbols)
+                                  pretty_indices=symbols)
 ```
 Here we have used a sympy array to hold the terms of the BCH expansion. Substitute_dummies just uses a user defined symbol dictionary to use in place of the internal dummies.
 + **Coupled-Cluster Doubles**
@@ -462,6 +462,24 @@ I've already used type 'L' for Linear CC so I've gone for the 'G' for the &Lambd
 ```
 The derivative of the lagrangian with respect to T<sub>2</sub> (= t<sub>2</sub>{a<sup>+</sup>b<sup>+</sup>ij}) is
 <0| (-{a<sup>+</sup>b<sup>+</sup>ij}e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> + <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> {a<sup>+</sup>b<sup>+</sup>ij}|0> + <0|L (-e<sup>-T</sup>{a<sup>+</sup>b<sup>+</sup>ij}H<sub>N</sub>e<sup>T</sup> |0> + <0| L e<sup>-T</sup>H<sub>N</sub>{a<sup>+</sup>b<sup>+</sup>ij}e<sup>T</sup> |0>\
-which is <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |&psi;<sup>ab</sup><sub>ij</sub>> + <0| L e<sup>-T</sup> \[H<sub>N</sub>,{a<sup>+</sup>b<sup>+</sup>ij}] e<sup>T</sup> |0> and these are the expressions for the &Lambda; doubles amplitudes.
+which is <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |&psi;<sup>ab</sup><sub>ij</sub>> + <0| L e<sup>-T</sup> \[H<sub>N</sub>,{a<sup>+</sup>b<sup>+</sup>ij}] e<sup>T</sup> |0> and these are the expressions for the &Lambda; doubles amplitudes. Implemented as 
+```python
+    if 'D' in show:
+        #Lambda doubles amplitude
+        cc = bakerCampbellHausdorff(h*Fd(a)*Fd(b)*F(j)*F(i), type, level)
+        w = wicks(cc, simplify_kronecker_deltas=True, keep_only_fully_contracted=True)
 
+        cc = bakerCampbellHausdorff(Commutator(h,Fd(a)*Fd(b)*F(j)*F(i)), type, level)
+        leftOperators = lagrangeOperators('S') + lagrangeOperators('D')
+        w += wicks(leftOperators*cc, simplify_kronecker_deltas=True, keep_only_fully_contracted=True)
+
+        symbolRules = {'below':'klmno', 'above': 'cdef', 'general':'pqrstu'}
+
+        ld = substitute_dummies(w, new_indices=True, pretty_indices=symbolRules)
+        p = [PermutationOperator(i,j), PermutationOperator(a,b)]
+```
+We gave the lagrangian earlier as ***L***= <0| (1+&Lambda;) e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0>, hence the Lagrangian energy is given by\
+<0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> + <0| L<sub>1</sub> e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> + <0| L<sub>2</sub> e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0>, or\
+E<sub>CCSD</sub> + l1<0|i<sup>+</sup>a e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> + l2<0| i<sup>+</sup>j<sup>+</sup>ba e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> or\
+E<sub>CCSD</sub> + l1.t1 + l2.t2
 
