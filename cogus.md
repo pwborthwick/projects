@@ -481,5 +481,8 @@ which is <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |&psi;<sup>ab</sup><sub>ij
 We gave the lagrangian earlier as ***L***= <0| (1+&Lambda;) e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0>, hence the Lagrangian energy is given by\
 <0| e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> + <0| L<sub>1</sub> e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> + <0| L<sub>2</sub> e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0>, or\
 E<sub>CCSD</sub> + l1<0|i<sup>+</sup>a e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> + l2<0| i<sup>+</sup>j<sup>+</sup>ba e<sup>-T</sup>H<sub>N</sub>e<sup>T</sup> |0> or\
-E<sub>CCSD</sub> + l1.t1 + l2.t2
+E<sub>CCSD</sub> + l1 CCSD<sub>singles</sub> + l2 CCSD<sub>doubles</sub>
 
+## EOM
+We can define an excitation operator R<sub>k</sub> as R<sub>k</sub>|&phi;<sub>0</sub>> = |&phi;<sub>k</sub>> Shavitt & Bartlett 13.7.\
+Our main equation is \[H, R<sub>k</sub>]|0> = &omega;<sub>k</sub>R<sub>k</sub>|0> Shavitt & Bartlett 13.20\
