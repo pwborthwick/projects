@@ -486,3 +486,41 @@ E<sub>CCSD</sub> + l1 CCSD<sub>singles</sub> + l2 CCSD<sub>doubles</sub>
 ## EOM
 We can define an excitation operator R<sub>k</sub> as R<sub>k</sub>|&phi;<sub>0</sub>> = |&phi;<sub>k</sub>> Shavitt & Bartlett 13.7.\
 Our main equation is \[H, R<sub>k</sub>]|0> = &omega;<sub>k</sub>R<sub>k</sub>|0> Shavitt & Bartlett 13.20\
+We define the excitation amplitudes with
+```python
+def excitationOperators(level):
+
+    i, j, k = symbols('i,j,k' ,below_fermi=True, cls=Dummy)
+    a ,b, c = symbols('a:c' ,above_fermi=True, cls=Dummy)   
+
+    if level == 'IP':
+        return [0, AntiSymmetricTensor('r',(),(i,))*F(i), Rational(1, 2)*AntiSymmetricTensor('r',(a,),(j,k))*Fd(a)*F(k)*F(j)]
+    elif level == 'EA':
+        return [0, AntiSymmetricTensor('r',(a,),())*Fd(a), Rational(1, 2)*AntiSymmetricTensor('r',(b,c),(i,))*Fd(b)*Fd(c)*F(i)]
+    elif level == 'EE':
+        return [AntiSymmetricTensor('r0',(),()), AntiSymmetricTensor('r',(a,),(i,))*Fd(a)*F(i), \
+                Rational(1, 4)*AntiSymmetricTensor('r',(b,c),(j,k))*Fd(b)*Fd(c)*F(k)*F(j) ]
+    elif level == 'CC':
+        return [1, 0, 0]
+```
+The single-single block (for EE) is then calculated as
+```python
+#singles-singles block
+qOperators, qSymbols = [Fd(i)*F(a), {'below': 'jklmno','above': 'bcdefg'}]
+ss = evaluate_deltas(wicks(qOperators*Commutator(h,R[1]) , keep_only_fully_contracted=True))
+ss = substitute_dummies(ss, new_indices=True, pretty_indices= qSymbols)
+
+p = [PermutationOperator(i,j), PermutationOperator(a,b)]
+mixture['ss'] = simplify_index_permutations(ss, p)
+```
+For IP and EA the operators and symbols are
+```python
+if level == 'IP': qOperators, qSymbols = [Fd(i), {'below': 'jklmno','above': 'abcdefg'}]
+if level == 'EA': qOperators, qSymbols = [F(a), {'below': 'ijklmno','above': 'bcdefg'}]
+
+#and for 'ds' and 'dd' blocks
+if level == 'IP': qOperators, qSymbols = [Fd(i)*Fd(j)*F(a), {'below': 'klmno','above': 'bcdefg'}]
+if level == 'EA': qOperators, qSymbols = [Fd(i)*F(b)*F(a), {'below': 'jklmno','above': 'cdefg'}]
+if level == 'EE': qOperators, qSymbols = [Fd(i)*Fd(j)*F(b)*F(a), {'below': 'klmno','above': 'cdefg'}]
+```
+Of course for 'sd' and 'dd' blocks the R\[2] excitation operators are used.
