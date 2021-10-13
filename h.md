@@ -101,10 +101,10 @@ In order to determine the bounded energy levels we must solve a boundary value p
 
     parameters - *boundEnergies* are the energies computed by the above routine. Compares the computed *boundEnergies* with the theoretical values of -1.0/n<sup>2</sup>. Returns overall validity and a list of individual validity tests.The validity criterion is 1e-4.
 
-19. **numerovHydrogenicWavefunctionDensity(parameters = {'points':2000, 'extent':[1e-8, 100], 'n_range': 5, 'radius':[0,15],'occupied': [1, True, False]})**
+19. **numerovHydrogenicRadialDensity(parameters = {'points':2000, 'extent':[1e-8, 100], 'n_range': 5, 'radius':[0,15],'occupied': [1, True, False]})**
 
     parameters - *parameters* is a dictionary of values defining the problem, these values are 'points' - number of radial sample points, 'extent' - radial range values, 'n_range' - is a number specifying the maximum principal quantum number to evaluate, 'radius' - is the range of radial values for xlim and 'occupied' - is a list, the first entry is the atomic number of the hydrogenic type atom to plot and the second entry is a boolean which controls whether the orbitals should be considered as occupied. The third entry is a boolean which if True will plot the overall electron density in the radial direction. Plots the hydrogenic radial wavefunctions and returns a list of plotted states - each element of list is a 4-tuple containing (*n*, *l*, *e*, fermi level). As an example\
-numerovHydrogenicWavefunctionDensity({'points':2000, 'extent':[1e-8, 100], 'n_range': 5, 'radius':[0,25],'occupied': [28, True, False]})\
+numerovHydrogenicRadialDensity({'points':2000, 'extent':[1e-8, 100], 'n_range': 5, 'radius':[0,25],'occupied': [28, True, False]})\
 	This plots the occupied hydrogenic wavefunctions for an atom with 28 electrons (Ni).
 	![image](https://user-images.githubusercontent.com/73105740/136944573-ea821ba8-52e1-4a71-bb96-d672908124b4.png)
 	
@@ -117,3 +117,15 @@ The returned list is
 [(1, 0, -0.9999221089559599,  1.0), (2, 1, -0.2500000156117056,  1.0), (2, 0, -0.24999019020652957, 1.0), 
  (3, 1, -0.11111111678091953, 1.0), (3, 2, -0.11111111114690334, 1.0), (3, 0, -0.11110820082299608, 1.0)]
 ```
+
+20. **numerovRadialVerify(n, l)**
+
+    parameters - *n* is a principal quantum number, *l* is an angular quantum number. Routine plots Numerov wavefunction profile and scipy calculated profile for comparison. No return value, displays the plotted profiles for Numerov and Sympy radial wavefunctions for (n,l) = (1,0),(2,0),(2,1),(3,0),(3,1),(3,2). The resulting plot is
+    
+![image](https://user-images.githubusercontent.com/73105740/137095203-360f13eb-9ac5-48c2-a3e8-072a8a0c4bda.png)
+
+21. ** finiteDifferenceSolution(parameters = {'l': 0, 'points': 4000, 'extent':[0, 40], 'levels':25, 'show':5})**
+
+    parameters - *parameters* is a directory of values defining the problem, these values are 'l' - quantum angular number, 'points' - are the number of data sample points, 'extent' - is a list denoting the range of the radial extent in nm, 'levels' - the number of eigenvalues to calculate and 'show' - the number of states to plot. This routine uses a three-point stencil finite difference method. The discrete radial grid is generated as an equidistant mesh between 'extent' in 'points' steps. The 'extent' should be sufficient to include contributing parts of the wavefunction. The default [0, 40] is sufficient for first 5 energy levels to an accuracy of two decimal places. Increasing 'points' can improve the accuracy up to a point. The 'show' levels are plotted and the legend shows the computed energy level in eV, included in [] after the computed value is the theoretical value of 1/(n+l)<sup>2</sup> Ry. The plot is r and probability density. The default parameters produce the following plot
+    
+![image](https://user-images.githubusercontent.com/73105740/137188568-632e60fc-dc90-4ae2-8a29-b9862bc51bc4.png)
