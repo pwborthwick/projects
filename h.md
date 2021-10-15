@@ -1,4 +1,5 @@
 ## Hydrogenic Wavefunctions
+These routines explore various aspects of the hydrogen solution of the Schrodinger equation. They're designed to give pointers to various ways of solving the hydrogen and visualizing the solutions.
 
 1.  **transform(mode, i, j, k)**
 
@@ -124,8 +125,21 @@ The returned list is
     
 ![image](https://user-images.githubusercontent.com/73105740/137095203-360f13eb-9ac5-48c2-a3e8-072a8a0c4bda.png)
 
-21. ** finiteDifferenceSolution(parameters = {'l': 0, 'points': 4000, 'extent':[0, 40], 'levels':25, 'show':5})**
+21. **finiteDifferenceRadial(parameters = {'l': 0, 'points': 4000, 'extent':[0, 40], 'levels':25, 'show':5})**
 
     parameters - *parameters* is a directory of values defining the problem, these values are 'l' - quantum angular number, 'points' - are the number of data sample points, 'extent' - is a list denoting the range of the radial extent in nm, 'levels' - the number of eigenvalues to calculate and 'show' - the number of states to plot. This routine uses a three-point stencil finite difference method. The discrete radial grid is generated as an equidistant mesh between 'extent' in 'points' steps. The 'extent' should be sufficient to include contributing parts of the wavefunction. The default [0, 40] is sufficient for first 5 energy levels to an accuracy of two decimal places. Increasing 'points' can improve the accuracy up to a point. The 'show' levels are plotted and the legend shows the computed energy level in eV, included in [] after the computed value is the theoretical value of 1/(n+l)<sup>2</sup> Ry. The plot is r and probability density. The default parameters produce the following plot
-    
-![image](https://user-images.githubusercontent.com/73105740/137188568-632e60fc-dc90-4ae2-8a29-b9862bc51bc4.png)
+
+
+These routines can be run using the default parameters supplied from the command line as 'python h.py -\<key>'. The available keys are\
+	'rp' - radialSolutionPlot (10)\
+	'rv' - radialVerify (8)\
+	'ap' - angularSolutionPlotSingle (4)\
+	'af' - angularSolutionPlotFamily (5)\
+	'av' - angularVerify (6)\
+	'wc' - wavefunctionContour (12)\
+	'wv' - wavefunctionVerify (13)\
+	'ne' - numerovHydrogenicEnergies (17)\
+	'Nev'- numerovEnergyVerify (18)\
+	'NRv'- numerovRadialVerify (20)\
+	'Nw' - numerovHydrogenicRadialDensity (19)\
+	'fd' - finiteDifferenceRadial (21)
