@@ -10,13 +10,14 @@
 
      name=<string>
      [basis=slater]
-   	 shell=closed|open
+     shell=closed|open
      [charge=<integer>]0
      [multiplicity=<integer>]1
      [tolerance=<float>]1e-8
      [cycles=<integer>]100
      [geometry=<string>]
-     ]units=angstrom|bohr]bohr
+     [units=angstrom|bohr]bohr
+     [damping={&alpha;,n}]{0,0}
      <blank line>
   Then number of atoms lines of atom identifier, atomic number, x-coordinate, y-coordinate, z-coordinate eg
 
@@ -45,7 +46,7 @@
   The file must have a .hpf extension to be recognized.
 
 ### Files
-  The files included are/
+  The files included are\
   **harpy(se).py** - handles the command line arguements and passes them to cindo.py, also does the timing of the run and prints it and returned energy to console.
 
   **cindo.py** - project.hpf commands parsing, overlap and coulomb integral evaluation, calls closed.py or open.py routines.
@@ -60,7 +61,7 @@
 
   **open.py** - open shell Huckel Hamiltonian, open shell scf iterations.
 
-  **validation.py** - runs a suite of test molecules provided in project.hpf. Compares total energy and orbital eigenvectors against known correct values. This is a test of the self-consistency of the program not of the program against known CNDO/2 or INDO results. Although see below.
+  **verification.py** - runs a suite of test molecules provided in project.hpf. Compares total energy and orbital eigenvectors against known correct values. This is a test of the self-consistency of the program not of the program against known CNDO/2 or INDO results. Although see below.
   
   **project.hpf** - this holds the molecular geometries and parameters for each molecule calculation..
 
@@ -86,9 +87,21 @@ open shell
 + &alpha;  and &beta; spin densities and hyperfine coupling constants
 
 <sup>\*</sup> The geometry specifier in the project file is of the form 'geometry=\<specifier>...\<specifier>', where \<specifier> can be either\
-	{r:i,j} or {a:i,j,k} or {t:i,j,k,l}, where i,j,k,l are integers denoting atoms (first set of coordinates is atom 1). 'r' is bond, 'a' is angle and 't' is torsion angle.
+  {r:i,j} or {a:i,j,k} or {t:i,j,k,l}, where i,j,k,l are integers denoting atoms (first set of coordinates is atom 1). 'r' is bond, 'a' is angle and 't' is torsion angle.
 
 <sup>\*\*</sup> Trend is a string of the sign of the difference of the last two scf electronic energies. If all is well it should be a sequence like '-','--','---' etc. 
 
 ### Testing
-  I have checked the results against output files contained in this [download](http://www.jh-inst.cas.cz/~liska/Cnindo.htm). (The input and output files are a mess often the contents aren't what the file title advertises!) There is also an on-line CNDO/2 application [here](https://www.colby.edu/chemistry/PChem/scripts/cndo.html). Harpy(se) has been tested against these sources. The verification.py program contains reference values from these programs. If you are are looking at these programs be aware that with the 'jh-inst' program if the iteration limit is exceeded it just uses the unconverged value to print post-scf results without any warning - there's just no 'energy satisfied' message. The colby.edu program has a very low convergence tolerance (1e-4?) so results may not be too accurate.
+  I have checked the results against output files contained in this [download](http://www.jh-inst.cas.cz/~liska/Cnindo.htm). (The input and output files are a mess often the contents aren't what the file title advertises!) There is also an on-line CNDO/2 application [here](https://www.colby.edu/chemistry/PChem/scripts/cndo.html). Harpy(se) has been tested against these sources. The verification.py program contains reference values from these programs. If you are are looking at these programs be aware that with the 'jh-inst' program if the iteration limit is exceeded it just uses the unconverged value to print post-scf results without any warning - there's just no 'energy satisfied' message. The colby.edu program has a very low convergence tolerance (1e-4?) so results may not be too accurate. The verification program prints lines like
+
+    LiH   ......  Passed... ✓ 
+
+  This shows that the computed energy and eigenvalues of the installed version agree with the reference harpy(se) values computed by my reference version - that is the 'PASSED'. The tick shows that the installed version agrees to better than 1e-6 (the tolerance used) with jh-inst values. The two molecules for CNDO closed shell 'oh-' and 'co' have reference values taken from Colby college program and so cannot match the criterion of 1e-6.
+  
+### Convergence
+  When using the original QCPE CNDO/2 program in the 70's we noted that for some molecules the SCF energies went into an oscillatory state. An example of this is the &gamma;-aminobutyric acid molecule zwitterion (A.J.Dobson, R.E.Gerkin, Acta Crystallographica,Section C: Crystal Structure Communications, 1996, 52, 3075)
+  
+  ![image](https://user-images.githubusercontent.com/73105740/140323602-fb01c087-746f-4a3e-8734-4c35773603a7.png)
+
+The solution adopted here is to employ a damping mechanism. This involves mixing the density matrix generated in the current cycle with that of the previous cycle ie &Delta;<sub>n</sub> = &alpha;&Delta;<sub>n-1</sub> + (1-&alpha;)&Delta;<sub>n</sub>, where &alpha; is a parameter between 0 and <1. 0 is normal SCF density treatment, the bigger alpha is the more weight is given to the last iteration. This mixing can be continued for a set number of cycles.
+Employing an &alpha; of 0.75 for 7 cycles results in a converged solution for the &gamma;-aminobutyric acid.
