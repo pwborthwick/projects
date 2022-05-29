@@ -6,7 +6,7 @@ The paper [Simplified methods for equation-of-motion coupled-cluster excited sta
 F<sub>ae</sub>C<sup>e</sup><sub>i</sub> - F<sub>mi</sub>C<sup>a</sup><sub>m</sub> + W<sub>amie</sub>C<sup>e</sup><sub>m</sub> , *which re-indexed {e->c,m->k} is*\
 F<sub>ac</sub>C<sup>c</sup><sub>i</sub> - F<sub>ki</sub>C<sup>a</sup><sub>k</sub> + W<sub>akic</sub>C<sup>c</sup><sub>k</sub> &nbsp;&nbsp;, *uniform vectors*\
 F<sub>ac</sub>C<sup>c</sup><sub>k</sub>&delta;<sub>ik</sub> - F<sub>ki</sub>C<sup>c</sup><sub>k</sub>&delta;<sub>ac</sub>+ W<sub>akic</sub>C<sup>c</sup><sub>k</sub>
-+ H<sub>SS</sub><sup>**a**</sup><sub>**i**</sub> = \[*P*(ij)F<sub>**a**c</sub> &delta;<sub>**i**k</sub> - *P*(ab) F<sub>k**i**</sub> &delta;<sub>**a**c</sub> + W<sub>**a**k**i**c</sub>] C<sup>c</sup><sub>k</sub>
++ H<sub>SS</sub><sup>**a**</sup><sub>**i**</sub> = \[F<sub>**a**c</sub> &delta;<sub>**i**k</sub> -  F<sub>k**i**</sub> &delta;<sub>**a**c</sub> + W<sub>**a**k**i**c</sub>] C<sup>c</sup><sub>k</sub>
 
 **H<sub>SD</sub>**\
 F<sub>me</sub>C<sup>ae</sup><sub>im</sub> + 0.5W<sub>amef</sub>C<sup>ef</sup><sub>im</sub> - 0.5W<sub>mnie</sub>C<sup>ae</sup><sub>mn</sub> , *which re-indexed {m->l,e->d,f->c,n->k} is*\
@@ -51,25 +51,25 @@ W<sub>abei</sub> = W<sub>(vvvo)</sub> = g<sub>abei</sub> - F<sub>me</sub>t<sup>a
 W<sub>mbij</sub> = W<sub>(ovoo)</sub> = g<sub>mbij</sub> - F<sub>me</sub>t<sup>be</sup><sub>ij</sub> - t<sup>b</sup><sub>n</sub>W<sub>mnij</sub> + 0.5&tau;<sup>ef</sup><sub> ij</sub> g<sub>mbef</sub> + P(ij) t<sup>be</sup><sub>jn</sub> g<sub>mnie</sub> + P(ij) t<sup>e</sup><sub>i</sub> {g<sub>mbej</sub> - t<sup>bf</sup><sub>nj</sub> g<sub>mnef</sub>} 
 - - - -
 #### H<sub>SS</sub> 
-\[*P*(ij)F<sub>**a**c</sub> &delta;<sub>**i**k</sub> - *P*(ab) F<sub>k**i**</sub> &delta;<sub>**a**c</sub> + W<sub>**a**k**i**c</sub>] r<sup>ck</sup> \
+\[F<sub>**a**c</sub> &delta;<sub>**i**k</sub> - F<sub>k**i**</sub> &delta;<sub>**a**c</sub> + W<sub>**a**k**i**c</sub>] r<sup>ck</sup> \
 \
 Equations for terms taken from  [J. Chem. Phys. 98, 7029 (1993); https://doi.org/10.1063/1.46474698, 7029© 1993 American Institute of Physics.The equation of motion coupled-clustermethod. A systematic biorthogonal approach to molecular excitation energies, transition probabilities, and excited state properties](https://www.theochem.ru.nl/files/local/jcp-98-7029-1993.pdf) 
 
-+ *P*(ij){+F<sub>**a**c</sub>} = *P*(ij){*f*<sub>**a**c</sub> &delta;<sub>**i**k</sub> - t<sup>**a**</sup><sub>m</sub> *f*<sub>mc</sub>&delta;<sub>**i**k</sub> + t<sup>e</sup> </sub>m</sub> g<sub>m**a**ec</sub> &delta;<sub>**i**k</sub> - 0.5 t<sup>e**a**</sup><sub>nm</sub> g<sub>mnce</sub> &delta;<sub>**i**k</sub> - t<sup>e</sup><sub>n</sub> t<sup>**a**</sup><sub>m</sub> g<sub>mnce</sub> &delta;<sub>**i**k</sub>}
++ +F<sub>**a**c</sub> = *f*<sub>**a**c</sub> &delta;<sub>**i**k</sub> - t<sup>**a**</sup><sub>m</sub> *f*<sub>mc</sub>&delta;<sub>**i**k</sub> + t<sup>e</sup> </sub>m</sub> g<sub>m**a**ec</sub> &delta;<sub>**i**k</sub> - 0.5 t<sup>e**a**</sup><sub>nm</sub> g<sub>mnce</sub> &delta;<sub>**i**k</sub> - t<sup>e</sup><sub>n</sub> t<sup>**a**</sup><sub>m</sub> g<sub>mnce</sub> &delta;<sub>**i**k</sub>
 
-    + [1]  *P*(ij) {+*f*<sub>**a**c</sub> &delta;<sub>**i**k</sub>} &nbsp;&nbsp;<sup>1</sup>
-    + [2]  *P*(ij) {-t<sub>m</sub><sup>**a**</sup> *f*<sub>mc</sub> &delta;<sub>**i**k</sub>} &nbsp;&nbsp;<sup>9</sup>
-    + [3]  *P*(ij) {+t<sup>e</sup><sub>m</sub> g<sub>m**a**ec</sub> &delta;<sub>**i**k</sub>} &nbsp;&nbsp;<sup>4</sup>
-    + [4]  *P*(ij) {-0.5 t<sup>e**a**</sup><sub>nm</sub> g<sub>mnce</sub> &delta;<sub>**i**k</sub>} &nbsp;&nbsp;<sup>10</sup>
-    + [5]  *P*(ij) {-t<sup>e</sup><sub>n</sub> t<sup>**a**</sup><sub>m</sub> g<sub>mnce</sub> &delta;<sub>**i**k</sub>}  &nbsp;&nbsp;<sup>15</sup>
+    + [1]  +*f*<sub>**a**c</sub> &delta;<sub>**i**k</sub> &nbsp;&nbsp;<sup>1</sup>
+    + [2]  -t<sub>m</sub><sup>**a**</sup> *f*<sub>mc</sub> &delta;<sub>**i**k</sub> &nbsp;&nbsp;<sup>9</sup>
+    + [3]  +t<sup>e</sup><sub>m</sub> g<sub>m**a**ec</sub> &delta;<sub>**i**k</sub> &nbsp;&nbsp;<sup>4</sup>
+    + [4]  -0.5 t<sup>e**a**</sup><sub>nm</sub> g<sub>mnce</sub> &delta;<sub>**i**k</sub> &nbsp;&nbsp;<sup>10</sup>
+    + [5]  -t<sup>e</sup><sub>n</sub> t<sup>**a**</sup><sub>m</sub> g<sub>mnce</sub> &delta;<sub>**i**k</sub>  &nbsp;&nbsp;<sup>15</sup>
    
-+ *P*(ab){-F<sub>k**i**</sub>} = -*P*(ab)\{*f*<sub>k**i**</sub> &delta;<sub>**a**c</sub> + t<sup>e</sup><sub>**i**</sub> *f*<sub>ke</sub> &delta;<sub>**a**c</sub> + t<sup>e</sup><sub>m</sub> g<sub>km**i**e</sub> &delta;<sub>**a**c</sub> + 0.5 t<sup>ef</sup><sub>**i**m</sub> g<sub>kmef</sub> &delta;<sub>**a**c</sub> + t<sup>e</sup><sub>**i**</sub> t<sup>f</sup><sub>m</sub> g<sub>kmef</sub> &delta;<sub>**a**c</sub> }
++ -F<sub>k**i**</sub> = -{*f*<sub>k**i**</sub> &delta;<sub>**a**c</sub> + t<sup>e</sup><sub>**i**</sub> *f*<sub>ke</sub> &delta;<sub>**a**c</sub> + t<sup>e</sup><sub>m</sub> g<sub>km**i**e</sub> &delta;<sub>**a**c</sub> + 0.5 t<sup>ef</sup><sub>**i**m</sub> g<sub>kmef</sub> &delta;<sub>**a**c</sub> + t<sup>e</sup><sub>**i**</sub> t<sup>f</sup><sub>m</sub> g<sub>kmef</sub> &delta;<sub>**a**c</sub> }
 
-    + [6]  -*P*(ab) {*f*<sub>k**i**</sub> &delta;<sub>**a**c</sub>} &nbsp;&nbsp;<sup>2</sup>
-    + [7]  -*P*(ab) {t<sup>e</sup><sub>**i**</sub> *f*<sub>ke</sub> &delta;<sub>**a**c</sub>}  &nbsp;&nbsp;<sup>8</sup>
-    + [8]  -*P*(ab) {t<sup>e</sup><sub>m</sub> g<sub>km**i**e</sub> &delta;<sub>**a**c</sub>}  &nbsp;&nbsp;<sup>5</sup>
-    + [9]  -*P*(ab) {0.5 t<sup>ef</sup><sub>**i**m</sub> g<sub>kmef</sub> &delta;<sub>**a**c</sub>}  &nbsp;&nbsp;<sup>11</sup>
-    + [10] -*P*(ab) {t<sup>e</sup><sub>**i**</sub> t<sup>f</sup><sub>m</sub> g<sub>kmef</sub> &delta;<sub>**a**c</sub>}  &nbsp;&nbsp;<sup>14</sup>
+    + [6]  -*f*<sub>k**i**</sub> &delta;<sub>**a**c</sub> &nbsp;&nbsp;<sup>2</sup>
+    + [7]  -t<sup>e</sup><sub>**i**</sub> *f*<sub>ke</sub> &delta;<sub>**a**c</sub>  &nbsp;&nbsp;<sup>8</sup>
+    + [8]  -t<sup>e</sup><sub>m</sub> g<sub>km**i**e</sub> &delta;<sub>**a**c</sub>  &nbsp;&nbsp;<sup>5</sup>
+    + [9]  -0.5 t<sup>ef</sup><sub>**i**m</sub> g<sub>kmef</sub> &delta;<sub>**a**c</sub>  &nbsp;&nbsp;<sup>11</sup>
+    + [10] -t<sup>e</sup><sub>**i**</sub> t<sup>f</sup><sub>m</sub> g<sub>kmef</sub> &delta;<sub>**a**c</sub>  &nbsp;&nbsp;<sup>14</sup>
 
 + +W<sub>**a**k**i**c</sub> = g<sub>**a**k**i**c</sub> + t<sup>e</sup><sub>**i**</sub> g<sub>**a**kec</sub> - t<sup>**a**</sup><sub>m</sub> g<sub>mk**i**c</sub> - (t<sup>e**a**</sup><sub>**i**m</sub> + t<sup>e</sup><sub>**i**</sub> t<sup>**a**</sup><sub>m</sub>) g<sub>mkec</sub>
 
