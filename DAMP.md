@@ -22,7 +22,7 @@ To produce a Python file containing a function to evaluate Moller-Plesset correc
 h,generate_file('python', file='outputs/mp3.py')
 ```
 The subroutine is defined as __damp(eps, g, nocc)__ where _eps_ are the orbital energies in a molecular spin basis, _g_ are the 2-electron repulsion integrals in the molecular spin basis and _nocc_ are the number of singly occupied spin-orbitals.
-The description of a particlur diagram can be obtained from the *.debug(diagram_number)* method. The diagram number is the number in which it appears in the printed list of a tex-file for that order of diagram. This number can be obtaied for a diagram from it's unique identidier tuple. 
+The description of a particular diagram can be obtained from the *.debug(diagram_number)* method. The diagram number is the number it appears in the printed list of a tex-file for that order of diagram. This number can be obtained for a diagram from it's unique identifier tuple. 
 
 Diagrams can be plotted individually or as a group of the whole order (group is only available for order 4 and below).
 ```
@@ -34,9 +34,13 @@ will display and save the diagram number 3 to the file 'outputs/diagram_33.png'.
 The file script.py in root folder has a fully commented explaination of using the HUGENHOLTZ and DISPLAY classes.
 
 __Identifying Diagrams__
-&nbsp;&nbsp;A diagram of order _n_ will have _n_ nodes. The nodes are numbered from the bottom up - the lowest node will be _0_ and the highest _n-1_. Connections occur between pairs of node, there will be $\frac{n(n-1)}{2}$ pairs of nodes. The pairs of nodes are generated in the order {(0,1), (0,2), ... ,(0,n-1), (1,2), (1,3), ... , (1,n-1), ...,(n-3,n-2) (n-3, n-1), (n-2,n-1)}. A diagram can then be specified uniquely by the number of up connections (particles) and the number of down (holes) between the node pairs. For the following diagram we have for up connections (0, 0, 2) and for down connection (2, 2, 0). The number of the diagram in the order produced by _HUGENHOLTZ_ is given by
+&nbsp;&nbsp;A diagram of order _n_ will have _n_ nodes. The nodes are numbered from the bottom up - the lowest node will be _0_ and the highest _n-1_. Connections occur between pairs of node, there will be $\frac{n(n-1)}{2}$ pairs of nodes. The pairs of nodes are generated in the order {(0,1), (0,2), ... ,(0,n-1), (1,2), (1,3), ... , (1,n-1), ...,(n-3,n-2) (n-3, n-1), (n-2,n-1)}. A diagram can then be specified uniquely by the number of up connections (particles) and the number of down (holes) between the node pairs. For the following diagram we have for up connections (0, 2, 0) and for down connection (2, 0, 2).
+
+ ![image](https://user-images.githubusercontent.com/73105740/211301726-1955fc64-db97-4eb7-9721-be5681ab6c0f.png)
+
+The number of the diagram in the order produced by _HUGENHOLTZ_ is given by
 ```
-n = h.ordinal([0,0,2], [2,2,0]))
+n = h.ordinal([0,2,0], [2,0,2]))
 ```
 and the details of the diagram are then found with
 ```
